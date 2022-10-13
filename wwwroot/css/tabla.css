@@ -1,0 +1,10 @@
+.cabeceraTabla{
+    background-color: rgb(0, 120, 86);
+    color: white;
+    text-align: center;
+    font-size: medium;
+}
+
+.cuerpoTabla{
+    text-align: center;
+}

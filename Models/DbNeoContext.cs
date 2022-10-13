@@ -14,6 +14,7 @@ namespace LibroNovedades.Models
         public DbNeoContext(DbContextOptions<DbNeoContext> options)
             : base(options)
         {
+            
         }
 
         public virtual DbSet<Area> Areas { get; set; } = null!;
@@ -368,15 +369,21 @@ namespace LibroNovedades.Models
 
             modelBuilder.Entity<LibroNove>(entity =>
             {
-                entity.HasKey(e => e.RdidReuDia)
+                entity.HasKey(e => e.IdReuDia)
                     .HasName("PK_LibroNovedades");
 
                 entity.ToTable("LibroNove");
 
-                entity.Property(e => e.RdidReuDia).HasColumnName("RDIdReuDia");
-
                 entity.Property(e => e.IdEquipo)
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.IdMaquina)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.RdTurno)
+                    .HasMaxLength(1)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Rddiscrepa)
@@ -392,7 +399,24 @@ namespace LibroNovedades.Models
                     .IsUnicode(false)
                     .HasColumnName("RDFichaRes");
 
+                entity.Property(e => e.Rdgrupo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("RDGrupo");
+
                 entity.Property(e => e.RdtiePerMi).HasColumnName("RDTiePerMi");
+
+                entity.HasOne(d => d.IdAreaCarNavigation)
+                    .WithMany(p => p.LibroNoves)
+                    .HasForeignKey(d => d.IdAreaCar)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LibroNove_Area");
+
+                entity.HasOne(d => d.IdLineaNavigation)
+                    .WithMany(p => p.LibroNoves)
+                    .HasForeignKey(d => d.IdLinea)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LibroNove_Linea");
             });
 
             modelBuilder.Entity<LinAre>(entity =>

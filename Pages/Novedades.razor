@@ -1,0 +1,135 @@
+@page "/Formato"
+@inject IDataArea DataArea;
+@inject IDataCentro DataCentro;
+@inject IDataLinea DataLinea;
+
+<PageTitle>Formato</PageTitle>
+
+
+<BSContainer PaddingBottom="Padding.Large">
+     <BSRow>
+        <h1 class="titulo">Libro de Novedades</h1>
+    </BSRow>
+</BSContainer>
+
+<BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
+    <BSAlert style="height:55px;" class="alertaInfo" IsDismissible="true" @ref="_alertRef" Dismissed="Dismissed">
+        <h5>@mensaje</h5>
+    </BSAlert>
+    <BSCard CardType="CardType.Body">
+        <BSCard CardType="CardType.Text">
+            <BSForm Model="dataNove" IsRow="true" Gutters="Gutters.Medium" OnSubmit="OK">
+                <DataAnnotationsValidator />
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                        <BSLabel class="labelFormulario">Centro</BSLabel>
+                        <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdAreaCar" @onchange="BuscarLinea">
+                            @if(ListaCentro != null){
+                                <option value="0">Seleccione un Centro</option>
+                                @foreach (var item in ListaCentro)
+                                {
+                                    <option value="@item.IdCentro">@item.Cnom</option>
+                                }
+                            }else{
+                                <option value="0">Cargando...</option>
+                            }
+                        </BSInput>
+                        
+                </BSCol>
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                        <BSLabel class="labelFormulario">Linea</BSLabel>
+                        <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdLinea" >
+                            @if (dataNove.IdAreaCar != 0)
+                            {   
+                                @if(ListaLinea != null){
+                                    <option value="0">Seleccione un Linea</option>
+                                    @foreach (var item in ListaLinea)
+                                    {
+                                        <option value="@item.IdLinea">@item.Lnom</option>
+                                    }
+                                }else{
+                                    <option value="0">Cargando...</option>
+                                }
+                            }else{
+                                <option value="0">Seleccione un Centro</option>
+                            }
+                        </BSInput>
+                    </BSCol>
+                
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                        <BSLabel class="labelFormulario">ID Maquina</BSLabel>
+                        <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdMaquina"></BSInput>
+                </BSCol>
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                        <BSLabel class="labelFormulario">ID Equipo</BSLabel>
+                        <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdEquipo"></BSInput>
+                </BSCol>
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                        <BSLabel class="labelFormulario">Ficha</BSLabel>
+                        <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.RdfichaRes"></BSInput>
+                </BSCol>
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                        <BSLabel class="labelFormulario">Grupo</BSLabel>
+                        <BSInput  InputType="InputType.Select" @bind-Value="dataNove.Rdgrupo">
+                            <option value="0">Seleccionar Grupo</option>
+                            <option value="A">Grupo A</option>
+                            <option value="B">Grupo B</option>
+                            <option value="C">Grupo C</option>
+                            <option value="D">Grupo D</option>
+                        </BSInput>
+                </BSCol>
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                        <BSLabel class="labelFormulario">Turno</BSLabel>
+                        <BSInput  InputType="InputType.Select" @bind-Value="dataNove.Rdgrupo">
+                            <option value="0">Seleccionar Grupo</option>
+                            <option value="A">1er turno</option>
+                            <option value="B">2do truno</option>
+                        </BSInput>
+                </BSCol>
+                <BSCol Position="Position.Relative" Place ColumnMedium="8">
+                        <BSLabel class="labelFormulario">Discrepancia</BSLabel>
+                        <BSInput InputType="InputType.TextArea" rows="1" @bind-Value="dataNove.Rddiscrepa"></BSInput>
+                </BSCol>
+            </BSForm>
+        </BSCard>
+    </BSCard>
+    
+</BSCard>
+@code{
+    public string? mensaje { get; set;}
+    public LibroNove dataNove  { get; set;}
+    public List<Centro> ListaCentro { get; set;}
+    public List<Linea> ListaLinea { get; set;}
+
+    public List<LinAre> ListaArea { get; set;}
+    private BSAlert _alertRef;
+
+    public int idLinea { get; set;}
+    
+    private bool _buttonDisabled = true;
+    
+    protected override async Task  OnInitializedAsync()
+    {
+        dataNove = new LibroNove();
+        ListaCentro = await DataCentro.ObtenerTodosLosCentro();
+        ListaArea = new List<LinAre>();
+        ListaLinea = new List<Linea>();
+    }
+    protected async Task OK(EditContext e){
+        dataNove.Rdfecha = DateTime.Now;
+    }
+
+    protected async Task BuscarLinea(ChangeEventArgs e){
+        dataNove.IdAreaCar = Int32.Parse(e.Value.ToString());
+        if(dataNove.IdAreaCar != 0){
+            ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(dataNove.IdAreaCar);
+        }else{
+            dataNove.IdLinea = 0;
+        }
+    }
+    
+    private void Dismissed()
+    {
+        _buttonDisabled = false;
+    }
+}
+

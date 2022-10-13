@@ -1,0 +1,56 @@
+.labelFormulario{
+    width: 40%;
+    border-radius: 3px;
+    color: aliceblue;
+    background-color: #3cad49;
+    text-align: center;
+    font-weight: 650;
+}
+.labelFormularioGrande{
+    width: 80%;
+    border-radius: 3px;
+    color: aliceblue;
+    background-color: #3cad49;
+    text-align: center;
+    font-weight: 650;
+}
+
+.labelFormularioCompleto{
+    width: 100%;
+    padding: 2%;
+    border-radius: 3px;
+    color: aliceblue;
+    background-color: #3cad49;
+    text-align: center;
+    font-weight: 650;
+}
+
+.buttonFormularioOK{
+    background-color: #3cad49;
+    color: white;
+}
+.buttonFormularioDLT{
+    background-color: tomato;
+    color: white;
+}
+
+.buttonFormularioCambio{
+    background-color:#ffff4d;
+    color: black;
+}
+
+.buttonFormularioCambio:hover{
+    color: black;
+    background-color: white;
+}
+
+
+.buttonFormularioDLT:hover{
+    background-color:black;
+    color: white;
+}
+
+.buttonFormularioOK:hover{
+    background-color: rgb(0, 120, 86);
+    color:white;
+}

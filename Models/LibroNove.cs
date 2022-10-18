@@ -16,8 +16,7 @@ namespace LibroNovedades.Models
         [Required(ErrorMessage ="Coloque la novedad.")] 
         public string Rddiscrepa { get; set; } = null!;
 
-        //TODO: falta este campo
-        [Required(ErrorMessage ="Coloque el tiempo perdido en minutos.")]
+        [ValidDiferenteACero]
         public double RdtiePerMi { get; set; }
 
         [Required(ErrorMessage ="Coloque su ficha.")]
@@ -30,13 +29,15 @@ namespace LibroNovedades.Models
 
         [Required(ErrorMessage ="Coloque el id de la maquina.")]
         public string IdMaquina { get; set; } = null!;
-        //TODO: falta este campo
-        [Required(ErrorMessage ="Coloque el tipo de novedad.")]
+        
+        [ValidDiferenteACero]
         public int IdTipoNove { get; set; }
 
         [Required(ErrorMessage ="Coloque el area a la que pertenece.")]
         public int IdAreaCar { get; set; }
         public virtual Area IdAreaCarNavigation { get; set; } = null!;
         public virtual Linea IdLineaNavigation { get; set; } = null!;
+        public virtual TiParTp IdTipoNoveNavigation { get; set; } = null!;
     }
 }
+

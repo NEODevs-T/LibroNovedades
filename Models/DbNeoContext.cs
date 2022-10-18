@@ -14,7 +14,6 @@ namespace LibroNovedades.Models
         public DbNeoContext(DbContextOptions<DbNeoContext> options)
             : base(options)
         {
-            
         }
 
         public virtual DbSet<Area> Areas { get; set; } = null!;
@@ -417,6 +416,12 @@ namespace LibroNovedades.Models
                     .HasForeignKey(d => d.IdLinea)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_LibroNove_Linea");
+
+                entity.HasOne(d => d.IdTipoNoveNavigation)
+                    .WithMany(p => p.LibroNoves)
+                    .HasForeignKey(d => d.IdTipoNove)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_LibroNove_TiParTP");
             });
 
             modelBuilder.Entity<LinAre>(entity =>

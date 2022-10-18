@@ -16,6 +16,8 @@ builder.Services.AddDbContext<DbNeoContext>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataCentro, global::LibroNovedades.Data.Global.DataCentro>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataLinea, global::LibroNovedades.Data.Global.DataLinea>();
+builder.Services.AddScoped<global::LibroNovedades.Data.APIOEE.IDataAPIOEE, global::LibroNovedades.Data.APIOEE.DataAPIOEE>();
+builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataLibroNov, global::LibroNovedades.Data.LibroNov.DataLibroNov>();
 
 var app = builder.Build();
 

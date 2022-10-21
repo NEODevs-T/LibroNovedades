@@ -4,6 +4,7 @@
 @inject IDataLinea DataLinea;
 @inject IDataAPIOEE DataAPIOEE;
 @inject IDataLibroNov DataLibroNov;
+@inject IDataTiParTP DataTiParTP;
 
 <PageTitle>Formato</PageTitle>
 
@@ -13,7 +14,6 @@
         <h1 class="titulo">Libro de Novedades</h1>
     </BSRow>
 </BSContainer>
-
 <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
     <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo" IsDismissible="true" @ref="_alertRef" Dismissed="Dismissed">
         <h5>@mensaje</h5>
@@ -125,7 +125,7 @@
                                 <BSTD>@item</BSTD>
                                 <BSTD>@paradas[2][item]</BSTD>
                                 <BSTD>@paradas[3][item].Substring(0,5).Replace(".",",")</BSTD>
-                                <BSTD><BSButton class="buttonFormularioOK" @onclick="@(e => eleccion(item))">Seleccionar</BSButton></BSTD>
+                                <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">Seleccionar</BSButton></BSTD>
                             </BSTR>
                         }
                     }
@@ -136,25 +136,33 @@
     
 </BSCard>
 @code{
-    public string? mensaje { get; set;}
-    public LibroNove dataNove  { get; set;}
-    public List<Centro> ListaCentro { get; set;}
-    public List<Linea> ListaLinea { get; set;}
+    private string? mensaje { get; set;}
+    private LibroNove dataNove  { get; set;}
 
-    public List<LinAre> ListaArea { get; set;}
+    private TiParTp tipoParada  { get; set;}
+    private List<Centro> ListaCentro { get; set;}
+    private List<Linea> ListaLinea { get; set;}
+
+    private List<LinAre> ListaArea { get; set;}
     private BSAlert _alertRef;
     private bool _showTooltip;
 
-    public int idLinea { get; set;}
+    private int idLinea { get; set;}
     
     private bool _buttonDisabled = true;
 
     private List<List<string>> paradas;
     //public HttpClient cliente { get; set;}
-    public List<int> index  { get; set;}
+    private List<int> index  { get; set;}
 
-    public bool isDisabled  { get; set;}
-    public bool bandera  { get; set;}
+    private List<LibroNove> listaNove { get; set;}
+
+    private ComponentBase contenedor { get; set;}
+
+    private InputText inputTextReferencia {get; set;}
+
+    private bool isDisabled  { get; set;}
+    private bool bandera  { get; set;}
     protected override async Task  OnInitializedAsync()
     {
         mensaje = "Registre una Novedad";
@@ -165,20 +173,40 @@
         paradas = new List<List<string>>();
         index = new List<int>();
         isDisabled = false;
-        
     }
     protected async Task OK(EditContext e){
         isDisabled = true;
         dataNove.Rdfecha = DateTime.Now;
         if (e.Validate())
         {
-            bandera = await DataLibroNov.InsertarRegistro(dataNove);
+            try
+            {
+                bandera = await DataLibroNov.InsertarRegistro(dataNove);
 
-            if(bandera){
-                mensaje = "Guardado Exitosamente";
-            }else{
-                mensaje = "Error. Intente de nuevo";
+                if(bandera){
+                    mensaje = "Guardado Exitosamente";
+                    int d1 = dataNove.IdAreaCar;
+                    int d2 =  dataNove.IdLinea;
+                    int d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParaGesp.ToString().Substring(1)));
+                    dataNove.IdAreaCar = d1;
+                    dataNove.IdLinea = d2;
+                    paradas[0].RemoveAt(d3);
+                    paradas[1].RemoveAt(d3);
+                    paradas[2].RemoveAt(d3);
+                    paradas[3].RemoveAt(d3);
+                    dataNove = new LibroNove();
+                    index = new List<int>(paradas[0].Count());
+                    for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
+                }else{
+                    mensaje = "Error. Intente de nuevo";
+                }
             }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
+            {
+                mensaje = "Ese elemento ya fue registrado. Por favor seleccione otra causa";
+                dataNove = new LibroNove();
+            }
+
 
         }else if( dataNove.RdtiePerMi == 0 || dataNove.IdTipoNove == 0 ){
             mensaje = "Seleccione una causa de tiempo perdido";
@@ -200,16 +228,29 @@
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
         dataNove.IdLinea = int.Parse(e.Value.ToString());
         Linea linea =  ListaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).First();
-        paradas = await DataAPIOEE.obtenerParadasActuales1turnoPorLinea(linea.LcenCos);
+        listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
+        
+        paradas = await DataAPIOEE.obtenerParadasActuales1turnoPorLinea(linea.LcenCos,listaNove);
+
         index = new List<int>(paradas[0].Count());
         for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
     }
 
     public async Task eleccion(int item){
-        dataNove.IdTipoNove = int.Parse(paradas[0][item]);
-        dataNove.RdtiePerMi = double.Parse(paradas[2][item].Replace(".",","));
+        //? al agregar 1 indica que son datos del Gespline
+        //string a = await ReturnArrayAsync(item.ToString());
+        dataNove.IdParaGesp =  int.Parse('1' + paradas[0][item]); 
+        tipoParada =   await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
+        dataNove.IdTipoNove = tipoParada.IdTiParTp;
+        dataNove.RdtiePerMi = double.Parse(paradas[3][item].Replace(".",","));
     }
     
+    //[JSInvokable]
+    //public static Task<string> ReturnArrayAsync(string item)
+    //{
+    //    return Task.FromResult(item);
+    //}
+
     private void Dismissed()
     {
         _buttonDisabled = false;

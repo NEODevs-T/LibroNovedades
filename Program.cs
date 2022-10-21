@@ -18,6 +18,7 @@ builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataCentro, globa
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataLinea, global::LibroNovedades.Data.Global.DataLinea>();
 builder.Services.AddScoped<global::LibroNovedades.Data.APIOEE.IDataAPIOEE, global::LibroNovedades.Data.APIOEE.DataAPIOEE>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataLibroNov, global::LibroNovedades.Data.LibroNov.DataLibroNov>();
+builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataTiParTP, global::LibroNovedades.Data.LibroNov.DataTiParTP>();
 
 var app = builder.Build();
 

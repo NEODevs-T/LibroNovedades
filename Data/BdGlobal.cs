@@ -11,6 +11,8 @@ namespace LibroNovedades.Data.Global
     public interface IDataLinea
     {
         Task<List<Linea>> ObtenerLasLineasPorCentro(int idCentro);
+
+        Task<List<Linea>> ObtenerTodasLasLineas();
     }
 
     public interface IDataArea
@@ -41,6 +43,9 @@ namespace LibroNovedades.Data.Global
         public async Task<List<Linea>> ObtenerLasLineasPorCentro(int idCentro)
         {
             return await _cotext.Lineas.Where(x => x.IdCentro == idCentro && x.Lestado == true).ToListAsync();
+        }
+        public async Task<List<Linea>> ObtenerTodasLasLineas(){
+            return await _cotext.Lineas.OrderBy(l => l.Lnom).ToListAsync();
         }
     }
     public class DataArea : IDataArea

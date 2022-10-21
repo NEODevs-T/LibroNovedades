@@ -373,6 +373,9 @@ namespace LibroNovedades.Models
 
                 entity.ToTable("LibroNove");
 
+                entity.HasIndex(e => e.IdParaGesp, "UQ__LibroNov__E7DCE92E1F466A06")
+                    .IsUnique();
+
                 entity.Property(e => e.IdEquipo)
                     .HasMaxLength(50)
                     .IsUnicode(false);

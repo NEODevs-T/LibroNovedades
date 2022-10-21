@@ -36,5 +36,14 @@
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/BlazorStrap/popper.min.js"></script>
     <script src="_content/BlazorStrap/blazorstrap.js"></script>
+    @* <script>
+    window.returnArrayAsync = () => {
+        DotNet.invokeMethodAsync('BlazorSample', 'ReturnArrayAsync')
+        .then(data => {
+            document.(data).style.color = '#ffff4d';
+            return '#ffff4d';
+        });
+        };
+</script> *@
 </body>
 </html>

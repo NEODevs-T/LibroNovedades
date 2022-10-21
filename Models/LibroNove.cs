@@ -35,9 +35,12 @@ namespace LibroNovedades.Models
 
         [Required(ErrorMessage ="Coloque el area a la que pertenece.")]
         public int IdAreaCar { get; set; }
+
+        [ValidDiferenteACero]
+        public int IdParaGesp { get; set; }
         public virtual Area IdAreaCarNavigation { get; set; } = null!;
         public virtual Linea IdLineaNavigation { get; set; } = null!;
         public virtual TiParTp IdTipoNoveNavigation { get; set; } = null!;
+        
     }
 }
-

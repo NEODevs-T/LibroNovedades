@@ -22,7 +22,7 @@ namespace LibroNovedades.Models
         /// <summary>
         /// codigo del tipo parada
         /// </summary>
-        public string? Tpcodigo { get; set; }
+        public string Tpcodigo { get; set; }
         /// <summary>
         /// nombre del centro
         /// </summary>

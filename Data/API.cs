@@ -1,29 +1,30 @@
 using LibroNovedades.Models;
+using LibroNovedades.Models.Logic;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibroNovedades.Data.APIOEE
+namespace LibroNovedades.Data.API
 {
-    public interface IDataAPIOEE
+    public interface IDataAPI
     {
         Task<List<List<string>>> obtenerParadasActuales1turnoPorLinea(string centroCosto);
-
         Task<List<List<string>>> obtenerParadasActuales1turnoPorLinea(string centroCosto,List<LibroNove> listaNove);
-
+        Task<Dictionary<string,string>>? obtenerUsuario(string ficha);
     }
 
-    public class DataAPIOEE : IDataAPIOEE
+    public class DataAPI : IDataAPI
     {
+        private HttpClient cliente;
         public async Task<List<List<string>>>? obtenerParadasActuales1turnoPorLinea(string centroCosto){
             List<List<string>> data;
             string url = "http://operaciones.papeleslatinos.com/neoapi/OEE/obtenerParadasActuales1turnoPorLinea/" + centroCosto;
-            HttpClient cliente = new HttpClient();
+            this.cliente = new HttpClient();
             data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
             return data;
         }
         public async Task<List<List<string>>>? obtenerParadasActuales1turnoPorLinea(string centroCosto, List<LibroNove> listaNove){
             string ParadasIgnorar = "[";
             List<List<string>> data = new List<List<string>>();
-            HttpClient cliente = new HttpClient();
+            this.cliente = new HttpClient();
             if(listaNove.Count == 0){
                 return await this.obtenerParadasActuales1turnoPorLinea(centroCosto);
             }else{
@@ -41,5 +42,12 @@ namespace LibroNovedades.Data.APIOEE
             data = await cliente.GetFromJsonAsync<List<List<string>>>(url);     
             return data;
         }
+        public async Task<Dictionary<string,string>>? obtenerUsuario(string ficha){
+            Dictionary<string,string> usuario = new Dictionary<string,string>();
+            string url = "http://operaciones.papeleslatinos.com/neoapi/usuario/BuscarUsuarioPorFicha/" + ficha;
+            this.cliente = new HttpClient();
+            usuario = await cliente.GetFromJsonAsync<Dictionary<string,string>>(url);
+            return usuario;
+        } 
     }
 }

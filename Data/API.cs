@@ -1,5 +1,4 @@
 using LibroNovedades.Models;
-using LibroNovedades.Models.Logic;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibroNovedades.Data.API

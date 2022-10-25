@@ -12,6 +12,7 @@ namespace LibroNovedades.Models
         {
             AudCas = new HashSet<AudCa>();
             ParAres = new HashSet<ParAre>();
+            ParsiOees = new HashSet<ParsiOee>();
         }
 
         /// <summary>
@@ -32,5 +33,6 @@ namespace LibroNovedades.Models
         public virtual Linea IdLineaNavigation { get; set; } = null!;
         public virtual ICollection<AudCa> AudCas { get; set; }
         public virtual ICollection<ParAre> ParAres { get; set; }
+        public virtual ICollection<ParsiOee> ParsiOees { get; set; }
     }
 }

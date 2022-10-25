@@ -21,10 +21,6 @@ namespace LibroNovedades.Models
         /// </summary>
         public int IdParaTp { get; set; }
         /// <summary>
-        /// identificador de la parte
-        /// </summary>
-        public int IdParte { get; set; }
-        /// <summary>
         /// fecha de inicio de la parada
         /// </summary>
         public DateTime Tefechai { get; set; }
@@ -39,6 +35,5 @@ namespace LibroNovedades.Models
 
         public virtual ParaTp IdParaTpNavigation { get; set; } = null!;
         public virtual ParsiOee IdParsiOeeNavigation { get; set; } = null!;
-        public virtual ParAre IdParteNavigation { get; set; } = null!;
     }
 }

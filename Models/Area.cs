@@ -12,7 +12,6 @@ namespace LibroNovedades.Models
         {
             LibroNoves = new HashSet<LibroNove>();
             LinAres = new HashSet<LinAre>();
-            ParsiOees = new HashSet<ParsiOee>();
             VarAres = new HashSet<VarAre>();
         }
 
@@ -35,7 +34,6 @@ namespace LibroNovedades.Models
 
         public virtual ICollection<LibroNove> LibroNoves { get; set; }
         public virtual ICollection<LinAre> LinAres { get; set; }
-        public virtual ICollection<ParsiOee> ParsiOees { get; set; }
         public virtual ICollection<VarAre> VarAres { get; set; }
     }
 }

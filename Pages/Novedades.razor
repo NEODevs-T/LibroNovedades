@@ -27,15 +27,85 @@
                             <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.RdfichaRes"></BSInput>
                             <BSFeedback For="@(() => dataNove.RdfichaRes)"/> 
                             <br>
-                            <BSButton class="buttonFormularioOK" @onclick=BuscarFicha>Login</BSButton>
+                            <BSButton class="buttonFormularioOK" @onclick=BuscarFicha>Seleccionar</BSButton>
                     </BSCol>
                 </BSRow>
+            }else if(dataNove.IdParaGesp == 0 || dataNove.IdParaGesp == null || dataNove.IdParaGesp == -1){
+                <BSRow> 
+                    @if(dataNove.IdParaGesp == -1){
+                        <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                <BSLabel class="labelFormulario">Centro</BSLabel>
+                                <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="dataNove.IdAreaCar" @onchange="BuscarLinea">
+                                    @if(ListaCentro != null){
+                                        <option value="0">Seleccione un Centro</option>
+                                        @foreach (var item in ListaCentro)
+                                        {
+                                            <option value="@item.IdCentro">@item.Cnom</option>
+                                        }
+                                    }else{
+                                        <option value="0">Cargando...</option>
+                                    }
+                                </BSInput>
+                        </BSCol>
+                    }
+                    <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                <BSLabel class="labelFormulario">Linea</BSLabel>
+                                <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
+                                    @if (dataNove.IdAreaCar != 0)
+                                    {   
+                                        @if(ListaLinea != null){
+                                            <option value="0">Seleccione un Linea</option>
+                                            @foreach (var item in ListaLinea)
+                                            {
+                                                <option value="@item.IdLinea">@item.Lnom</option>
+                                            }
+                                        }else{
+                                            <option value="0">Cargando...</option>
+                                        }
+                                    }else{
+                                        <option value="0">Seleccione un Centro</option>
+                                    }
+                                </BSInput>
+                    </BSCol>
+                    <BSCol Position="Position.Relative" Align="Align.End"  AlignRow="OTRAlignRow" Place ColumnMedium="4">
+                        <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" IsReset="true" @onclick=atras1>Atras</BSButton>
+                    </BSCol>
+                </BSRow>  
+                <br>
+                <br>
+                <BSTable IsResponsive="true" IsStriped="true">
+                    <BSTHead>
+                        <BSTR class="cabeceraTabla">
+                            <BSTD>#</BSTD>
+                            <BSTD>Descripcion</BSTD>
+                            <BSTD>Tiempo</BSTD>
+                            <BSTD>Seleccionar</BSTD>
+                        </BSTR>
+                    </BSTHead>
+                    <BSTBody class="cuerpoTabla">
+                        @if(paradas == null){
+                            <BSTR>
+                                <BSTD ColSpan="5">Coloque una Linea</BSTD>
+                            </BSTR>
+                        }else{
+                            @foreach (var item in index)
+                            {
+                                <BSTR>
+                                    <BSTD>@item</BSTD>
+                                    <BSTD>@paradas[2][item]</BSTD>
+                                    <BSTD>@paradas[3][item].Substring(0,5).Replace(".",",")</BSTD>
+                                    <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">Seleccionar</BSButton></BSTD>
+                                </BSTR>
+                            }
+                        }
+                    </BSTBody>
+                </BSTable>
             }else{
                 <BSForm Model="dataNove" IsRow="true" Gutters="Gutters.Medium" OnSubmit="OK">
                     <DataAnnotationsValidator />
                     <BSCol Position="Position.Relative" Place ColumnMedium="4">
                             <BSLabel class="labelFormulario">Centro</BSLabel>
-                            <BSInput IsDisabled="@isDisabledArea" InputType="InputType.Select" @bind-Value="dataNove.IdAreaCar" @onchange="BuscarLinea">
+                            <BSInput IsDisabled="true" InputType="InputType.Select" @bind-Value="dataNove.IdAreaCar" @onchange="BuscarLinea">
                                 @if(ListaCentro != null){
                                     <option value="0">Seleccione un Centro</option>
                                     @foreach (var item in ListaCentro)
@@ -50,7 +120,7 @@
                     </BSCol>
                     <BSCol Position="Position.Relative" Place ColumnMedium="4">
                             <BSLabel class="labelFormulario">Linea</BSLabel>
-                            <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
+                            <BSInput InputType="InputType.Select" IsDisabled="true" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
                                 @if (dataNove.IdAreaCar != 0)
                                 {   
                                     @if(ListaLinea != null){
@@ -99,44 +169,21 @@
                             </BSInput>
                             <BSFeedback For="@(() => dataNove.RdTurno)"/> 
                     </BSCol>
-                    <BSCol Position="Position.Relative" Place ColumnMedium="8">
+                    <BSCol Position="Position.Relative" Place ColumnMedium="12">
                             <BSLabel class="labelFormulario">Discrepancia</BSLabel>
                             <BSInput InputType="InputType.TextArea" rows="1" @bind-Value="dataNove.Rddiscrepa"></BSInput>
                             <BSFeedback For="@(() => dataNove.Rddiscrepa)"/> 
                     </BSCol>
+                    <BSCol Position="Position.Relative" Place ColumnMedium="12">
+                            <BSLabel class="labelFormulario">Accion</BSLabel>
+                            <BSInput InputType="InputType.TextArea" rows="1" @bind-Value="dataNove.Rdaccion"></BSInput>
+                            <BSFeedback For="@(() => dataNove.Rdaccion)"/> 
+                    </BSCol>
                     <BSCol Column="12">
                             <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" IsSubmit="true">Registrar</BSButton>
+                            <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=atras2 IsReset="true" >Atras</BSButton> 
                     </BSCol>
                 </BSForm>
-                <br>
-                <br>
-                <BSTable IsResponsive="true" IsStriped="true">
-                    <BSTHead>
-                        <BSTR class="cabeceraTabla">
-                            <BSTD>#</BSTD>
-                            <BSTD>Descripcion</BSTD>
-                            <BSTD>Tiempo</BSTD>
-                            <BSTD>Seleccionar</BSTD>
-                        </BSTR>
-                    </BSTHead>
-                    <BSTBody class="cuerpoTabla">
-                        @if(paradas == null){
-                            <BSTR>
-                                <BSTD ColSpan="5">Cargando...</BSTD>
-                            </BSTR>
-                        }else{
-                            @foreach (var item in index)
-                            {
-                                <BSTR>
-                                    <BSTD>@item</BSTD>
-                                    <BSTD>@paradas[2][item]</BSTD>
-                                    <BSTD>@paradas[3][item].Substring(0,5).Replace(".",",")</BSTD>
-                                    <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">Seleccionar</BSButton></BSTD>
-                                </BSTR>
-                            }
-                        }
-                    </BSTBody>
-                </BSTable>
             }
         </BSCard>
     </BSCard>
@@ -172,6 +219,7 @@
     private bool isDisabled  { get; set;}
 
     private bool isDisabledArea { get; set;}
+    private bool isDisabledLinea { get; set;}
     private bool bandera  { get; set;}
     protected override async Task  OnInitializedAsync()
     {
@@ -198,13 +246,13 @@
                     int d1 = dataNove.IdAreaCar;
                     int d2 =  dataNove.IdLinea;
                     int d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParaGesp.ToString().Substring(1)));
-                    dataNove.IdAreaCar = d1;
-                    dataNove.IdLinea = d2;
                     paradas[0].RemoveAt(d3);
                     paradas[1].RemoveAt(d3);
                     paradas[2].RemoveAt(d3);
                     paradas[3].RemoveAt(d3);
                     dataNove = new LibroNove();
+                    dataNove.IdAreaCar = d1;
+                    dataNove.IdLinea = d2;
                     index = new List<int>(paradas[0].Count());
                     for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
                 }else{
@@ -215,6 +263,7 @@
             {
                 mensaje = "Ese elemento ya fue registrado. Por favor seleccione otra causa";
                 dataNove = new LibroNove();
+                usuario =null;
             }
 
 
@@ -247,6 +296,7 @@
         usuario = await DataAPI.obtenerUsuario(dataNove.RdfichaRes);
         string departamenteo = usuario["departamento"];
         isDisabledArea =true;
+        isDisabledLinea = true;
         try{
             if(departamenteo.Contains("CONVERSION")){
                 dataNove.IdAreaCar = 1;
@@ -255,6 +305,8 @@
             }else if(departamenteo.Contains("MEJORA CONTINUA")){
                 dataNove.IdAreaCar = 0;
                 isDisabledArea = false;
+                dataNove.IdParaGesp = -1;
+                isDisabledLinea = false;
             }else{
                 usuario = null;
                 mensaje = "No posee autorización para ingresar a este módulo";
@@ -270,9 +322,7 @@
         dataNove.IdLinea = int.Parse(e.Value.ToString());
         Linea linea =  ListaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).First();
         listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
-        
         paradas = await DataAPI.obtenerParadasActuales1turnoPorLinea(linea.LcenCos,listaNove);
-
         index = new List<int>(paradas[0].Count());
         for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
     }
@@ -281,9 +331,19 @@
         //? al agregar 1 indica que son datos del Gespline
         //string a = await ReturnArrayAsync(item.ToString());
         dataNove.IdParaGesp =  int.Parse('1' + paradas[0][item]); 
-        tipoParada =   await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
+        tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
         dataNove.IdTipoNove = tipoParada.IdTiParTp;
         dataNove.RdtiePerMi = double.Parse(paradas[3][item].Replace(".",","));
+    }
+
+    public async Task atras1(){
+        usuario = null;
+        dataNove = new LibroNove();
+        paradas = null;
+    }
+
+    public async Task atras2(){
+        dataNove.IdParaGesp = 0;
     }
     
     //[JSInvokable]

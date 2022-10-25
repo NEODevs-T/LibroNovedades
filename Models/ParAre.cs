@@ -8,11 +8,6 @@ namespace LibroNovedades.Models
     /// </summary>
     public partial class ParAre
     {
-        public ParAre()
-        {
-            TieParTps = new HashSet<TieParTp>();
-        }
-
         /// <summary>
         /// identificador del Par_Are
         /// </summary>
@@ -31,6 +26,6 @@ namespace LibroNovedades.Models
         public string? Pacodigo { get; set; }
 
         public virtual LinAre IdAreaNavigation { get; set; } = null!;
-        public virtual ICollection<TieParTp> TieParTps { get; set; }
+        public virtual Parte IdParteNavigation { get; set; } = null!;
     }
 }

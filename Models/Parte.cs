@@ -10,6 +10,7 @@ namespace LibroNovedades.Models
     {
         public Parte()
         {
+            ParAres = new HashSet<ParAre>();
             TiPaPars = new HashSet<TiPaPar>();
         }
 
@@ -30,6 +31,7 @@ namespace LibroNovedades.Models
         /// </summary>
         public bool Pestado { get; set; }
 
+        public virtual ICollection<ParAre> ParAres { get; set; }
         public virtual ICollection<TiPaPar> TiPaPars { get; set; }
     }
 }

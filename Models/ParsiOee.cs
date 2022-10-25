@@ -63,7 +63,7 @@ namespace LibroNovedades.Models
         /// </summary>
         public double? Poee { get; set; }
 
-        public virtual Area IdAreaNavigation { get; set; } = null!;
+        public virtual LinAre IdAreaNavigation { get; set; } = null!;
         public virtual TurnoTp IdTurnoTpNavigation { get; set; } = null!;
         public virtual ICollection<TieEjeTp> TieEjeTps { get; set; }
         public virtual ICollection<TieParTp> TieParTps { get; set; }

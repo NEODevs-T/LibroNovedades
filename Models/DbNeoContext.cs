@@ -388,6 +388,10 @@ namespace LibroNovedades.Models
                     .HasMaxLength(1)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Rdaccion)
+                    .IsUnicode(false)
+                    .HasColumnName("RDAccion");
+
                 entity.Property(e => e.Rddiscrepa)
                     .IsUnicode(false)
                     .HasColumnName("RDDiscrepa");
@@ -591,6 +595,12 @@ namespace LibroNovedades.Models
                     .HasForeignKey(d => d.IdArea)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ParAre_LinAre");
+
+                entity.HasOne(d => d.IdParteNavigation)
+                    .WithMany(p => p.ParAres)
+                    .HasForeignKey(d => d.IdParte)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ParAre_Parte");
             });
 
             modelBuilder.Entity<ParaTp>(entity =>
@@ -690,7 +700,7 @@ namespace LibroNovedades.Models
                     .WithMany(p => p.ParsiOees)
                     .HasForeignKey(d => d.IdArea)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ParsiOEE_Area");
+                    .HasConstraintName("FK_ParsiOEE_LinAre");
 
                 entity.HasOne(d => d.IdTurnoTpNavigation)
                     .WithMany(p => p.ParsiOees)
@@ -1155,8 +1165,6 @@ namespace LibroNovedades.Models
                     .HasColumnName("IdParsiOEE")
                     .HasComment("identificador del turno");
 
-                entity.Property(e => e.IdParte).HasComment("identificador de la parte");
-
                 entity.Property(e => e.Teduracion)
                     .HasColumnName("TEDuracion")
                     .HasComment("duracion de la parada");
@@ -1182,12 +1190,6 @@ namespace LibroNovedades.Models
                     .HasForeignKey(d => d.IdParsiOee)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TieParTP_ParsiOEE");
-
-                entity.HasOne(d => d.IdParteNavigation)
-                    .WithMany(p => p.TieParTps)
-                    .HasForeignKey(d => d.IdParte)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TieParTP_ParAre");
             });
 
             modelBuilder.Entity<TurPro>(entity =>

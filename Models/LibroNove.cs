@@ -38,6 +38,9 @@ namespace LibroNovedades.Models
 
         [ValidDiferenteACero]
         public int IdParaGesp { get; set; }
+
+        [Required(ErrorMessage ="Coloque la accion correspondiente.")]
+        public string Rdaccion { get; set; } = null!;
         public virtual Area IdAreaCarNavigation { get; set; } = null!;
         public virtual Linea IdLineaNavigation { get; set; } = null!;
         public virtual TiParTp IdTipoNoveNavigation { get; set; } = null!;

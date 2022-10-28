@@ -37,6 +37,7 @@ namespace LibroNovedades.Models
         /// </summary>
         public bool Lestado { get; set; }
         public string LcenCos { get; set; } = null!;
+        public string? Lofic { get; set; }
 
         public virtual Centro IdCentroNavigation { get; set; } = null!;
         public virtual ICollection<LibroNove> LibroNoves { get; set; }

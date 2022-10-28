@@ -8,6 +8,7 @@ namespace LibroNovedades.Data.API
         Task<List<List<string>>> obtenerParadasActuales1turnoPorLinea(string centroCosto);
         Task<List<List<string>>> obtenerParadasActuales1turnoPorLinea(string centroCosto,List<LibroNove> listaNove);
         Task<Dictionary<string,string>>? obtenerUsuario(string ficha);
+        Task<List<string>>? ObtenerTurnoYGrupo();
     }
 
     public class DataAPI : IDataAPI
@@ -47,6 +48,14 @@ namespace LibroNovedades.Data.API
             this.cliente = new HttpClient();
             usuario = await cliente.GetFromJsonAsync<Dictionary<string,string>>(url);
             return usuario;
-        } 
-    }
+        }
+
+        public async Task<List<string>>? ObtenerTurnoYGrupo(){
+            List<string> usuario;
+            string url = "http://operaciones.papeleslatinos.com/neoapi/turno/ObtenerTurnoYGrupoActual";
+            this.cliente = new HttpClient();
+            usuario = await cliente.GetFromJsonAsync<List<string>>(url);
+            return usuario;
+        }
+    }   
 }

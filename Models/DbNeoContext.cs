@@ -522,6 +522,11 @@ namespace LibroNovedades.Models
                     .HasColumnName("LNom")
                     .HasComment("nombre de la linea");
 
+                entity.Property(e => e.Lofic)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("LOFIC");
+
                 entity.HasOne(d => d.IdCentroNavigation)
                     .WithMany(p => p.Lineas)
                     .HasForeignKey(d => d.IdCentro)

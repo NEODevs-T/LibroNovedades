@@ -151,7 +151,7 @@
                     </BSCol>
                     <BSCol Position="Position.Relative" Place ColumnMedium="4">
                             <BSLabel class="labelFormulario">Grupo</BSLabel>
-                            <BSInput  InputType="InputType.Select" @bind-Value="dataNove.Rdgrupo">
+                            <BSInput IsDisabled="true"  InputType="InputType.Select" @bind-Value="dataNove.Rdgrupo">
                                 <option value="0">Seleccionar Grupo</option>
                                 <option value="A">Grupo A</option>
                                 <option value="B">Grupo B</option>
@@ -162,7 +162,7 @@
                     </BSCol>
                     <BSCol Position="Position.Relative" Place ColumnMedium="4">
                             <BSLabel class="labelFormulario">Turno</BSLabel>
-                            <BSInput  InputType="InputType.Select" @bind-Value="dataNove.RdTurno">
+                            <BSInput  IsDisabled="true" InputType="InputType.Select" @bind-Value="dataNove.RdTurno">
                                 <option value="0">Seleccionar Grupo</option>
                                 <option value="1">1er turno</option>
                                 <option value="2">2do truno</option>
@@ -221,11 +221,15 @@
     private bool isDisabledArea { get; set;}
     private bool isDisabledLinea { get; set;}
     private bool bandera  { get; set;}
+    private List<string> listaTurnoYGrupo { get; set;}
     protected override async Task  OnInitializedAsync()
     {
         mensaje = "Registre una Novedad";
         dataNove = new LibroNove();
         ListaCentro = await DataCentro.ObtenerTodosLosCentro();
+        listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
+        dataNove.RdTurno = listaTurnoYGrupo[0];
+        dataNove.Rdgrupo = listaTurnoYGrupo[1];
         ListaArea = new List<LinAre>();
         ListaLinea = new List<Linea>();
         paradas = new List<List<string>>();
@@ -239,6 +243,7 @@
         {
             try
             {
+                dataNove.RdfichaRes = dataNove.RdfichaRes.ToUpper();
                 bandera = await DataLibroNov.InsertarRegistro(dataNove);
 
                 if(bandera){
@@ -246,6 +251,7 @@
                     int d1 = dataNove.IdAreaCar;
                     int d2 =  dataNove.IdLinea;
                     int d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParaGesp.ToString().Substring(1)));
+                    string d4 = dataNove.RdfichaRes;
                     paradas[0].RemoveAt(d3);
                     paradas[1].RemoveAt(d3);
                     paradas[2].RemoveAt(d3);
@@ -253,6 +259,9 @@
                     dataNove = new LibroNove();
                     dataNove.IdAreaCar = d1;
                     dataNove.IdLinea = d2;
+                    dataNove.RdfichaRes = d4;
+                    dataNove.RdTurno = listaTurnoYGrupo[0];
+                    dataNove.Rdgrupo = listaTurnoYGrupo[1];
                     index = new List<int>(paradas[0].Count());
                     for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
                 }else{
@@ -263,13 +272,11 @@
             {
                 mensaje = "Ese elemento ya fue registrado. Por favor seleccione otra causa";
                 dataNove = new LibroNove();
+                dataNove.RdTurno = listaTurnoYGrupo[0];
+                dataNove.Rdgrupo = listaTurnoYGrupo[1];
                 usuario =null;
             }
 
-
-        }else if( dataNove.RdtiePerMi == 0 || dataNove.IdTipoNove == 0 ){
-            mensaje = "Seleccione una causa de tiempo perdido";
-            _buttonDisabled = true;
         }
         isDisabled = false;
         _showTooltip = true;
@@ -340,6 +347,8 @@
         usuario = null;
         dataNove = new LibroNove();
         paradas = null;
+        dataNove.RdTurno = listaTurnoYGrupo[0];
+        dataNove.Rdgrupo = listaTurnoYGrupo[1];
     }
 
     public async Task atras2(){

@@ -106,3 +106,8 @@ footer {
     width: 100%;
     background-color: bisque;
 }
+.AbajoBoton{
+    display: flex;
+    justify-content:flex-start;
+    align-items: end;
+}

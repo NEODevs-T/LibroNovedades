@@ -5,6 +5,9 @@
 @inject IDataAPI DataAPI;
 @inject IDataLibroNov DataLibroNov;
 @inject IDataTiParTP DataTiParTP;
+@inject IDataPizarra DataPizarra;
+@inject ILogicLibroNov LogicLibroNov;
+
 
 <PageTitle>Historico</PageTitle>
 
@@ -15,7 +18,7 @@
 </BSContainer>
 
 <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-    <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo" IsDismissible="true" @ref="_alertRef" Dismissed="Dismissed">
+    <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" Dismissed="Dismissed">
         <h5>@mensaje</h5>
     </BSAlert>
     <BSCard CardType="CardType.Body">
@@ -73,6 +76,7 @@
                             <BSTD>Grupo</BSTD>
                             <BSTD>Turno</BSTD>
                             <BSTD>Tiempo Perdido (min)</BSTD>
+                            <BSTD>Pizarra Unificada</BSTD>
                         </BSTR>
                     </BSTHead>
                     <BSTBody class="cuerpoTabla">
@@ -81,16 +85,36 @@
                                 <BSTD>@item.IdLineaNavigation.Lnom</BSTD>
                                 <BSTD>@item.IdMaquina</BSTD>
                                 <BSTD>@item.IdEquipo</BSTD>
-                                <BSTD>@item.Rdgrupo</BSTD>
-                                <BSTD>@item.RdTurno</BSTD>
-                                <BSTD>@item.RdtiePerMi.ToString().Substring(0,5).Replace(".",",")</BSTD>
+                                <BSTD>@item.Lngrupo</BSTD>
+                                <BSTD>@item.Lnturno</BSTD>
+                                @if(item.LntiePerMi == -1){
+                                    <BSTD>Sin Perdida de Tiempo</BSTD> 
+                                }else if(item.LntiePerMi.ToString().Count() < 5){
+                                    <BSTD>@item.LntiePerMi.ToString().Replace(".",",")</BSTD> 
+                                }else{
+                                    <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
+                                }
+                                 <BSTD>
+                                    <div Class="@BS.Form_Check_Inline">
+                                        <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
+                                        <BSLabel IsCheckLabel="true"></BSLabel>
+                                    </div>
+                                </BSTD>
+                                @* .Substring(0,5) *@
                             </BSTR>
                             <BSTR>
-                                <BSTD>@discrepancia  @item.Rddiscrepa</BSTD>
+                                <BSTD>@discrepancia  @item.Lndiscrepa</BSTD>
                             </BSTR>
+                        
                         }
                     </BSTBody>
                 </BSTable>
+                <BSRow>
+                    <BSCol Column="12">
+                        <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
+                        <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=buscar IsReset="true" >Borrar</BSButton> 
+                    </BSCol>
+                </BSRow>
             }
         </BSCard>
     </BSCard>
@@ -99,6 +123,7 @@
 
 @code{
     private string mensaje { get; set;}
+    private bool Value { get; set; } = false;
     private BSAlert _alertRef;
     private bool _buttonDisabled = true;
     private DateTime filtroFecha { get; set;}
@@ -108,8 +133,10 @@
     private List<TiParTp> listaTiposNovedad { get; set;}
     private List<Linea> listaLineas { get; set;}
     private bool isDisabled  { get; set;}
-
     private string discrepancia  { get; set;}
+    private BdDiv1 temporal  {get; set;}
+    private bool band1  { get; set;}
+    private bool band2  { get; set;}
     //private 
 
     protected override async Task  OnInitializedAsync()
@@ -120,11 +147,26 @@
         filtroFecha = DateTime.Now.Date;
         isDisabled = false;
         discrepancia = "Discrepancia: ";
-        
+        temporal = new BdDiv1();
     }
 
     protected async Task buscar(){
+        listaNovedades = null;
         listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(filtroFecha,filtroLinea,filtroTipoNovedad);
+    }
+    protected async Task Guardar(){
+        band1 = await LogicLibroNov.CambiosBDLibro(listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);
+        if(band1){
+            band2 = await DataLibroNov.UpdateRegistros(listaNovedades);
+            if(band2){
+                mensaje = "Se realizo de manera exitosa";
+            }else{
+                mensaje = "Falla en la actualizacion de el libro de novedades, la data fue registrada en la pizarra unificada";
+            }
+        }else{
+            mensaje = "Falla de inserción en la pizarra unificada";
+        }
+        //bool a = await DataPizarra.InsertarRegistro(temporal);
     }
 
     private void Dismissed()

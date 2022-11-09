@@ -7,34 +7,35 @@ namespace LibroNovedades.Models
 {
     public partial class LibroNove
     {
-        public int IdReuDia { get; set; }
+        public int IdlibrNov { get; set; }
         [ValidDiferenteACero]
         public int IdLinea { get; set; }
         [Required(ErrorMessage ="Coloque el id de equipo afectado.")]
         public string IdEquipo { get; set; } = null!;
         [Required(ErrorMessage ="Coloque la novedad.")] 
-        public string Rddiscrepa { get; set; } = null!;
+        public string Lndiscrepa { get; set; } = null!;
         [ValidDiferenteACero]
-        public double RdtiePerMi { get; set; }
+        public double LntiePerMi { get; set; }
         [Required(ErrorMessage ="Coloque su ficha.")]
-        public string RdfichaRes { get; set; } = null!;
-        public DateTime Rdfecha { get; set; }
+        public string LnfichaRes { get; set; } = null!;
+        public DateTime Lnfecha { get; set; }
         [ValidDiferenteACero]
-        public string Rdgrupo { get; set; } = null!;
+        public string Lngrupo { get; set; } = null!;
         [ValidDiferenteACero]
-        public string RdTurno { get; set; } = null!;
+        public string Lnturno { get; set; } = null!;
         [Required(ErrorMessage ="Coloque el id de la maquina.")]
         public string IdMaquina { get; set; } = null!;
         [ValidDiferenteACero]
         public int IdTipoNove { get; set; }
         [Required(ErrorMessage ="Coloque el area a la que pertenece.")]
         public int IdAreaCar { get; set; }
-        [Required(ErrorMessage ="Coloque la accion correspondiente.")]
-        public string Rdaccion { get; set; } = null!;
+        public string? Lnobserv { get; set; }
         public int? IdParada { get; set; }
+        public bool LnisPizUni { get; set; }
 
-        public virtual Area IdAreaCarNavigation { get; set; } = null!;
+        public virtual Centro IdAreaCarNavigation { get; set; } = null!;
         public virtual Linea IdLineaNavigation { get; set; } = null!;
         public virtual TiParTp IdTipoNoveNavigation { get; set; } = null!;
     }
 }
+

@@ -7,6 +7,11 @@
 @inject IDataTiParTP DataTiParTP;
 
 <PageTitle>Formato</PageTitle>
+@* //TODO: 
+•	Se debe dejar la sesión abierta una vez que se ingresa con el número de ficha.
+•   Chempro
+•   Otros centros 
+*@
 
 
 <BSContainer PaddingBottom="Padding.Large">
@@ -15,7 +20,7 @@
     </BSRow>
 </BSContainer>
 <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-    <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo" IsDismissible="true" @ref="_alertRef" Dismissed="Dismissed">
+    <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" Dismissed="Dismissed">
         <h5>@mensaje</h5>
     </BSAlert>
     <BSCard CardType="CardType.Body">
@@ -24,8 +29,8 @@
                 <BSRow>  
                     <BSCol Position="Position.Relative" Place ColumnMedium="4">
                             <BSLabel class="labelFormulario">Ficha</BSLabel>
-                            <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.RdfichaRes"></BSInput>
-                            <BSFeedback For="@(() => dataNove.RdfichaRes)"/> 
+                            <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.LnfichaRes"></BSInput>
+                            <BSFeedback For="@(() => dataNove.LnfichaRes)"/> 
                             <br>
                             <BSButton class="buttonFormularioOK" @onclick=BuscarFicha>Seleccionar</BSButton>
                     </BSCol>
@@ -68,7 +73,10 @@
                                 </BSInput>
                     </BSCol>
                     <BSCol Position="Position.Relative" Align="Align.End"  AlignRow="OTRAlignRow" Place ColumnMedium="4">
-                        <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" IsReset="true" @onclick=atras1>Atras</BSButton>
+                        @if(dataNove.IdLinea != 0){
+                            <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>Sin Perdida De tiempo</BSButton>
+                        }
+                        <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled"  @onclick=atras1>Atras</BSButton>
                     </BSCol>
                 </BSRow>  
                 <br>
@@ -102,6 +110,7 @@
                         <BSTHead>
                             <BSTR class="cabeceraTabla">
                                 <BSTD>#</BSTD>
+                                <BSTD>Area</BSTD>
                                 <BSTD>Descripcion</BSTD>
                                 <BSTD>Tiempo</BSTD>
                                 <BSTD>Seleccionar</BSTD>
@@ -117,6 +126,7 @@
                                 {
                                     <BSTR>
                                         <BSTD>@item</BSTD>
+                                        <BSTD>@paradas[4][item]</BSTD>
                                         <BSTD>@paradas[2][item]</BSTD>
                                         <BSTD>@paradas[3][item].Substring(0,5).Replace(".",",")</BSTD>
                                         <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">Seleccionar</BSButton></BSTD>
@@ -165,44 +175,42 @@
                             <BSFeedback For="@(() => dataNove.IdLinea)"/> 
                     </BSCol>
                     <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                            <BSLabel class="labelFormulario">ID Maquina</BSLabel>
-                            <BSInput InputType="InputType.Text" IsDisabled="true"  rows="1" @bind-Value="dataNove.IdMaquina"></BSInput>
-                            <BSFeedback For="@(() => dataNove.IdMaquina)"/> 
-                    </BSCol>
-                    <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                            <BSLabel class="labelFormulario">ID Equipo</BSLabel>
-                            <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdEquipo"></BSInput>
-                            <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
-                    </BSCol>
-                    <BSCol Position="Position.Relative" Place ColumnMedium="4">
                             <BSLabel class="labelFormulario">Grupo</BSLabel>
-                            <BSInput IsDisabled="true"  InputType="InputType.Select" @bind-Value="dataNove.Rdgrupo">
+                            <BSInput IsDisabled="true"  InputType="InputType.Select" @bind-Value="dataNove.Lngrupo">
                                 <option value="0">Seleccionar Grupo</option>
                                 <option value="A">Grupo A</option>
                                 <option value="B">Grupo B</option>
                                 <option value="C">Grupo C</option>
                                 <option value="D">Grupo D</option>
                             </BSInput>
-                            <BSFeedback For="@(() => dataNove.Rdgrupo)"/> 
+                            <BSFeedback For="@(() => dataNove.Lngrupo)"/> 
                     </BSCol>
                     <BSCol Position="Position.Relative" Place ColumnMedium="4">
                             <BSLabel class="labelFormulario">Turno</BSLabel>
-                            <BSInput  IsDisabled="true" InputType="InputType.Select" @bind-Value="dataNove.RdTurno">
+                            <BSInput  IsDisabled="true" InputType="InputType.Select" @bind-Value="dataNove.Lnturno">
                                 <option value="0">Seleccionar Grupo</option>
                                 <option value="1">1er turno</option>
                                 <option value="2">2do truno</option>
                             </BSInput>
-                            <BSFeedback For="@(() => dataNove.RdTurno)"/> 
+                            <BSFeedback For="@(() => dataNove.Lnturno)"/> 
+                    </BSCol>
+                    <BSCol Position="Position.Relative" Place ColumnMedium="5">
+                            <BSLabel class="labelFormularioGrande">Codigo de Equipo</BSLabel>
+                            <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdEquipo"></BSInput>
+                            <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
+                    </BSCol>
+                    <BSCol Position="Position.Relative" style="display: flex;justify-content: center;align-items: end;" Place ColumnMedium="3">
+                            <BSButton class="buttonFormularioOK" style="he" @onclick=IdMaquina>Cargar al OFIC</BSButton>
                     </BSCol>
                     <BSCol Position="Position.Relative" Place ColumnMedium="12">
                             <BSLabel class="labelFormulario">Discrepancia</BSLabel>
-                            <BSInput InputType="InputType.TextArea" rows="1" @bind-Value="dataNove.Rddiscrepa"></BSInput>
-                            <BSFeedback For="@(() => dataNove.Rddiscrepa)"/> 
+                            <BSInput InputType="InputType.TextArea" rows="1" @bind-Value="dataNove.Lndiscrepa"></BSInput>
+                            <BSFeedback For="@(() => dataNove.Lndiscrepa)"/> 
                     </BSCol>
                     <BSCol Position="Position.Relative" Place ColumnMedium="12">
-                            <BSLabel class="labelFormulario">Acción</BSLabel>
-                            <BSInput InputType="InputType.TextArea" rows="1" @bind-Value="dataNove.Rdaccion"></BSInput>
-                            <BSFeedback For="@(() => dataNove.Rdaccion)"/> 
+                            <BSLabel class="labelFormulario">Observación</BSLabel>
+                            <BSInput InputType="InputType.TextArea" rows="1" @bind-Value="dataNove.Lnobserv"></BSInput>
+                            <BSFeedback For="@(() => dataNove.Lnobserv)"/> 
                     </BSCol>
                     <BSCol Column="12">
                             <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" IsSubmit="true">Registrar</BSButton>
@@ -250,6 +258,7 @@
     private bool isDisabledLinea { get; set;}
     private bool bandera  { get; set;}
     private List<string> listaTurnoYGrupo { get; set;}
+    private bool IsSinTiempo { get; set;}
     protected override async Task  OnInitializedAsync()
     {
         mensaje = "Registre una Novedad";
@@ -257,8 +266,8 @@
         ListaCentro = await DataCentro.ObtenerTodosLosCentro();
         listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
-        dataNove.RdTurno = listaTurnoYGrupo[0];
-        dataNove.Rdgrupo = listaTurnoYGrupo[1];
+        dataNove.Lnturno = listaTurnoYGrupo[0];
+        dataNove.Lngrupo = listaTurnoYGrupo[1];
         ListaArea = new List<LinAre>();
         ListaLinea = new List<Linea>();
         paradas = new List<List<string>>();
@@ -266,39 +275,46 @@
         isDisabled = false;
         paradasBandera = false;
         tiempoPerdido = 0;
+        IsSinTiempo = false;
     }
     protected async Task OK(EditContext e){
         isDisabled = true;
-        dataNove.Rdfecha = DateTime.Now;
+        dataNove.Lnfecha = DateTime.Now;
         if (e.Validate())
         {
             try
             {
-                dataNove.RdfichaRes = dataNove.RdfichaRes.ToUpper();
+                dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
+                dataNove.IdEquipo = dataNove.IdEquipo.Trim();
+                dataNove.Lnobserv = dataNove.Lnobserv.Trim();
+                dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
                 bandera = await DataLibroNov.InsertarRegistro(dataNove);
-
                 if(bandera){
                     mensaje = "Guardado Exitosamente";
                     int d1 = dataNove.IdAreaCar;
                     int d2 =  dataNove.IdLinea;
-                    int d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParada.ToString().Substring(1)));
-                    string d4 = dataNove.RdfichaRes;
+                    int d3 = -1;
+                    if(dataNove.IdParada != null){
+                        d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParada.ToString().Substring(1)));
+                    }
+                    string d4 = dataNove.LnfichaRes;
                     string d5 = dataNove.IdMaquina;
-                    //TODO: condicion
                     if(d3 != -1){
                         paradas[0].RemoveAt(d3);
                         paradas[1].RemoveAt(d3);
                         paradas[2].RemoveAt(d3);
                         paradas[3].RemoveAt(d3);
+                        paradas[4].RemoveAt(d3);
+                        paradas[5].RemoveAt(d3);
                     }
                     dataNove = new LibroNove();
                     dataNove.IdAreaCar = d1;
                     dataNove.IdLinea = d2;
-                    dataNove.RdfichaRes = d4;
+                    dataNove.LnfichaRes = d4;
                     dataNove.IdMaquina = d5;
                     dataNove.IdParada = 0;
-                    dataNove.RdTurno = listaTurnoYGrupo[0];
-                    dataNove.Rdgrupo = listaTurnoYGrupo[1];
+                    dataNove.Lnturno = listaTurnoYGrupo[0];
+                    dataNove.Lngrupo = listaTurnoYGrupo[1];
                     index = new List<int>(paradas[0].Count());
                     for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
                 }else{
@@ -309,11 +325,10 @@
             {
                 mensaje = "Ese elemento ya fue registrado. Por favor seleccione otra causa";
                 dataNove = new LibroNove();
-                dataNove.RdTurno = listaTurnoYGrupo[0];
-                dataNove.Rdgrupo = listaTurnoYGrupo[1];
+                dataNove.Lnturno = listaTurnoYGrupo[0];
+                dataNove.Lngrupo = listaTurnoYGrupo[1];
                 usuario =null;
             }
-
         }
         isDisabled = false;
         _showTooltip = true;
@@ -338,7 +353,7 @@
 
     protected async Task BuscarFicha(){
         dataNove.IdParada = 0;
-        usuario = await DataAPI.obtenerUsuario(dataNove.RdfichaRes);
+        usuario = await DataAPI.obtenerUsuario(dataNove.LnfichaRes);
         string departamenteo = usuario["departamento"];
         isDisabledArea =true;
         isDisabledLinea = true;
@@ -385,13 +400,13 @@
         dataNove.IdParada =  int.Parse('1' + paradas[0][item]); 
         tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
         dataNove.IdTipoNove = tipoParada.IdTiParTp;
-        dataNove.RdtiePerMi = double.Parse(paradas[3][item].Replace(".",","));
+        dataNove.LntiePerMi = double.Parse(paradas[3][item].Replace(".",","));
     }
 
     public async Task eleccionSinGespline(){
         if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
             dataNove.IdParada = null;
-            dataNove.RdtiePerMi = tiempoPerdido;
+            dataNove.LntiePerMi = tiempoPerdido;
             tiempoPerdido = 0;
             mensaje = "";
         }else{
@@ -399,16 +414,28 @@
         }
     }
 
+    public async Task SinPerdida(){
+        dataNove.IdParada = null;
+        dataNove.LntiePerMi = -1;
+        dataNove.IdTipoNove = 19;
+        tiempoPerdido = 0;
+        mensaje = "";
+    }
+
     public async Task atras1(){
         usuario = null;
         dataNove = new LibroNove();
         paradas = null;
-        dataNove.RdTurno = listaTurnoYGrupo[0];
-        dataNove.Rdgrupo = listaTurnoYGrupo[1];
+        dataNove.Lnturno = listaTurnoYGrupo[0];
+        dataNove.Lngrupo = listaTurnoYGrupo[1];
     }
 
     public async Task atras2(){
         dataNove.IdParada = 0;
+    }
+
+    public async Task IdMaquina(){
+        dataNove.IdEquipo = dataNove.IdMaquina;
     }
     
     //[JSInvokable]

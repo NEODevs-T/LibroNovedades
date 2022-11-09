@@ -10,6 +10,8 @@ namespace LibroNovedades.Models
     {
         public Centro()
         {
+            Divisions = new HashSet<Division>();
+            LibroNoves = new HashSet<LibroNove>();
             Lineas = new HashSet<Linea>();
         }
 
@@ -25,11 +27,15 @@ namespace LibroNovedades.Models
         /// Detalle del centro
         /// </summary>
         public string? Cdetalle { get; set; }
+        public int? IdEmpresa { get; set; }
         /// <summary>
         /// 0: Inactivo, 1:Activo
         /// </summary>
         public bool Cestado { get; set; }
 
+        public virtual Empresa? IdEmpresaNavigation { get; set; }
+        public virtual ICollection<Division> Divisions { get; set; }
+        public virtual ICollection<LibroNove> LibroNoves { get; set; }
         public virtual ICollection<Linea> Lineas { get; set; }
     }
 }

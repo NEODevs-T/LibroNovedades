@@ -10,7 +10,6 @@ namespace LibroNovedades.Models
     {
         public Area()
         {
-            LibroNoves = new HashSet<LibroNove>();
             LinAres = new HashSet<LinAre>();
             VarAres = new HashSet<VarAre>();
         }
@@ -32,7 +31,6 @@ namespace LibroNovedades.Models
         /// </summary>
         public bool Aestado { get; set; }
 
-        public virtual ICollection<LibroNove> LibroNoves { get; set; }
         public virtual ICollection<LinAre> LinAres { get; set; }
         public virtual ICollection<VarAre> VarAres { get; set; }
     }

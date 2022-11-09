@@ -1,5 +1,7 @@
 using LibroNovedades.Models;
+using LibroNovedades.ModelsDocIng;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace LibroNovedades.Data.API
 {
@@ -9,6 +11,7 @@ namespace LibroNovedades.Data.API
         Task<List<List<string>>> obtenerParadasActuales1turnoPorLinea(string centroCosto,List<LibroNove> listaNove);
         Task<List<List<string>>> obtenerParadasActualesturnoPorLinea(string centroCosto,List<LibroNove> listaNove);
         Task<Dictionary<string,string>>? obtenerUsuario(string ficha);
+        // Task<System.Net.Http.HttpResponseMessage> PostDiscrepancia(BdDiv1 bdDiv1);
 
         Task<List<string>>? ObtenerTurnoYGrupo();
     }
@@ -35,18 +38,25 @@ namespace LibroNovedades.Data.API
             string ParadasIgnorar = "[";
             List<List<string>> data = new List<List<string>>();
             this.cliente = new HttpClient();
-            if(listaNove.Count == 0 || listaNove[0].IdParada == null){
+            if(listaNove.Count == 0){
                 return await this.obtenerParadasActuales1turnoPorLinea(centroCosto);
             }else{
                 for (int i = 0; i < listaNove.Count; i++)
                 {
-                    if(i ==  listaNove.Count - 1){
-                        ParadasIgnorar += listaNove[i].IdParada.ToString().Substring(1);
+                    if(listaNove[i].IdParada != null){
+                        if(i ==  listaNove.Count - 1){
+                            ParadasIgnorar += listaNove[i].IdParada.ToString().Substring(1);
+                        }else{
+                            ParadasIgnorar +=  listaNove[i].IdParada.ToString().Substring(1) + ",";
+                        }
                     }else{
-                        ParadasIgnorar +=  listaNove[i].IdParada.ToString().Substring(1) + ",";
+                        continue;
                     }
                 }
                 ParadasIgnorar += "]";
+            }
+            if(ParadasIgnorar == "[]"){
+                return await this.obtenerParadasActuales1turnoPorLinea(centroCosto);
             }
             string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/obtenerParadasActuales1turnoPorLinea/" + centroCosto + "/" + ParadasIgnorar;
             data = await cliente.GetFromJsonAsync<List<List<string>>>(url);     
@@ -57,15 +67,19 @@ namespace LibroNovedades.Data.API
             string ParadasIgnorar = "[";
             List<List<string>> data = new List<List<string>>();
             this.cliente = new HttpClient();
-            if(listaNove.Count == 0 || listaNove[0].IdParada == null){
+            if(listaNove.Count == 0 ){
                 return await this.obtenerParadasActuales2turnoPorLinea(centroCosto);
             }else{
                 for (int i = 0; i < listaNove.Count; i++)
                 {
-                    if(i ==  listaNove.Count - 1){
-                        ParadasIgnorar += listaNove[i].IdParada.ToString().Substring(1);
+                    if(listaNove[i].IdParada != null){
+                        if(i ==  listaNove.Count - 1){
+                            ParadasIgnorar += listaNove[i].IdParada.ToString().Substring(1);
+                        }else{
+                            ParadasIgnorar +=  listaNove[i].IdParada.ToString().Substring(1) + ",";
+                        }
                     }else{
-                        ParadasIgnorar +=  listaNove[i].IdParada.ToString().Substring(1) + ",";
+                        continue;
                     }
                 }
                 ParadasIgnorar += "]";
@@ -97,5 +111,14 @@ namespace LibroNovedades.Data.API
             usuario = await cliente.GetFromJsonAsync<List<string>>(url);
             return usuario;
         }
+
+        // public async Task<System.Net.Http.HttpResponseMessage> PostDiscrepancia(BdDiv1 bdDiv1)
+        // {   
+        
+            
+        //     //return true;
+        //     // await SetAsistencia(result);
+        // }
+
     }   
 }

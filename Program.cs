@@ -1,9 +1,12 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using BlazorStrap;
+using Blazored.SessionStorage;
 using LibroNovedades.Data;
 using LibroNovedades.Models;
 using LibroNovedades.ModelsDocIng;
-using BlazorStrap;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +15,30 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorStrap();
 
-builder.Services.AddDbContext<DbNeoContext>();
-builder.Services.AddDbContext<DOC_IngIContext>();
+builder.Services.AddBlazoredSessionStorage(config =>
+{
+    config.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+    config.JsonSerializerOptions.IgnoreNullValues = true;
+    config.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
+    config.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    config.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    config.JsonSerializerOptions.ReadCommentHandling = JsonCommentHandling.Skip;
+    config.JsonSerializerOptions.WriteIndented = false;
+});
+
+builder.Services.AddBlazoredSessionStorage();
+
+builder.Services.AddDbContext<DbNeoContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionDbNeo")),ServiceLifetime.Transient
+);
+
+builder.Services.AddDbContext<DOC_IngIContext>( options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionDbIng")),ServiceLifetime.Transient
+);
+
+// builder.Services.AddDbContext<DOC_IngIContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
+
 
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataCentro, global::LibroNovedades.Data.Global.DataCentro>();

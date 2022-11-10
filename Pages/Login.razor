@@ -1,0 +1,55 @@
+@page "/Login"
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject NavigationManager NavigationManager;
+@inject IDataAPI DataAPI
+
+
+<BSContainer PaddingBottom="Padding.Large">
+     <BSRow>
+        <h1 class="titulo">Login</h1>
+    </BSRow>
+</BSContainer>
+
+<BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
+    <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo">
+        <h5>@mensaje</h5>
+    </BSAlert>
+    <BSCard CardType="CardType.Body">
+        <BSCard CardType="CardType.Text">
+            <BSRow>  
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                        <BSLabel class="labelFormulario">Ficha</BSLabel>
+                        <BSInput InputType="InputType.Text" rows="1" @bind-Value="ficha"></BSInput>                            
+                        <br>
+                        <BSButton class="buttonFormularioOK" @onclick=BuscarFicha>Seleccionar</BSButton>
+                </BSCol>
+            </BSRow>
+        </BSCard>
+    </BSCard>
+</BSCard>
+
+@code {
+
+    private string? name { get; set;}
+
+    private string? mensaje { get; set;}
+    private string? ficha { get; set;}
+
+    private Dictionary<string,string>? usuario { get; set;}
+
+
+    protected async Task BuscarFicha(){
+        usuario = await DataAPI.obtenerUsuario(ficha);
+        
+        if(usuario["departamento"] == null){
+            mensaje = "Ficha no encontrada";
+        }else{
+            await sessionStorage.SetItemAsync("usuarioD", usuario["departamento"]);
+            await sessionStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
+            await sessionStorage.SetItemAsync("usuarioN", usuario["nombre"]);
+            await sessionStorage.SetItemAsync("usuarioC",  usuario["cargo"]);
+            mensaje = "Login Exitoso";
+            NavigationManager.NavigateTo("");
+        }
+    }
+}

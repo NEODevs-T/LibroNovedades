@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject NavigationManager NavigationManager
 
 <PageTitle>LibroNovedades</PageTitle>
 
@@ -9,7 +11,7 @@
 
     <main>
         <div class="top-row px-4">
-            @* <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a> *@
+            <BSButton Color="BSColor.Success" IsOutlined="true"  @onclick="logout">Logout</BSButton>
         </div>
 
         <article class="content px-4">
@@ -17,3 +19,14 @@
         </article>
     </main>
 </div>
+
+@code{
+
+    protected async Task logout(){
+        await sessionStorage.SetItemAsync("usuarioD", "");
+        await sessionStorage.SetItemAsync("usuarioA",  "");
+        await sessionStorage.SetItemAsync("usuarioN", "");
+        await sessionStorage.SetItemAsync("usuarioC",  "");
+        NavigationManager.NavigateTo("Login");
+    }
+}

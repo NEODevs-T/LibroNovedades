@@ -1,124 +1,130 @@
 @page "/Historico"
-@inject IDataArea DataArea;
-@inject IDataCentro DataCentro;
-@inject IDataLinea DataLinea;
-@inject IDataAPI DataAPI;
-@inject IDataLibroNov DataLibroNov;
-@inject IDataTiParTP DataTiParTP;
-@inject IDataPizarra DataPizarra;
-@inject ILogicLibroNov LogicLibroNov;
+@inject IDataArea DataArea
+@inject IDataCentro DataCentro
+@inject IDataLinea DataLinea
+@inject IDataAPI DataAPI
+@inject IDataLibroNov DataLibroNov
+@inject IDataTiParTP DataTiParTP
+@inject IDataPizarra DataPizarra
+@inject ILogicLibroNov LogicLibroNov
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject NavigationManager NavigationManager
 
+    <PageTitle>Historico</PageTitle>
 
-<PageTitle>Historico</PageTitle>
+    <BSContainer PaddingBottom="Padding.Large">
+        <BSRow>
+            <h1 class="titulo">Historico</h1>
+        </BSRow>
+    </BSContainer>
 
-<BSContainer PaddingBottom="Padding.Large">
-     <BSRow>
-        <h1 class="titulo">Historico</h1>
-    </BSRow>
-</BSContainer>
-
-<BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-    <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" Dismissed="Dismissed">
-        <h5>@mensaje</h5>
-    </BSAlert>
-    <BSCard CardType="CardType.Body">
-        <BSCard CardType="CardType.Text">
-            <BSRow>
-                <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                    <BSLabel class="labelFormulario">Fecha</BSLabel>
-                    <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFecha"></BSInput>
-                </BSCol>
-                <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                    <BSLabel class="labelFormulario">Linea</BSLabel>
-                        <BSInput  InputType="InputType.Select" @bind-Value="filtroLinea">
-                            <option value="0">Seleccionar la Linea</option>
-                            @if (listaLineas != null)
-                            {
-                                <option value="0">Todos</option>
-                                @foreach (var item in listaLineas)
-                                {
-                                    <option value="@item.IdLinea">@item.Lnom</option>
+    <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
+        <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" Dismissed="Dismissed">
+            <h5>@mensaje</h5>
+        </BSAlert>
+        <BSCard CardType="CardType.Body">
+            @if(IsAcceso){
+                <BSCard CardType="CardType.Text">
+                    
+                    <BSRow>
+                        <BSCol Position="Position.Relative" Place ColumnMedium="3">
+                            <BSLabel class="labelFormulario">Fecha</BSLabel>
+                            <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFecha"></BSInput>
+                        </BSCol>
+                        <BSCol Position="Position.Relative" Place ColumnMedium="3">
+                            <BSLabel class="labelFormulario">Linea</BSLabel>
+                                <BSInput  InputType="InputType.Select" @bind-Value="filtroLinea">
+                                    <option value="0">Seleccionar la Linea</option>
+                                    @if (listaLineas != null)
+                                    {
+                                        <option value="0">Todos</option>
+                                        @foreach (var item in listaLineas)
+                                        {
+                                            <option value="@item.IdLinea">@item.Lnom</option>
+                                        }
+                                    }
+                                </BSInput>
+                        </BSCol>
+                        <BSCol Position="Position.Relative" Place ColumnMedium="5">
+                            <BSLabel class="labelFormulario">Tipo de Novedad</BSLabel>
+                                <BSInput  InputType="InputType.Select" @bind-Value="filtroTipoNovedad">
+                                    <option value="0">Seleccionar el Tipo de Novedad</option>
+                                    @if (listaTiposNovedad != null)
+                                    {
+                                        <option value="0">Todos</option>
+                                        @foreach (var item in listaTiposNovedad)
+                                        {
+                                            <option value="@item.IdTiParTp">@item.Tpnombre.ToUpper()</option>
+                                        }   
+                                    }
+                                </BSInput>
+                        </BSCol>
+                    </BSRow> 
+                    <br>
+                    <BSRow>
+                        <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">Buscar</BSButton>
+                        </BSCol>
+                    </BSRow>
+                    @if (listaNovedades != null)
+                    {
+                        <br>
+                        <br>
+                        <BSTable IsResponsive="true" IsStriped="true">
+                            <BSTHead>
+                                <BSTR class="cabeceraTabla">
+                                    <BSTD>Linea</BSTD>
+                                    <BSTD>ID Maquina</BSTD>
+                                    <BSTD>ID Equipo</BSTD>
+                                    <BSTD>Grupo</BSTD>
+                                    <BSTD>Turno</BSTD>
+                                    <BSTD>Tiempo Perdido (min)</BSTD>
+                                    <BSTD>Pizarra Unificada</BSTD>
+                                </BSTR>
+                            </BSTHead>
+                            <BSTBody class="cuerpoTabla">
+                                @foreach (var item in listaNovedades){
+                                    <BSTR>
+                                        <BSTD>@item.IdLineaNavigation.Lnom</BSTD>
+                                        <BSTD>@item.IdMaquina</BSTD>
+                                        <BSTD>@item.IdEquipo</BSTD>
+                                        <BSTD>@item.Lngrupo</BSTD>
+                                        <BSTD>@item.Lnturno</BSTD>
+                                        @if(item.LntiePerMi == -1){
+                                            <BSTD>Sin Perdida de Tiempo</BSTD> 
+                                        }else if(item.LntiePerMi.ToString().Count() < 5){
+                                            <BSTD>@item.LntiePerMi.ToString().Replace(".",",")</BSTD> 
+                                        }else{
+                                            <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
+                                        }
+                                        <BSTD>
+                                            <div Class="@BS.Form_Check_Inline">
+                                                <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
+                                                <BSLabel IsCheckLabel="true"></BSLabel>
+                                            </div>
+                                        </BSTD>
+                                        @* .Substring(0,5) *@
+                                    </BSTR>
+                                    <BSTR>
+                                        <BSTD>@discrepancia  @item.Lndiscrepa</BSTD>
+                                    </BSTR>
+                                
                                 }
-                            }
-                        </BSInput>
-                </BSCol>
-                <BSCol Position="Position.Relative" Place ColumnMedium="5">
-                    <BSLabel class="labelFormulario">Tipo de Novedad</BSLabel>
-                        <BSInput  InputType="InputType.Select" @bind-Value="filtroTipoNovedad">
-                            <option value="0">Seleccionar el Tipo de Novedad</option>
-                            @if (listaTiposNovedad != null)
-                            {
-                                <option value="0">Todos</option>
-                                @foreach (var item in listaTiposNovedad)
-                                {
-                                    <option value="@item.IdTiParTp">@item.Tpnombre.ToUpper()</option>
-                                }   
-                            }
-                        </BSInput>
-                </BSCol>
-            </BSRow> 
-            <br>
-            <BSRow>
-                <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">Buscar</BSButton>
-                </BSCol>
-            </BSRow>
-            @if (listaNovedades != null)
-            {
-                <br>
-                <br>
-                <BSTable IsResponsive="true" IsStriped="true">
-                    <BSTHead>
-                        <BSTR class="cabeceraTabla">
-                            <BSTD>Linea</BSTD>
-                            <BSTD>ID Maquina</BSTD>
-                            <BSTD>ID Equipo</BSTD>
-                            <BSTD>Grupo</BSTD>
-                            <BSTD>Turno</BSTD>
-                            <BSTD>Tiempo Perdido (min)</BSTD>
-                            <BSTD>Pizarra Unificada</BSTD>
-                        </BSTR>
-                    </BSTHead>
-                    <BSTBody class="cuerpoTabla">
-                        @foreach (var item in listaNovedades){
-                            <BSTR>
-                                <BSTD>@item.IdLineaNavigation.Lnom</BSTD>
-                                <BSTD>@item.IdMaquina</BSTD>
-                                <BSTD>@item.IdEquipo</BSTD>
-                                <BSTD>@item.Lngrupo</BSTD>
-                                <BSTD>@item.Lnturno</BSTD>
-                                @if(item.LntiePerMi == -1){
-                                    <BSTD>Sin Perdida de Tiempo</BSTD> 
-                                }else if(item.LntiePerMi.ToString().Count() < 5){
-                                    <BSTD>@item.LntiePerMi.ToString().Replace(".",",")</BSTD> 
-                                }else{
-                                    <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
-                                }
-                                 <BSTD>
-                                    <div Class="@BS.Form_Check_Inline">
-                                        <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
-                                        <BSLabel IsCheckLabel="true"></BSLabel>
-                                    </div>
-                                </BSTD>
-                                @* .Substring(0,5) *@
-                            </BSTR>
-                            <BSTR>
-                                <BSTD>@discrepancia  @item.Lndiscrepa</BSTD>
-                            </BSTR>
-                        
-                        }
-                    </BSTBody>
-                </BSTable>
-                <BSRow>
-                    <BSCol Column="12">
-                        <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
-                        <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=buscar IsReset="true" >Borrar</BSButton> 
-                    </BSCol>
-                </BSRow>
+                            </BSTBody>
+                        </BSTable>
+                        <BSRow>
+                            <BSCol Column="12">
+                                <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
+                                <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=buscar IsReset="true" >Borrar</BSButton> 
+                            </BSCol>
+                        </BSRow>
+                    }
+                
+                </BSCard>
             }
         </BSCard>
     </BSCard>
-</BSCard>
+
 
 
 @code{
@@ -137,18 +143,43 @@
     private BdDiv1 temporal  {get; set;}
     private bool band1  { get; set;}
     private bool band2  { get; set;}
-    //private 
+    private bool IsAcceso  { get; set;}
+    private Dictionary<string,string?>? usuarioCache {get; set;}
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender){
+            usuarioCache = new Dictionary<string,string>();
+            usuarioCache.Add("usuarioD",await sessionStorage.GetItemAsync<string>("usuarioD"));
+            if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
+                NavigationManager.NavigateTo("Login");
+            }else{
+                if(usuarioCache["usuarioD"].Contains("CONVERSION")){
+                    IsAcceso = true;
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(1);
+                }else if(usuarioCache["usuarioD"].Contains("MOLINOS")){
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(2);
+                }else{
+                    mensaje = "No tiene acceso";
+                }
+            }
+        }
+    }
+
+    
+    
     protected override async Task  OnInitializedAsync()
     {
+        IsAcceso = false;
         mensaje = "Historico de registro de las novedades";
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
-        listaLineas = await DataLinea.ObtenerTodasLasLineas();
         filtroFecha = DateTime.Now.Date;
         isDisabled = false;
         discrepancia = "Discrepancia: ";
         temporal = new BdDiv1();
     }
+
+    
 
     protected async Task buscar(){
         listaNovedades = null;

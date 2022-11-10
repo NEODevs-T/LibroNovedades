@@ -18,7 +18,7 @@ namespace LibroNovedades.Logic{
     {
 
         public async Task<bool> CambiosBDLibro(List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad){
-            
+            var builder = WebApplication.CreateBuilder();
             DbNeoContext contex = new DbNeoContext();
             DOC_IngIContext contexIng = new DOC_IngIContext();
             IDataLibroNov dataLibroNov = new DataLibroNov(contex);

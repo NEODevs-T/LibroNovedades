@@ -5,6 +5,8 @@
 @inject IDataAPI DataAPI;
 @inject IDataLibroNov DataLibroNov;
 @inject IDataTiParTP DataTiParTP;
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject NavigationManager NavigationManager
 
 <PageTitle>Formato</PageTitle>
 @* //TODO: 
@@ -259,6 +261,16 @@
     private bool bandera  { get; set;}
     private List<string> listaTurnoYGrupo { get; set;}
     private bool IsSinTiempo { get; set;}
+    private string? usuarioCache {get; set;}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        usuarioCache = await sessionStorage.GetItemAsync<string>("usuarioN");
+        if(usuarioCache == "" ||  usuarioCache == null){
+            NavigationManager.NavigateTo("Login");
+        }
+    }
+    
     protected override async Task  OnInitializedAsync()
     {
         mensaje = "Registre una Novedad";

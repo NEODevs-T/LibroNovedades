@@ -20,10 +20,12 @@ namespace LibroNovedades.ModelsDocIng
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var builder = new ConfigurationBuilder();
+            builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            IConfiguration configuration = builder.Build();
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=10.20.1.60\\DBVEN01;Database=DOC_IngI;TrustServerCertificate=True;Persist Security Info=True;User ID=usrDocIng;Password=usrDoc08*Sq*");
+                optionsBuilder.UseSqlServer(configuration.GetConnectionString("ConnectionDbIng"));
             }
         }
 

@@ -11,13 +11,13 @@ using LibroNovedades.Data.LibroNov;
 namespace LibroNovedades.Logic{
     public interface ILogicLibroNov
     {
-        Task<bool> CambiosBDLibro(List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad);
+        Task<bool> CambiosBDLibro(int idCentro,List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad);
     }
 
     public class LogicLibroNov : ILogicLibroNov
     {
 
-        public async Task<bool> CambiosBDLibro(List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad){
+        public async Task<bool> CambiosBDLibro(int idCentro,List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad){
             var builder = WebApplication.CreateBuilder();
             DbNeoContext contex = new DbNeoContext();
             DOC_IngIContext contexIng = new DOC_IngIContext();
@@ -27,7 +27,7 @@ namespace LibroNovedades.Logic{
             BdDiv1 registro = new BdDiv1();
             List<BdDiv1> listaPizarra = new List<BdDiv1>(listaNovedades.Count);
 
-            List<LibroNove> listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltro(filtroFecha,filtroLinea,filtroTipoNovedad);
+            List<LibroNove> listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad);
 
             foreach (var item in listaNovedades)
             {

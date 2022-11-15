@@ -11,7 +11,7 @@
 @inject NavigationManager NavigationManager
 
     <PageTitle>Historico</PageTitle>
-
+@if(IsCargado){
     <BSContainer PaddingBottom="Padding.Large">
         <BSRow>
             <h1 class="titulo">Historico</h1>
@@ -74,8 +74,7 @@
                             <BSTHead>
                                 <BSTR class="cabeceraTabla">
                                     <BSTD>Linea</BSTD>
-                                    <BSTD>ID Maquina</BSTD>
-                                    <BSTD>ID Equipo</BSTD>
+                                    <BSTD>Codigo de Equipo</BSTD>
                                     <BSTD>Grupo</BSTD>
                                     <BSTD>Turno</BSTD>
                                     <BSTD>Tiempo Perdido (min)</BSTD>
@@ -86,7 +85,6 @@
                                 @foreach (var item in listaNovedades){
                                     <BSTR>
                                         <BSTD>@item.IdLineaNavigation.Lnom</BSTD>
-                                        <BSTD>@item.IdMaquina</BSTD>
                                         <BSTD>@item.IdEquipo</BSTD>
                                         <BSTD>@item.Lngrupo</BSTD>
                                         <BSTD>@item.Lnturno</BSTD>
@@ -97,6 +95,7 @@
                                         }else{
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                         }
+                                        @* <BSTD>@item.LntiePerMi.ToString()</BSTD> *@
                                         <BSTD>
                                             <div Class="@BS.Form_Check_Inline">
                                                 <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
@@ -107,7 +106,9 @@
                                     </BSTR>
                                     <BSTR>
                                         <BSTD>@discrepancia  @item.Lndiscrepa</BSTD>
+                                        @* <BSTD>@observcion  @item.Lnobserv</BSTD> *@
                                     </BSTR>
+                                    
                                 
                                 }
                             </BSTBody>
@@ -124,7 +125,21 @@
             }
         </BSCard>
     </BSCard>
+}else{
+    <BSRow class="carga" Justify="Justify.Center">
+        <BSCol Column="3">
+        <div class="loader"></div>
+        </BSCol>  
+    </BSRow>
+}
 
+<BSModal DataId="model9"  @ref="refModal">
+    <Header>Estado</Header>
+    <Content>@mensaje</Content>
+    <Footer Context="modal">
+        <BSButton MarginStart="Margins.Auto" class="buttonFormularioDLT" @onclick="modal.HideAsync">Close</BSButton>
+    </Footer>
+</BSModal>
 
 
 @code{
@@ -144,49 +159,65 @@
     private bool band1  { get; set;}
     private bool band2  { get; set;}
     private bool IsAcceso  { get; set;}
+    private bool IsCargado  { get; set;}
     private Dictionary<string,string?>? usuarioCache {get; set;}
+    private string observcion  { get; set;}
+    private BSModal refModal;
+    private int idCentro { get; set;}
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected  async Task Carga()
     {
-        if(firstRender){
+        if(true){
             usuarioCache = new Dictionary<string,string>();
             usuarioCache.Add("usuarioD",await sessionStorage.GetItemAsync<string>("usuarioD"));
             if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
                 NavigationManager.NavigateTo("Login");
             }else{
+                IsCargado = true;
+                IsAcceso = true;
                 if(usuarioCache["usuarioD"].Contains("CONVERSION")){
-                    IsAcceso = true;
-                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(1);
+                    idCentro = 1;
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
                 }else if(usuarioCache["usuarioD"].Contains("MOLINOS")){
-                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(2);
+                    idCentro = 2;
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                }else if(usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS")){
+                    idCentro = 9;
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
                 }else{
+                    IsAcceso = false;
                     mensaje = "No tiene acceso";
                 }
             }
         }
+        IsCargado = true;
     }
 
     
     
     protected override async Task  OnInitializedAsync()
     {
+        refModal = new BSModal();
+        IsCargado = false;
         IsAcceso = false;
         mensaje = "Historico de registro de las novedades";
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
         filtroFecha = DateTime.Now.Date;
         isDisabled = false;
         discrepancia = "Discrepancia: ";
+        observcion = "Observación: ";
         temporal = new BdDiv1();
+        await this.Carga();
     }
 
     
 
     protected async Task buscar(){
         listaNovedades = null;
-        listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(filtroFecha,filtroLinea,filtroTipoNovedad);
+        listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad);
     }
     protected async Task Guardar(){
-        band1 = await LogicLibroNov.CambiosBDLibro(listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);
+        band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);
         if(band1){
             band2 = await DataLibroNov.UpdateRegistros(listaNovedades);
             if(band2){
@@ -197,6 +228,7 @@
         }else{
             mensaje = "Falla de inserción en la pizarra unificada";
         }
+        await refModal.ShowAsync();
         //bool a = await DataPizarra.InsertarRegistro(temporal);
     }
 

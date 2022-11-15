@@ -24,9 +24,10 @@
 
     protected async Task logout(){
         await sessionStorage.SetItemAsync("usuarioD", "");
-        await sessionStorage.SetItemAsync("usuarioA",  "");
+        await sessionStorage.SetItemAsync("usuarioA", "");
         await sessionStorage.SetItemAsync("usuarioN", "");
-        await sessionStorage.SetItemAsync("usuarioC",  "");
+        await sessionStorage.SetItemAsync("usuarioC", "");
+        await sessionStorage.SetItemAsync("usuarioF", "");
         NavigationManager.NavigateTo("Login");
     }
 }

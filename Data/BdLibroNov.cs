@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
     {
         Task<bool> InsertarRegistro(LibroNove libroNove);
         Task<List<LibroNove>> RegistroDeHoyPorLinea(int idLinea);
-        Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(DateTime fecha,int idLinea,int tipoNov);
+        Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(int idCentro,DateTime fecha,int idLinea,int tipoNov);
         Task<bool> UpdateRegistros(List<LibroNove> novedades);
     }
 
@@ -68,10 +68,10 @@ using Microsoft.EntityFrameworkCore;
             }
             return true;
         }
-        public async Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(DateTime fecha,int idLinea,int tipoNov)
+        public async Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(int idCentro,DateTime fecha,int idLinea,int tipoNov)
         {
             if(idLinea == 0 && tipoNov == 0){
-                return await this._cotext.LibroNoves.Where(t => t.Lnfecha >= fecha && t.Lnfecha < fecha.AddDays(1)).Include(t => t.IdLineaNavigation).Include(t => t.IdTipoNoveNavigation).ToListAsync();
+                return await this._cotext.LibroNoves.Where(t => (t.Lnfecha >= fecha && t.Lnfecha < fecha.AddDays(1)) && t.IdLineaNavigation.IdCentro == idCentro).Include(t => t.IdLineaNavigation).Include(t => t.IdTipoNoveNavigation).ToListAsync();
             }else if(idLinea == 0){
                 return await this._cotext.LibroNoves.Where(t => (t.Lnfecha >= fecha && t.Lnfecha < fecha.AddDays(1)) && (t.IdTipoNove == tipoNov)).Include(t => t.IdLineaNavigation).Include(t => t.IdTipoNoveNavigation).ToListAsync();
             }else if(tipoNov == 0){

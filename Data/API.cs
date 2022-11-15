@@ -38,28 +38,31 @@ namespace LibroNovedades.Data.API
             string ParadasIgnorar = "[";
             List<List<string>> data = new List<List<string>>();
             this.cliente = new HttpClient();
-            if(listaNove.Count == 0){
-                return await this.obtenerParadasActuales1turnoPorLinea(centroCosto);
-            }else{
-                for (int i = 0; i < listaNove.Count; i++)
-                {
-                    if(listaNove[i].IdParada != null){
-                        if(i ==  listaNove.Count - 1){
-                            ParadasIgnorar += listaNove[i].IdParada.ToString().Substring(1);
+            if(centroCosto != ""){
+                if(listaNove.Count == 0){
+                    return await this.obtenerParadasActuales1turnoPorLinea(centroCosto);
+                }else{
+                    for (int i = 0; i < listaNove.Count; i++)
+                    {
+                        if(listaNove[i].IdParada != null){
+                            if(i ==  listaNove.Count - 1){
+                                ParadasIgnorar += listaNove[i].IdParada.ToString().Substring(1);
+                            }else{
+                                ParadasIgnorar +=  listaNove[i].IdParada.ToString().Substring(1) + ",";
+                            }
                         }else{
-                            ParadasIgnorar +=  listaNove[i].IdParada.ToString().Substring(1) + ",";
+                            continue;
                         }
-                    }else{
-                        continue;
                     }
+                    ParadasIgnorar += "]";
                 }
-                ParadasIgnorar += "]";
+                if(ParadasIgnorar == "[]"){
+                    return await this.obtenerParadasActuales1turnoPorLinea(centroCosto);
+                }
+                string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/obtenerParadasActuales1turnoPorLinea/" + centroCosto + "/" + ParadasIgnorar;
+                data = await cliente.GetFromJsonAsync<List<List<string>>>(url);     
+                return data;
             }
-            if(ParadasIgnorar == "[]"){
-                return await this.obtenerParadasActuales1turnoPorLinea(centroCosto);
-            }
-            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/obtenerParadasActuales1turnoPorLinea/" + centroCosto + "/" + ParadasIgnorar;
-            data = await cliente.GetFromJsonAsync<List<List<string>>>(url);     
             return data;
         }
 
@@ -67,26 +70,29 @@ namespace LibroNovedades.Data.API
             string ParadasIgnorar = "[";
             List<List<string>> data = new List<List<string>>();
             this.cliente = new HttpClient();
-            if(listaNove.Count == 0 ){
-                return await this.obtenerParadasActuales2turnoPorLinea(centroCosto);
-            }else{
-                for (int i = 0; i < listaNove.Count; i++)
-                {
-                    if(listaNove[i].IdParada != null){
-                        if(i ==  listaNove.Count - 1){
-                            ParadasIgnorar += listaNove[i].IdParada.ToString().Substring(1);
+            if(centroCosto != ""){
+                if(listaNove.Count == 0 ){
+                    return await this.obtenerParadasActuales2turnoPorLinea(centroCosto);
+                }else{
+                    for (int i = 0; i < listaNove.Count; i++)
+                    {
+                        if(listaNove[i].IdParada != null){
+                            if(i ==  listaNove.Count - 1){
+                                ParadasIgnorar += listaNove[i].IdParada.ToString().Substring(1);
+                            }else{
+                                ParadasIgnorar +=  listaNove[i].IdParada.ToString().Substring(1) + ",";
+                            }
                         }else{
-                            ParadasIgnorar +=  listaNove[i].IdParada.ToString().Substring(1) + ",";
+                            continue;
                         }
-                    }else{
-                        continue;
                     }
+                    ParadasIgnorar += "]";
                 }
-                ParadasIgnorar += "]";
+                string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasSegundoTurnoPorMaquina/" + centroCosto + "/" + ParadasIgnorar;
+                data = await cliente.GetFromJsonAsync<List<List<string>>>(url);     
+                return data;
             }
-            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasSegundoTurnoPorMaquina/" + centroCosto + "/" + ParadasIgnorar;
-            data = await cliente.GetFromJsonAsync<List<List<string>>>(url);     
-            return data;
+            return data;  
         }
         public async Task<List<List<string>>>? obtenerParadasActualesturnoPorLinea(string centroCosto, List<LibroNove> listaNove){
             DateTime tiempo =  DateTime.Now;

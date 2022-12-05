@@ -56,3 +56,6 @@
     background-color: rgb(0, 120, 86);
     color:white;
 }
+.TextAreaMediano{
+    columns: 10;
+}

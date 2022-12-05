@@ -1,4 +1,4 @@
-@page "/Formato"
+@page "/FormatoAgrupado"
 @inject IDataArea DataArea;
 @inject IDataCentro DataCentro;
 @inject IDataLinea DataLinea;
@@ -101,9 +101,9 @@
                                 <BSTHead>
                                     <BSTR class="cabeceraTabla">
                                         <BSTD>#</BSTD>
-                                        <BSTD>Area</BSTD>
+                                        <BSTD>Sección</BSTD>
                                         <BSTD>Descripcion</BSTD>
-                                        <BSTD>Tiempo</BSTD>
+                                        <BSTD>Tiempo (min)</BSTD>
                                         <BSTD>Seleccionar</BSTD>
                                     </BSTR>
                                 </BSTHead>
@@ -118,9 +118,17 @@
                                             <BSTR>
                                                 <BSTD>@item</BSTD>
                                                 <BSTD>@paradas[4][item]</BSTD>
-                                                <BSTD>@paradas[2][item]</BSTD>
-                                                <BSTD>@paradas[3][item].Substring(0,5).Replace(".",",")</BSTD>
-                                                <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">Seleccionar</BSButton></BSTD>
+                                                <BSTD>@paradas[3][item]</BSTD>
+                                                <BSTD>@paradas[5][item].Substring(0,5).Replace(".",",")</BSTD>
+                                                @if(paradas[6][item] == "0"){
+                                                    <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">Seleccionar</BSButton></BSTD>
+                                                }else if(paradas[6][item] == "1"){
+                                                    <BSTD><BSButton id="@item"  class="buttonFormularioCambio" @onclick="@(e => eleccion(item))">Actulizado</BSButton></BSTD>
+                                                }else{
+                                                    <BSTD><BSButton id="@item"  class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">Por Actualizar</BSButton></BSTD>
+                                                }
+                                                
+                                                
                                             </BSTR>
                                         }
                                     }
@@ -167,7 +175,7 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Grupo</BSLabel>
-                                    <BSInput IsDisabled="true"  InputType="InputType.Select" @bind-Value="dataNove.Lngrupo">
+                                    <BSInput IsDisabled="@isManualGT"  InputType="InputType.Select" @bind-Value="dataNove.Lngrupo">
                                         <option value="0">Seleccionar Grupo</option>
                                         <option value="A">Grupo A</option>
                                         <option value="B">Grupo B</option>
@@ -178,7 +186,7 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Turno</BSLabel>
-                                    <BSInput  IsDisabled="true" InputType="InputType.Select" @bind-Value="dataNove.Lnturno">
+                                    <BSInput  IsDisabled="@isManualGT" InputType="InputType.Select" @bind-Value="dataNove.Lnturno">
                                         <option value="0">Seleccionar Grupo</option>
                                         <option value="1">1er turno</option>
                                         <option value="2">2do truno</option>
@@ -195,12 +203,12 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
                                     <BSLabel class="labelFormulario">Discrepancia</BSLabel>
-                                    <BSInput InputType="InputType.TextArea" rows="1" @bind-Value="dataNove.Lndiscrepa"></BSInput>
+                                    <BSInput class="TextAreaMediano" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lndiscrepa)"/> 
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
                                     <BSLabel class="labelFormulario">Observación</BSLabel>
-                                    <BSInput InputType="InputType.TextArea" rows="1" @bind-Value="dataNove.Lnobserv"></BSInput>
+                                    <BSInput class="TextAreaMediano" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lnobserv)"/> 
                             </BSCol>
                             <BSCol Column="12">
@@ -241,6 +249,8 @@
     private List<int> index  { get; set;}
 
     private List<LibroNove> listaNove { get; set;}
+
+    //private List<LibroNove> listaNove { get; set;}
     private List<TiParTp> listaTiposNovedad { get; set;}
     private ComponentBase contenedor { get; set;}
     private InputText inputTextReferencia {get; set;}
@@ -254,6 +264,14 @@
     private bool IsCargado  { get; set;}
     private Dictionary<string,string>? usuarioCache {get; set;}
     private bool IsAcceso  { get; set;}
+
+    private bool IsChempro  { get; set;}
+
+    private bool IsNuevo  { get; set;}
+
+    private int indexCambio  { get; set;}
+
+    private bool isManualGT { get; set;}
 
     protected  async Task Carga()
     {
@@ -281,9 +299,17 @@
                     isDisabledArea = false;
                     dataNove.IdParada = "-1";
                     isDisabledLinea = false;
-                }else if(usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS")){
+                }else if(
+                    usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS") ||
+                    usuarioCache["usuarioD"].Contains("MANTENIMIENTO") ||
+                    usuarioCache["usuarioD"].Contains("GCIA SERVICIOS INDUSTRIALES") ||
+                    usuarioCache["usuarioD"].Contains("LABORATORIO") ||
+                    usuarioCache["usuarioD"].Contains("SEGURIDAD INDUSTRIAL")
+                ){
                     dataNove.IdAreaCar = 9;
                     ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(9);
+                    IsChempro = true;
+                    isManualGT = false;
                 }else{
                     IsAcceso = false;
                     mensaje = "No posee autorización para ingresar a este módulo";
@@ -295,19 +321,22 @@
     
     protected override async Task  OnInitializedAsync()
     {
+        IsChempro = false;
+        isManualGT = true;
         IsCargado = false;
         IsAcceso = false;
         mensaje = "Registre una Novedad";
         dataNove = new LibroNove();
+        dataNove.Lnobserv = "";
+        dataNove.Lndiscrepa = "";
         ListaCentro = await DataCentro.ObtenerTodosLosCentro();
         listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
-        dataNove.Lnturno = listaTurnoYGrupo[0];
-        dataNove.Lngrupo = listaTurnoYGrupo[1];
         //ListaArea = new List<LinAre>();
         //ListaLinea = new List<Linea>();
         //paradas = new List<List<string>>();
         //index = new List<int>();
+        indexCambio = -1;
         isDisabled = false;
         paradasBandera = false;
         tiempoPerdido = 0;
@@ -319,32 +348,36 @@
         dataNove.Lnfecha = DateTime.Now;
         if (e.Validate())
         {
+            //TODO: FALTA ACTUALIZACION DEL ESTADO DEL DE LAS LISTAS DEL GEPLINE
+            dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
+            dataNove.IdEquipo = dataNove.IdEquipo.Trim();
+            dataNove.Lnobserv = dataNove.Lnobserv.Trim();
+            dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
+            dataNove.LntiePerMi = Math.Round(dataNove.LntiePerMi,5);
             try
             {
-                dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
-                dataNove.IdEquipo = dataNove.IdEquipo.Trim();
-                dataNove.Lnobserv = dataNove.Lnobserv.Trim();
-                dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
-                dataNove.LntiePerMi = Math.Round(dataNove.LntiePerMi,5);
-                bandera = await DataLibroNov.InsertarRegistro(dataNove);
+                if(IsChempro){
+                    dataNove.IdParada = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
+                }
+                if(IsNuevo){
+                    bandera = await DataLibroNov.InsertarRegistro(dataNove);
+                }else{
+                    bandera = await  DataLibroNov.ActualizacionCompleta(dataNove.IdlibrNov,dataNove);
+                }
                 if(bandera){
                     mensaje = "Guardado Exitosamente";
                     int d1 = dataNove.IdAreaCar;
                     int d2 =  dataNove.IdLinea;
                     int d3 = -1;
-                    if(dataNove.IdParada != null){
-                        d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParada.ToString().Substring(1)));
-                    }
+                    //if(dataNove.IdParada != null){
+                    //    d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParada.ToString()));
+                    //}
                     string d4 = dataNove.LnfichaRes;
                     string d5 = dataNove.IdMaquina;
-                    if(d3 != -1){
-                        paradas[0].RemoveAt(d3);
-                        paradas[1].RemoveAt(d3);
-                        paradas[2].RemoveAt(d3);
-                        paradas[3].RemoveAt(d3);
-                        paradas[4].RemoveAt(d3);
-                        paradas[5].RemoveAt(d3);
+                    if(indexCambio != -1){
+                        paradas[6][indexCambio] = "1";
                     }
+                        
                     dataNove = new LibroNove();
                     dataNove.IdAreaCar = d1;
                     dataNove.IdLinea = d2;
@@ -353,8 +386,10 @@
                     dataNove.IdParada = "0";
                     dataNove.Lnturno = listaTurnoYGrupo[0];
                     dataNove.Lngrupo = listaTurnoYGrupo[1];
-                    index = new List<int>(paradas[0].Count());
-                    for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
+                    indexCambio = -1;
+                    //index = new List<int>(paradas[0].Count());
+                    //for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
+
                 }else{
                     mensaje = "Error. Intente de nuevo";
                 }
@@ -380,48 +415,36 @@
             dataNove.IdLinea = 0;
         }
     }
-    protected async Task BuscarLinea(int dato){
-        dataNove.IdAreaCar = Int32.Parse(dato.ToString());
-        if(dataNove.IdAreaCar != 0){
-            ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(dataNove.IdAreaCar);
-        }else{
-            dataNove.IdLinea = 0;
-        }
-    }
-
-    protected async Task BuscarFicha(){
-        dataNove.IdParada = "0";
-        usuario = await DataAPI.obtenerUsuario(dataNove.LnfichaRes);
-        string departamenteo = usuario["departamento"];
-        isDisabledArea =true;
-        isDisabledLinea = true;
-        try{
-            if(departamenteo.Contains("CONVERSION")){
-                dataNove.IdAreaCar = 1;
-            }else if(departamenteo.Contains("MOLINOS")){
-                dataNove.IdAreaCar = 2;
-            }else if(departamenteo.Contains("MEJORA CONTINUA")){
-                dataNove.IdAreaCar = 0;
-                isDisabledArea = false;
-                dataNove.IdParada = "-1";
-                isDisabledLinea = false;
-            }else{
-                usuario = null;
-                mensaje = "No posee autorización para ingresar a este módulo";
-            }
-            await BuscarLinea(dataNove.IdAreaCar);
-        }catch(System.NullReferenceException){
-            usuario = null;
-            mensaje = "La ficha ingresada no existe";
-        }
-    }
 
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
         dataNove.IdLinea = int.Parse(e.Value.ToString());
-        Linea linea =  ListaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).First();
+        Linea linea =  ListaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
         dataNove.IdMaquina = linea.Lofic;
         listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
-        paradas = await DataAPI.obtenerParadasActualesturnoPorLinea(linea.LcenCos,listaNove);
+        paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
+        List<string> listaDeEstado = new List<string>();
+        string temporal;
+        LibroNove? dataNov;
+        double parada;
+        
+        for (int i = 0; i < paradas[0].Count; i++)
+        {
+            temporal = paradas[0][i] + "-" + paradas[1][i] + "-" + paradas[2][i] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
+            dataNov = listaNove.Where(n => n.IdParada == temporal).FirstOrDefault();
+            if(dataNov == null){
+                listaDeEstado.Add("0");
+                continue;
+            }else{
+                parada = Math.Round(double.Parse(paradas[5][i].Replace(".",",")),5);
+                if(dataNov.LntiePerMi == parada){
+                    listaDeEstado.Add("1");
+                }else{
+                    listaDeEstado.Add("2");
+                }
+            }
+        }
+        paradas.Add(listaDeEstado);
+
         if(paradas.Count != 0){
             if(paradas[0].Count == 0){
                 paradasBandera = true;
@@ -440,13 +463,44 @@
     public async Task eleccion(int item){
         //? al agregar 1 indica que son datos del Gespline
         //string a = await ReturnArrayAsync(item.ToString());
-        dataNove.IdParada =  '1' + paradas[0][item].ToString(); 
-        tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
-        dataNove.IdTipoNove = tipoParada.IdTiParTp;
-        dataNove.LntiePerMi = double.Parse(paradas[3][item].Replace(".",","));
+        indexCambio = item;
+        string temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
+        LibroNove data = await DataLibroNov.ObtenerPorIdParada(temporal);
+        if(data == null){
+            tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
+            dataNove.IdTipoNove = tipoParada.IdTiParTp;
+            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item].Replace(".",",")),5);
+            dataNove.Lnturno = listaTurnoYGrupo[0];
+            dataNove.Lngrupo = listaTurnoYGrupo[1];
+            dataNove.IdEquipo = "";
+            dataNove.Lnobserv = "";
+            dataNove.Lndiscrepa = "";
+            dataNove.IdParada =  temporal;
+            IsNuevo = true;
+        }else{
+            dataNove.IdLinea = data.IdLinea;
+            dataNove.IdAreaCar = data.IdAreaCar;
+            dataNove.IdEquipo = data.IdEquipo;
+            dataNove.IdlibrNov =  data.IdlibrNov;
+            dataNove.IdMaquina = data.IdMaquina;
+            dataNove.IdParada = data.IdParada;
+            dataNove.IdTipoNove = data.IdTipoNove;
+            dataNove.Lndiscrepa = data.Lndiscrepa;
+            dataNove.Lnfecha = data.Lnfecha;
+            dataNove.LnfichaRes = data.LnfichaRes;
+            dataNove.Lngrupo = data.Lngrupo;
+            dataNove.LnisPizUni = data.LnisPizUni;
+            dataNove.Lnobserv = data.Lnobserv;
+            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item].Replace(".",",")),5);
+            dataNove.Lnturno = data.Lnturno;
+            IsNuevo = false;
+        }
     }
 
     public async Task eleccionSinGespline(){
+        dataNove.Lnturno = listaTurnoYGrupo[0];
+        dataNove.Lngrupo = listaTurnoYGrupo[1];
+        IsNuevo = true;
         if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
             dataNove.IdParada = null;
             dataNove.LntiePerMi = tiempoPerdido;
@@ -458,7 +512,13 @@
     }
 
     public async Task SinPerdida(){
+        IsNuevo = true;
+        dataNove.Lnturno = listaTurnoYGrupo[0];
+        dataNove.Lngrupo = listaTurnoYGrupo[1];
         dataNove.IdParada = null;
+        dataNove.Lndiscrepa = "";
+        dataNove.Lnobserv = "";
+        dataNove.IdEquipo = "";
         dataNove.LntiePerMi = -1;
         dataNove.IdTipoNove = 19;
         tiempoPerdido = 0;
@@ -491,5 +551,8 @@
     {
         _buttonDisabled = false;
     }
+
 }
+
+
 

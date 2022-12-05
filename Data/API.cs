@@ -11,6 +11,7 @@ namespace LibroNovedades.Data.API
         Task<List<List<string>>> obtenerParadasActuales1turnoPorLinea(string centroCosto,List<LibroNove> listaNove);
         Task<List<List<string>>> obtenerParadasActualesturnoPorLinea(string centroCosto,List<LibroNove> listaNove);
         Task<Dictionary<string,string>>? obtenerUsuario(string ficha);
+        Task<List<List<string>>>? obtenerParadasActualesturnoPorLineaAgrupadas(string centroCosto);
         // Task<System.Net.Http.HttpResponseMessage> PostDiscrepancia(BdDiv1 bdDiv1);
 
         Task<List<string>>? ObtenerTurnoYGrupo();
@@ -27,12 +28,49 @@ namespace LibroNovedades.Data.API
             return data;
         }
 
+        public async Task<List<List<string>>>? obtenerParadasActuales1turnoPorLineaAgrupados(string centroCosto){
+            List<List<string>> data;
+            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasGesplienActualesAgrupados1turno/" + centroCosto;
+            this.cliente = new HttpClient();
+            data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
+            return data;
+        }
+
+        public async Task<List<List<string>>>? obtenerParadasActuales2turnoPorLineaAgrupadosDespuesDeLas0am(string centroCosto){
+            List<List<string>> data;
+            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasGesplienActualesAgrupados2turnoDespuesDeLas0am/" + centroCosto;
+            this.cliente = new HttpClient();
+            data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
+            return data;
+        }
+        public async Task<List<List<string>>>? obtenerParadasActuales2turnoPorLineaAgrupadosAntesDeLas0am(string centroCosto){
+            List<List<string>> data;
+            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasGesplienActualesAgrupados2turnoAntesDeLas0am/" + centroCosto;
+            this.cliente = new HttpClient();
+            data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
+            return data;
+        }
+
+
+
         public async Task<List<List<string>>>? obtenerParadasActuales2turnoPorLinea(string centroCosto){
             List<List<string>> data;
             string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasSegundoTurnoPorMaquina/" + centroCosto;
             this.cliente = new HttpClient();
             data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
             return data;
+        }
+
+        public async Task<List<List<string>>>? obtenerParadasActualesturnoPorLineaAgrupadas(string centroCosto){
+            DateTime tiempo =  DateTime.Now;
+            if(tiempo.Hour >= 6 && tiempo.Hour < 18){
+                return await this.obtenerParadasActuales1turnoPorLineaAgrupados(centroCosto);
+            }else if(tiempo.Hour >= 18 && tiempo.Hour < 24){
+                return await this.obtenerParadasActuales2turnoPorLineaAgrupadosAntesDeLas0am(centroCosto);
+            }else if(tiempo.Hour >= 0 && tiempo.Hour < 6){
+                return await this.obtenerParadasActuales2turnoPorLineaAgrupadosDespuesDeLas0am(centroCosto);
+            }
+            return null;
         }
         public async Task<List<List<string>>>? obtenerParadasActuales1turnoPorLinea(string centroCosto, List<LibroNove> listaNove){
             string ParadasIgnorar = "[";

@@ -27,7 +27,7 @@
             </BSCard>
         </BSCard>
     </BSCard>
-}else{  
+}else{
     <BSRow class="carga" Justify="Justify.Center">
         <BSCol Column="3">
         <div class="loader"></div>
@@ -57,14 +57,18 @@
         if(usuario["departamento"] == null){
             mensaje = "Ficha no encontrada";
         }else{
-            await sessionStorage.SetItemAsync("usuarioD", usuario["departamento"]);
             //await sessionStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
             //await sessionStorage.SetItemAsync("usuarioN", usuario["nombre"]);
+            if(ficha.ToUpper() == "J4656" || ficha.ToUpper() == "J4779"){
+                await sessionStorage.SetItemAsync("usuarioD", "CONVERSION");
+            }else{
+                await sessionStorage.SetItemAsync("usuarioD", usuario["departamento"]);
+            }
             await sessionStorage.SetItemAsync("usuarioC",  usuario["cargo"]);
             await sessionStorage.SetItemAsync("usuarioF",  ficha);
-            IsCargado = true;
             mensaje = "Login Exitoso";
             NavigationManager.NavigateTo("");
         }
+        IsCargado = true;
     }
 }

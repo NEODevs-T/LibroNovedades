@@ -137,7 +137,7 @@
     <Header>Estado</Header>
     <Content>@mensaje</Content>
     <Footer Context="modal">
-        <BSButton MarginStart="Margins.Auto" class="buttonFormularioDLT" @onclick="modal.HideAsync">Close</BSButton>
+        <BSButton MarginStart="Margins.Auto" class="buttonFormularioDLT" @onclick="cerrar">Close</BSButton>
     </Footer>
 </BSModal>
 
@@ -160,16 +160,22 @@
     private bool band2  { get; set;}
     private bool IsAcceso  { get; set;}
     private bool IsCargado  { get; set;}
+    private bool IsChempro  { get; set;}
     private Dictionary<string,string?>? usuarioCache {get; set;}
     private string observcion  { get; set;}
     private BSModal refModal;
     private int idCentro { get; set;}
 
+
+    protected async Task cerrar(){
+        await refModal.HideAsync();
+    }
     protected  async Task Carga()
     {
         if(true){
             usuarioCache = new Dictionary<string,string>();
             usuarioCache.Add("usuarioD",await sessionStorage.GetItemAsync<string>("usuarioD"));
+            usuarioCache.Add("usuarioC",await sessionStorage.GetItemAsync<string>("usuarioC"));
             if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
                 NavigationManager.NavigateTo("Login");
             }else{
@@ -181,7 +187,14 @@
                 }else if(usuarioCache["usuarioD"].Contains("MOLINOS")){
                     idCentro = 2;
                     listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
-                }else if(usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS")){
+                }else if(
+                    usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS") ||
+                    usuarioCache["usuarioD"].Contains("MANTENIMIENTO") ||
+                    usuarioCache["usuarioD"].Contains("GCIA SERVICIOS INDUSTRIALES") ||
+                    usuarioCache["usuarioD"].Contains("LABORATORIO") ||
+                    usuarioCache["usuarioD"].Contains("SEGURIDAD INDUSTRIAL")
+                ){
+                    IsChempro = true;
                     idCentro = 9;
                     listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
                 }else{
@@ -197,6 +210,7 @@
     
     protected override async Task  OnInitializedAsync()
     {
+        IsChempro = false;
         refModal = new BSModal();
         IsCargado = false;
         IsAcceso = false;
@@ -210,13 +224,23 @@
         await this.Carga();
     }
 
-    
-
     protected async Task buscar(){
         listaNovedades = null;
-        listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad);
+        string cod = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
+        if(IsChempro){
+            if (usuarioCache["usuarioC"].Contains("SUPERINTENDENTE DE PRODUCCION"))
+            {
+                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
+            }else{
+                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,cod);
+            }
+        }else{
+            listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
+        }
     }
+
     protected async Task Guardar(){
+        await refModal.ShowAsync();
         band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);
         if(band1){
             band2 = await DataLibroNov.UpdateRegistros(listaNovedades);
@@ -228,7 +252,6 @@
         }else{
             mensaje = "Falla de inserción en la pizarra unificada";
         }
-        await refModal.ShowAsync();
         //bool a = await DataPizarra.InsertarRegistro(temporal);
     }
 

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LibroNovedades.Validate
 {
-    public  class ValidDiferenteACero : ValidationAttribute
+    public class ValidDiferenteACero : ValidationAttribute
     {
         public string GetErrorMessage() => $"Debe colocar un valor";
 

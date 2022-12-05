@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using LibroNovedades.Validate;
 
 namespace LibroNovedades.Models
@@ -30,12 +31,41 @@ namespace LibroNovedades.Models
         [Required(ErrorMessage ="Coloque el area a la que pertenece.")]
         public int IdAreaCar { get; set; }
         public string? Lnobserv { get; set; }
-        public int? IdParada { get; set; }
+        public string? IdParada { get; set; }
         public bool LnisPizUni { get; set; }
-
+        [NotMapped]
+        public int IsActualizado { get; set; }
         public virtual Centro IdAreaCarNavigation { get; set; } = null!;
         public virtual Linea IdLineaNavigation { get; set; } = null!;
         public virtual TiParTp IdTipoNoveNavigation { get; set; } = null!;
     }
 }
 
+// using System;
+// using System.Collections.Generic;
+
+// namespace LibroNovedades.Models
+// {
+//     public partial class LibroNove
+//     {
+//         public int IdlibrNov { get; set; }
+//         public int IdLinea { get; set; }
+//         public string IdEquipo { get; set; } = null!;
+//         public string Lndiscrepa { get; set; } = null!;
+//         public double LntiePerMi { get; set; }
+//         public string LnfichaRes { get; set; } = null!;
+//         public DateTime Lnfecha { get; set; }
+//         public string Lngrupo { get; set; } = null!;
+//         public string Lnturno { get; set; } = null!;
+//         public string IdMaquina { get; set; } = null!;
+//         public int IdTipoNove { get; set; }
+//         public int IdAreaCar { get; set; }
+//         public string? Lnobserv { get; set; }
+//         public string? IdParada { get; set; }
+//         public bool LnisPizUni { get; set; }
+
+//         public virtual Centro IdAreaCarNavigation { get; set; } = null!;
+//         public virtual Linea IdLineaNavigation { get; set; } = null!;
+//         public virtual TiParTp IdTipoNoveNavigation { get; set; } = null!;
+//     }
+// }

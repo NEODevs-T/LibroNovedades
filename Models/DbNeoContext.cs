@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
 
 namespace LibroNovedades.Models
 {
@@ -16,22 +15,27 @@ namespace LibroNovedades.Models
             : base(options)
         {
         }
-        private readonly IConfiguration _configuration;
+
         public virtual DbSet<Area> Areas { get; set; } = null!;
+        public virtual DbSet<AreaTra> AreaTras { get; set; } = null!;
         public virtual DbSet<AsisPm> AsisPms { get; set; } = null!;
+        public virtual DbSet<AsistenReu> AsistenReus { get; set; } = null!;
         public virtual DbSet<AudCa> AudCas { get; set; } = null!;
         public virtual DbSet<AutenUsr> AutenUsrs { get; set; } = null!;
         public virtual DbSet<CargoPm> CargoPms { get; set; } = null!;
+        public virtual DbSet<CargoReu> CargoReus { get; set; } = null!;
         public virtual DbSet<Centro> Centros { get; set; } = null!;
         public virtual DbSet<ClienteP> ClientePs { get; set; } = null!;
         public virtual DbSet<DatAudCa> DatAudCas { get; set; } = null!;
         public virtual DbSet<Division> Divisions { get; set; } = null!;
         public virtual DbSet<Empresa> Empresas { get; set; } = null!;
         public virtual DbSet<IdAreaConLinea> IdAreaConLineas { get; set; } = null!;
+        public virtual DbSet<Ksf> Ksfs { get; set; } = null!;
         public virtual DbSet<LibroNove> LibroNoves { get; set; } = null!;
         public virtual DbSet<LinAre> LinAres { get; set; } = null!;
         public virtual DbSet<LinPro> LinPros { get; set; } = null!;
         public virtual DbSet<Linea> Lineas { get; set; } = null!;
+        public virtual DbSet<Nivel> Nivels { get; set; } = null!;
         public virtual DbSet<Operador> Operadors { get; set; } = null!;
         public virtual DbSet<Pai> Pais { get; set; } = null!;
         public virtual DbSet<ParAre> ParAres { get; set; } = null!;
@@ -39,17 +43,26 @@ namespace LibroNovedades.Models
         public virtual DbSet<ParsiOee> ParsiOees { get; set; } = null!;
         public virtual DbSet<Parte> Partes { get; set; } = null!;
         public virtual DbSet<ParteLineaAreaCentro> ParteLineaAreaCentros { get; set; } = null!;
+        public virtual DbSet<Personal> Personals { get; set; } = null!;
+        public virtual DbSet<Plantum> Planta { get; set; } = null!;
         public virtual DbSet<PregP> PregPs { get; set; } = null!;
         public virtual DbSet<Producto> Productos { get; set; } = null!;
         public virtual DbSet<Proyecto> Proyectos { get; set; } = null!;
+        public virtual DbSet<ProyectoUsr> ProyectoUsrs { get; set; } = null!;
+        public virtual DbSet<Puesto> Puestos { get; set; } = null!;
         public virtual DbSet<RespP> RespPs { get; set; } = null!;
+        public virtual DbSet<RespoReu> RespoReus { get; set; } = null!;
+        public virtual DbSet<Resuman> Resumen { get; set; } = null!;
         public virtual DbSet<ReuParM> ReuParMs { get; set; } = null!;
+        public virtual DbSet<ReunionDium> ReunionDia { get; set; } = null!;
+        public virtual DbSet<Rol> Rols { get; set; } = null!;
         public virtual DbSet<RspnsblP> RspnsblPs { get; set; } = null!;
         public virtual DbSet<TecniCa> TecniCas { get; set; } = null!;
         public virtual DbSet<TiPaPar> TiPaPars { get; set; } = null!;
         public virtual DbSet<TiParTp> TiParTps { get; set; } = null!;
         public virtual DbSet<TieEjeTp> TieEjeTps { get; set; } = null!;
         public virtual DbSet<TieParTp> TieParTps { get; set; } = null!;
+        public virtual DbSet<TipSuple> TipSuples { get; set; } = null!;
         public virtual DbSet<TurPro> TurPros { get; set; } = null!;
         public virtual DbSet<TurnoTp> TurnoTps { get; set; } = null!;
         public virtual DbSet<Usuario> Usuarios { get; set; } = null!;
@@ -58,12 +71,10 @@ namespace LibroNovedades.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var builder = new ConfigurationBuilder();
-            builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            IConfiguration configuration = builder.Build();
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(configuration.GetConnectionString("ConnectionDbNeo"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=AZTDTDB03\\DESARROLLO;Database=DbNeo;TrustServerCertificate=True;Persist Security Info=True;User ID=UsrEncuesta;Password=Enc2022**Ing");
             }
         }
 
@@ -94,6 +105,33 @@ namespace LibroNovedades.Models
                     .IsUnicode(false)
                     .HasColumnName("ANom")
                     .HasComment("nombre del area");
+            });
+
+            modelBuilder.Entity<AreaTra>(entity =>
+            {
+                entity.HasKey(e => e.IdAreaTra)
+                    .HasName("PK__AreaTra__487F56B804138E4C");
+
+                entity.ToTable("AreaTra");
+
+                entity.Property(e => e.AtcodBpc).HasColumnName("ATCodBPC");
+
+                entity.Property(e => e.Atcodigo)
+                    .HasMaxLength(6)
+                    .IsUnicode(false)
+                    .HasColumnName("ATCodigo");
+
+                entity.Property(e => e.Atestado).HasColumnName("ATEstado");
+
+                entity.Property(e => e.Atnombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("ATNombre");
+
+                entity.HasOne(d => d.IdPlantaNavigation)
+                    .WithMany(p => p.AreaTras)
+                    .HasForeignKey(d => d.IdPlanta)
+                    .HasConstraintName("FK__AreaTra__IdPlant__5D2BD0E6");
             });
 
             modelBuilder.Entity<AsisPm>(entity =>
@@ -129,6 +167,34 @@ namespace LibroNovedades.Models
                     .HasForeignKey(d => d.IdReuParM)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AsisPM_ReuParM");
+            });
+
+            modelBuilder.Entity<AsistenReu>(entity =>
+            {
+                entity.HasKey(e => e.IdAsistencia);
+
+                entity.ToTable("AsistenReu");
+
+                entity.Property(e => e.ArObser)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Ararea)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("ARArea");
+
+                entity.Property(e => e.Arfecha)
+                    .HasColumnType("date")
+                    .HasColumnName("ARFecha");
+
+                entity.Property(e => e.AridCargoR).HasColumnName("ARIdCargoR");
+
+                entity.HasOne(d => d.AridCargoRNavigation)
+                    .WithMany(p => p.AsistenReus)
+                    .HasForeignKey(d => d.AridCargoR)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AsistenReu_CargoReu");
             });
 
             modelBuilder.Entity<AudCa>(entity =>
@@ -264,6 +330,25 @@ namespace LibroNovedades.Models
                     .IsUnicode(false)
                     .HasColumnName("CPMNom")
                     .HasComment("cargo del asistidor");
+            });
+
+            modelBuilder.Entity<CargoReu>(entity =>
+            {
+                entity.HasKey(e => e.IdCargoR);
+
+                entity.ToTable("CargoReu");
+
+                entity.Property(e => e.Crempresa)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("CREmpresa");
+
+                entity.Property(e => e.Cresta).HasColumnName("CREsta");
+
+                entity.Property(e => e.Crnombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("CRNombre");
             });
 
             modelBuilder.Entity<Centro>(entity =>
@@ -426,6 +511,17 @@ namespace LibroNovedades.Models
                     .HasColumnName("LNom");
             });
 
+            modelBuilder.Entity<Ksf>(entity =>
+            {
+                entity.HasKey(e => e.Idksf);
+
+                entity.ToTable("KSF");
+
+                entity.Property(e => e.KsfNombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<LibroNove>(entity =>
             {
                 entity.HasKey(e => e.IdlibrNov)
@@ -438,6 +534,10 @@ namespace LibroNovedades.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.IdMaquina)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.IdParada)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
@@ -597,6 +697,35 @@ namespace LibroNovedades.Models
                     .WithMany(p => p.Lineas)
                     .HasForeignKey(d => d.IdDivision)
                     .HasConstraintName("FK_Linea_Division");
+            });
+
+            modelBuilder.Entity<Nivel>(entity =>
+            {
+                entity.HasKey(e => e.IdNivel);
+
+                entity.ToTable("Nivel");
+
+                entity.HasOne(d => d.IdDivisionNavigation)
+                    .WithMany(p => p.Nivels)
+                    .HasForeignKey(d => d.IdDivision)
+                    .HasConstraintName("FK_Nivel_Division");
+
+                entity.HasOne(d => d.IdProyectoNavigation)
+                    .WithMany(p => p.Nivels)
+                    .HasForeignKey(d => d.IdProyecto)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Nivel_ProyectoUsr");
+
+                entity.HasOne(d => d.IdRolNavigation)
+                    .WithMany(p => p.Nivels)
+                    .HasForeignKey(d => d.IdRol)
+                    .HasConstraintName("FK_Nivel_Rol");
+
+                entity.HasOne(d => d.IdUsuarioNavigation)
+                    .WithMany(p => p.Nivels)
+                    .HasForeignKey(d => d.IdUsuario)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Nivel_Usuario");
             });
 
             modelBuilder.Entity<Operador>(entity =>
@@ -851,6 +980,50 @@ namespace LibroNovedades.Models
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<Personal>(entity =>
+            {
+                entity.HasKey(e => e.IdPersonal)
+                    .HasName("PK__Personal__05A9201B1DEC2386");
+
+                entity.ToTable("Personal");
+
+                entity.Property(e => e.PeApellido)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PeFicha)
+                    .HasMaxLength(6)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PeNombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.IdAreaTraNavigation)
+                    .WithMany(p => p.Personals)
+                    .HasForeignKey(d => d.IdAreaTra)
+                    .HasConstraintName("FK__Personal__IdArea__5B438874");
+
+                entity.HasOne(d => d.IdPuestoNavigation)
+                    .WithMany(p => p.Personals)
+                    .HasForeignKey(d => d.IdPuesto)
+                    .HasConstraintName("FK__Personal__IdPues__5C37ACAD");
+            });
+
+            modelBuilder.Entity<Plantum>(entity =>
+            {
+                entity.HasKey(e => e.IdPlanta)
+                    .HasName("PK__Planta__12FEC124F71E3A67");
+
+                entity.Property(e => e.PlCodigo)
+                    .HasMaxLength(6)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PlDescri)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<PregP>(entity =>
             {
                 entity.HasKey(e => e.IdPregP);
@@ -976,6 +1149,37 @@ namespace LibroNovedades.Models
                     .HasConstraintName("FK_Proyecto_RspnsblP");
             });
 
+            modelBuilder.Entity<ProyectoUsr>(entity =>
+            {
+                entity.HasKey(e => e.IdProyecto)
+                    .HasName("PK_Proyecto_1");
+
+                entity.ToTable("ProyectoUsr");
+
+                entity.Property(e => e.Pestado).HasColumnName("PEstado");
+
+                entity.Property(e => e.Pnombre)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("PNombre");
+            });
+
+            modelBuilder.Entity<Puesto>(entity =>
+            {
+                entity.HasKey(e => e.IdPuesto)
+                    .HasName("PK__Puesto__ADAC6B9C1C93A40D");
+
+                entity.ToTable("Puesto");
+
+                entity.Property(e => e.PuCodigo)
+                    .HasMaxLength(6)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PuDescri)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<RespP>(entity =>
             {
                 entity.HasKey(e => e.IdRespP);
@@ -1011,6 +1215,81 @@ namespace LibroNovedades.Models
                     .HasForeignKey(d => d.IdProyecto)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RespP_Proyecto");
+            });
+
+            modelBuilder.Entity<RespoReu>(entity =>
+            {
+                entity.HasKey(e => e.IdResReu);
+
+                entity.ToTable("RespoReu");
+
+                entity.Property(e => e.Rresta).HasColumnName("RREsta");
+
+                entity.Property(e => e.Rrnombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("RRNombre");
+            });
+
+            modelBuilder.Entity<Resuman>(entity =>
+            {
+                entity.HasKey(e => e.IdResumen)
+                    .HasName("PK__Resumen__C15B26E506657487");
+
+                entity.Property(e => e.AreaTra)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Rfecha)
+                    .HasColumnType("datetime")
+                    .HasColumnName("RFecha");
+
+                entity.Property(e => e.Rgrupo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("RGrupo");
+
+                entity.Property(e => e.RisSplncia).HasColumnName("RIsSplncia");
+
+                entity.Property(e => e.Rplanta)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("RPlanta");
+
+                entity.Property(e => e.Rpuesto)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("RPuesto");
+
+                entity.Property(e => e.RsupFicha)
+                    .HasMaxLength(6)
+                    .IsUnicode(false)
+                    .HasColumnName("RSupFicha");
+
+                entity.Property(e => e.Rsuplido)
+                    .HasMaxLength(150)
+                    .IsUnicode(false)
+                    .HasColumnName("RSuplido");
+
+                entity.Property(e => e.RtraFicha)
+                    .HasMaxLength(6)
+                    .IsUnicode(false)
+                    .HasColumnName("RTraFicha");
+
+                entity.Property(e => e.Rtrabajado)
+                    .HasMaxLength(150)
+                    .IsUnicode(false)
+                    .HasColumnName("RTrabajado");
+
+                entity.Property(e => e.Rturno)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("RTurno");
+
+                entity.HasOne(d => d.IdTipSupleNavigation)
+                    .WithMany(p => p.Resumen)
+                    .HasForeignKey(d => d.IdTipSuple)
+                    .HasConstraintName("FK__Resumen__IdTipSu__5E1FF51F");
             });
 
             modelBuilder.Entity<ReuParM>(entity =>
@@ -1066,6 +1345,99 @@ namespace LibroNovedades.Models
                     .IsUnicode(false)
                     .HasColumnName("RPTipReu")
                     .HasComment("tipo de reunion");
+            });
+
+            modelBuilder.Entity<ReunionDium>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.AfectadoKsf)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Area)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Codigo)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CodigoEquipo)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Codigo_equipo");
+
+                entity.Property(e => e.Discrepancia)
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Div)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Division)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Fecha).HasColumnType("date");
+
+                entity.Property(e => e.Fecha2)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FechaTrab)
+                    .HasColumnType("date")
+                    .HasColumnName("Fecha_trab");
+
+                entity.Property(e => e.FechaTrab1)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Fecha_trab1");
+
+                entity.Property(e => e.OrdenTrabajo)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PlanDeAccion)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Plan_de_accion");
+
+                entity.Property(e => e.Produfin)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Responsable)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Tiempo)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Rol>(entity =>
+            {
+                entity.HasKey(e => e.IdRol);
+
+                entity.ToTable("Rol");
+
+                entity.Property(e => e.Rdescri)
+                    .HasMaxLength(500)
+                    .IsUnicode(false)
+                    .HasColumnName("RDescri");
+
+                entity.Property(e => e.Restado).HasColumnName("REstado");
+
+                entity.Property(e => e.Rnombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("RNombre");
             });
 
             modelBuilder.Entity<RspnsblP>(entity =>
@@ -1274,6 +1646,26 @@ namespace LibroNovedades.Models
                     .HasConstraintName("FK_TieParTP_ParsiOEE");
             });
 
+            modelBuilder.Entity<TipSuple>(entity =>
+            {
+                entity.HasKey(e => e.IdTipSuple)
+                    .HasName("PK__TipSuple__9ECDEC913F95291A");
+
+                entity.ToTable("TipSuple");
+
+                entity.Property(e => e.Tscodigo)
+                    .HasMaxLength(6)
+                    .IsUnicode(false)
+                    .HasColumnName("TSCodigo");
+
+                entity.Property(e => e.Tsdescri)
+                    .HasMaxLength(150)
+                    .IsUnicode(false)
+                    .HasColumnName("TSDescri");
+
+                entity.Property(e => e.Tsestado).HasColumnName("TSEstado");
+            });
+
             modelBuilder.Entity<TurPro>(entity =>
             {
                 entity.HasKey(e => e.IdTurPro);
@@ -1388,15 +1780,36 @@ namespace LibroNovedades.Models
 
                 entity.Property(e => e.IdUsuario).HasComment("Identificador del usuario");
 
-                entity.Property(e => e.Usestatus)
-                    .HasColumnName("USEstatus")
-                    .HasComment("estatus(0:inactivo,1:activo)");
+                entity.Property(e => e.UsApellido)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Usnombre)
+                entity.Property(e => e.UsClave)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UsCorreo)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UsEstatus).HasComment("estatus(0:inactivo,1:activo)");
+
+                entity.Property(e => e.UsFicha)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UsNombre)
                     .HasMaxLength(200)
                     .IsUnicode(false)
-                    .HasColumnName("USNombre")
                     .HasComment("nombre del usuario");
+
+                entity.Property(e => e.UsPass)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UsUsuario)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<VarAre>(entity =>

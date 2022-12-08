@@ -67,7 +67,7 @@
                                 @if(dataNove.IdLinea != 0){
                                     <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>Sin Perdida De tiempo</BSButton>
                                 }
-                                <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled"  @onclick=atras1>Atras</BSButton>
+                                @* <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled"  @onclick=atras1>Atras</BSButton> *@
                             </BSCol>
                         </BSRow>  
                         <br>
@@ -199,7 +199,11 @@
                                     <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
                             </BSCol>
                             <BSCol Position="Position.Relative" style="display: flex;justify-content: center;align-items: end;" Place ColumnMedium="3">
-                                    <BSButton class="buttonFormularioOK" style="he" @onclick=IdMaquina>Cargar al OFIC</BSButton>
+                                        @if(IsChempro){
+                                            <BSButton class="buttonFormularioOK" @onclick=IdMaquina>Cargar al EDIF</BSButton>
+                                        }else{
+                                            <BSButton class="buttonFormularioOK" @onclick=IdMaquina>Cargar al OFIC</BSButton>
+                                        }
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
                                     <BSLabel class="labelFormulario">Discrepancia</BSLabel>
@@ -350,7 +354,7 @@
         {
             //TODO: FALTA ACTUALIZACION DEL ESTADO DEL DE LAS LISTAS DEL GEPLINE
             dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
-            dataNove.IdEquipo = dataNove.IdEquipo.Trim();
+            dataNove.IdEquipo = dataNove.IdEquipo.Trim().ToUpper();
             dataNove.Lnobserv = dataNove.Lnobserv.Trim();
             dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
             dataNove.LntiePerMi = Math.Round(dataNove.LntiePerMi,5);

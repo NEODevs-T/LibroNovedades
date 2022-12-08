@@ -46,13 +46,23 @@ namespace LibroNovedades.Logic{
                         // }else if(temporal.IdLineaNavigation.IdCentro == 10){
                         //     registro.Div = "PD&CL";
                         // }
+                        if(temporal.IdTipoNove == 8){
+                            registro.AfectadoKsf = "Calidad";
+                        }else if(temporal.IdTipoNove == 13){
+                            registro.AfectadoKsf = "Seguridad";
+                        }else{
+                            registro.AfectadoKsf = "Producción";
+                        }
                         registro.Div = temporal.IdLineaNavigation.IdCentroNavigation.Cnom;
                         registro.Division = temporal.IdLineaNavigation.IdDivisionNavigation.Dnombre;
                         registro.Area = temporal.IdLineaNavigation.Lnom;
                         registro.CodigoEquipo = temporal.IdEquipo;
                         registro.Discrepancia = temporal.Lndiscrepa;
-                        registro.Fecha = temporal.Lnfecha.AddDays(1);
+                        registro.Fecha = temporal.Lnfecha.AddDays(1);   
+                        registro.FechaTrab = temporal.Lnfecha.AddDays(1);   
                         registro.Fecha2 = temporal.Lnfecha.AddDays(1).ToString("yyyyMMdd");
+                        registro.Status = "Pendiente";
+                        registro.Responsable = "Por Definir";
                         listaPizarra.Add(registro);
                         registro = new ReunionDium();
                     }

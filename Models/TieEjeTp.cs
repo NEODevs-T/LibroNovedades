@@ -40,6 +40,8 @@ namespace LibroNovedades.Models
         /// cantidad de productos malos
         /// </summary>
         public int? Temalo { get; set; }
+        public int? TenumVuelt { get; set; }
+        public int? Teproducidos { get; set; }
 
         public virtual ParsiOee IdParsiOeeNavigation { get; set; } = null!;
     }

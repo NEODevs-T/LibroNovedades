@@ -21,6 +21,26 @@ using Microsoft.EntityFrameworkCore;
         Task<bool> InsertarRegistros(List<ReunionDium> reunionDia);
     }
 
+    public interface IDataClasifiTPM
+    {
+        Task<List<ClasifiTpm>> ObtenerClasificacion();
+    }
+
+    public class DataClasifiTPM :IDataClasifiTPM
+    {
+        private readonly DbNeoContext _cotext;
+
+        public DataClasifiTPM(DbNeoContext context)
+        {
+            this._cotext = context;
+        }
+
+        public async Task<List<ClasifiTpm>> ObtenerClasificacion()
+        {
+            return await this._cotext.ClasifiTpms.Where(c => c.Ctpmestado == true).ToListAsync();
+        }
+    }
+
     public interface IDataTiParTP
     {
         Task<TiParTp> ObtenerTipoParadaId(string IdGespline);
@@ -67,6 +87,8 @@ using Microsoft.EntityFrameworkCore;
                 dataNove.Lnobserv = data.Lnobserv;
                 dataNove.LntiePerMi = data.LntiePerMi;
                 dataNove.Lnturno = data.Lnturno;
+                dataNove.IdCtpm = data.IdCtpm;
+                dataNove.LnisResu = data.LnisResu;
                 return 0 < await _cotext.SaveChangesAsync();
             }
             return false;         

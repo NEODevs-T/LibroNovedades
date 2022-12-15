@@ -5,6 +5,7 @@
 @inject IDataAPI DataAPI;
 @inject IDataLibroNov DataLibroNov;
 @inject IDataTiParTP DataTiParTP;
+@inject IDataClasifiTPM DataClasifiTPM;
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
 
@@ -119,7 +120,7 @@
                                                 <BSTD>@item</BSTD>
                                                 <BSTD>@paradas[4][item]</BSTD>
                                                 <BSTD>@paradas[3][item]</BSTD>
-                                                <BSTD>@paradas[5][item].Substring(0,5).Replace(".",",")</BSTD>
+                                                <BSTD>@Math.Round(double.Parse(paradas[5][item]),2)</BSTD>
                                                 @if(paradas[6][item] == "0"){
                                                     <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">Seleccionar</BSButton></BSTD>
                                                 }else if(paradas[6][item] == "1"){
@@ -127,13 +128,25 @@
                                                 }else{
                                                     <BSTD><BSButton id="@item"  class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">Por Actualizar</BSButton></BSTD>
                                                 }
-                                                
-                                                
                                             </BSTR>
                                         }
+                                        
                                     }
                                 </BSTBody>
                             </BSTable>
+
+                            @* @if(listaNoveSinTiempoPerdido != null){
+                                            @foreach (var item in listaNoveSinTiempoPerdido)
+                                            {
+                                                <BSTR>
+                                                    <BSTD>Sin seccion</BSTD>
+                                                    <BSTD>@paradas[4][item]</BSTD>
+                                                    <BSTD>@paradas[3][item]</BSTD>
+                                                    <BSTD>@paradas[5][item].Substring(0,5).Replace(".",",")</BSTD>
+                                                    
+                                                </BSTR>
+                                            }
+                                        } *@
                         }
                     }else{
                         <BSForm Model="dataNove" IsRow="true" Gutters="Gutters.Medium" OnSubmit="OK">
@@ -205,6 +218,34 @@
                                             <BSButton class="buttonFormularioOK" @onclick=IdMaquina>Cargar al OFIC</BSButton>
                                         }
                             </BSCol>
+                            @if(!IsChempro){
+                                <BSCol Position="Position.Relative" Place ColumnMedium="5">
+                                    <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
+                                    <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
+                                        @if(listaClasificacionTPM != null){
+                                            <option value="0">Seleccione</option>
+                                            @foreach (var item in listaClasificacionTPM)
+                                            {
+                                                <option value="@item.IdCtpm">@item.Ctpmnom</option>
+                                            }
+                                        }else{
+                                            <option value="0">Cargando...</option>
+                                        }
+                                    </BSInput>
+                                    <BSFeedback For="@(() => dataNove.IdCtpm)"/> 
+                                </BSCol>
+                                
+                                <BSCol Position="Position.Relative" Place ColumnMedium="5">
+                                        <BSLabel class="labelFormulario">Resuelto</BSLabel>
+                                        <BSInput InputType="InputType.Select" @bind-Value="dataNove.LnisResu">
+                                            <option value="0">No</option>
+                                            <option value="1">Si</option>
+                                        </BSInput>
+                                        <BSFeedback For="@(() => dataNove.LnisResu)"/> 
+                                </BSCol> 
+                            }
+                            
+
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
                                     <BSLabel class="labelFormulario">Discrepancia</BSLabel>
                                     <BSInput class="TextAreaMediano" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
@@ -254,6 +295,10 @@
 
     private List<LibroNove> listaNove { get; set;}
 
+    private List<LibroNove> listaNoveSinTiempoPerdido { get; set;}
+
+    private List<ClasifiTpm> listaClasificacionTPM { get; set;}
+
     //private List<LibroNove> listaNove { get; set;}
     private List<TiParTp> listaTiposNovedad { get; set;}
     private ComponentBase contenedor { get; set;}
@@ -276,6 +321,8 @@
     private int indexCambio  { get; set;}
 
     private bool isManualGT { get; set;}
+
+    
 
     protected  async Task Carga()
     {
@@ -314,6 +361,8 @@
                     ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(9);
                     IsChempro = true;
                     isManualGT = false;
+                    dataNove.IdCtpm = 5;
+                    dataNove.LnisResu = 2;
                 }else{
                     IsAcceso = false;
                     mensaje = "No posee autorización para ingresar a este módulo";
@@ -333,9 +382,12 @@
         dataNove = new LibroNove();
         dataNove.Lnobserv = "";
         dataNove.Lndiscrepa = "";
+        dataNove.LnisResu = 0;
+        dataNove.IdCtpm = 0;
         ListaCentro = await DataCentro.ObtenerTodosLosCentro();
         listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
+        listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
         //ListaArea = new List<LinAre>();
         //ListaLinea = new List<Linea>();
         //paradas = new List<List<string>>();
@@ -390,6 +442,7 @@
                     dataNove.IdParada = "0";
                     dataNove.Lnturno = listaTurnoYGrupo[0];
                     dataNove.Lngrupo = listaTurnoYGrupo[1];
+                    
                     indexCambio = -1;
                     //index = new List<int>(paradas[0].Count());
                     //for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
@@ -425,6 +478,7 @@
         Linea linea =  ListaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
         dataNove.IdMaquina = linea.Lofic;
         listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
+        listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
         paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
         List<string> listaDeEstado = new List<string>();
         string temporal;
@@ -439,7 +493,7 @@
                 listaDeEstado.Add("0");
                 continue;
             }else{
-                parada = Math.Round(double.Parse(paradas[5][i].Replace(".",",")),5);
+                parada = Math.Round(double.Parse(paradas[5][i]),5);
                 if(dataNov.LntiePerMi == parada){
                     listaDeEstado.Add("1");
                 }else{
@@ -473,7 +527,7 @@
         if(data == null){
             tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
             dataNove.IdTipoNove = tipoParada.IdTiParTp;
-            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item].Replace(".",",")),5);
+            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
             dataNove.Lnturno = listaTurnoYGrupo[0];
             dataNove.Lngrupo = listaTurnoYGrupo[1];
             dataNove.IdEquipo = "";
@@ -495,8 +549,10 @@
             dataNove.Lngrupo = data.Lngrupo;
             dataNove.LnisPizUni = data.LnisPizUni;
             dataNove.Lnobserv = data.Lnobserv;
-            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item].Replace(".",",")),5);
+            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
             dataNove.Lnturno = data.Lnturno;
+            dataNove.IdCtpm = data.IdCtpm;
+            dataNove.LnisResu = data.LnisResu;
             IsNuevo = false;
         }
     }

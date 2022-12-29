@@ -1,4 +1,4 @@
-@page "/Formato"
+
 @inject IDataArea DataArea;
 @inject IDataCentro DataCentro;
 @inject IDataLinea DataLinea;
@@ -269,10 +269,10 @@
                 IsCargado = true;
                 dataNove.LnfichaRes = await sessionStorage.GetItemAsync<string>("usuarioF");
                 IsAcceso = true;
-                if(usuarioCache["usuarioD"].Contains("CONVERSION")){
+                if(usuarioCache["usuarioD"].Contains("CONVERSION") || usuarioCache["usuarioD"].Contains("CELDA")){
                     dataNove.IdAreaCar = 1;
                     ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(1);
-                }else if(usuarioCache["usuarioD"].Contains("MOLINOS")){
+                }else if(usuarioCache["usuarioD"].Contains("MOLINO")){
                     dataNove.IdAreaCar = 2;
                     ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(2);
                 }else if(usuarioCache["usuarioD"].Contains("MEJORA CONTINUA")){

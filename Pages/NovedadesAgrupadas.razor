@@ -130,7 +130,6 @@
                                                 }
                                             </BSTR>
                                         }
-                                        
                                     }
                                 </BSTBody>
                             </BSTable>
@@ -338,10 +337,10 @@
                 IsCargado = true;
                 dataNove.LnfichaRes = await sessionStorage.GetItemAsync<string>("usuarioF");
                 IsAcceso = true;
-                if(usuarioCache["usuarioD"].Contains("CONVERSION")){
+                if(usuarioCache["usuarioD"].Contains("CONVERSION") || usuarioCache["usuarioD"].Contains("CELDA")){
                     dataNove.IdAreaCar = 1;
                     ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(1);
-                }else if(usuarioCache["usuarioD"].Contains("MOLINOS")){
+                }else if(usuarioCache["usuarioD"].Contains("MOLINO")){
                     dataNove.IdAreaCar = 2;
                     ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(2);
                 }else if(usuarioCache["usuarioD"].Contains("MEJORA CONTINUA")){
@@ -383,7 +382,7 @@
         dataNove.Lnobserv = "";
         dataNove.Lndiscrepa = "";
         dataNove.LnisResu = 0;
-        dataNove.IdCtpm = 0;
+        dataNove.IdCtpm = 2;
         ListaCentro = await DataCentro.ObtenerTodosLosCentro();
         listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
@@ -535,6 +534,7 @@
             dataNove.Lndiscrepa = "";
             dataNove.IdParada =  temporal;
             IsNuevo = true;
+            dataNove.IdCtpm = 2;
         }else{
             dataNove.IdLinea = data.IdLinea;
             dataNove.IdAreaCar = data.IdAreaCar;
@@ -560,6 +560,7 @@
     public async Task eleccionSinGespline(){
         dataNove.Lnturno = listaTurnoYGrupo[0];
         dataNove.Lngrupo = listaTurnoYGrupo[1];
+        dataNove.IdCtpm = 2;
         IsNuevo = true;
         if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
             dataNove.IdParada = null;
@@ -581,6 +582,7 @@
         dataNove.IdEquipo = "";
         dataNove.LntiePerMi = -1;
         dataNove.IdTipoNove = 19;
+        dataNove.IdCtpm = 2;
         tiempoPerdido = 0;
         mensaje = "";
     }

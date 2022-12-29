@@ -181,10 +181,10 @@
             }else{
                 IsCargado = true;
                 IsAcceso = true;
-                if(usuarioCache["usuarioD"].Contains("CONVERSION")){
+                if(usuarioCache["usuarioD"].Contains("CONVERSION") || usuarioCache["usuarioD"].Contains("CELDA")){
                     idCentro = 1;
                     listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
-                }else if(usuarioCache["usuarioD"].Contains("MOLINOS")){
+                }else if(usuarioCache["usuarioD"].Contains("MOLINO")){
                     idCentro = 2;
                     listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
                 }else if(

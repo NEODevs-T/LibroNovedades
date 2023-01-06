@@ -44,7 +44,7 @@ namespace LibroNovedades.Models
         public int IdLinea { get; set; }
         [Required(ErrorMessage ="Coloque el id de equipo afectado.")]
         public string IdEquipo { get; set; } = null!;
-        [Required(ErrorMessage ="Coloque la novedad.")] 
+        [Required(ErrorMessage ="Coloque la novedad."),StringLength(150,ErrorMessage="Alcanzo el limite de caracteres. Favor poner los detalles en las observacion")] 
         public string Lndiscrepa { get; set; } = null!;
         [ValidDiferenteACero]
         public double LntiePerMi { get; set; }

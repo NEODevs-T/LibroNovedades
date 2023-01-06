@@ -78,6 +78,10 @@
                                     <BSTD>Grupo</BSTD>
                                     <BSTD>Turno</BSTD>
                                     <BSTD>Tiempo Perdido (min)</BSTD>
+                                    <BSTD>Discrepancia</BSTD>
+                                    @if(IsChempro == false){
+                                        <BSTD>Estado</BSTD>
+                                    }
                                     <BSTD>Pizarra Unificada</BSTD>
                                 </BSTR>
                             </BSTHead>
@@ -89,13 +93,23 @@
                                         <BSTD>@item.Lngrupo</BSTD>
                                         <BSTD>@item.Lnturno</BSTD>
                                         @if(item.LntiePerMi == -1){
-                                            <BSTD>Sin Perdida de Tiempo</BSTD> 
+                                            <BSTD>0</BSTD> 
                                         }else if(item.LntiePerMi.ToString().Count() < 5){
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",")</BSTD> 
                                         }else{
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                         }
                                         @* <BSTD>@item.LntiePerMi.ToString()</BSTD> *@
+                                        <BSTD>@item.Lndiscrepa</BSTD>
+                                        @if(IsChempro == false){
+                                            <BSTD>
+                                                    @if(item.LnisResu == 0){
+                                                        <p>Resuelto</p>
+                                                    }else{
+                                                        <p>Por Resolver</p>
+                                                    }
+                                            </BSTD>
+                                        }
                                         <BSTD>
                                             <div Class="@BS.Form_Check_Inline">
                                                 <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
@@ -104,12 +118,10 @@
                                         </BSTD>
                                         @* .Substring(0,5) *@
                                     </BSTR>
-                                    <BSTR>
-                                        <BSTD>@discrepancia  @item.Lndiscrepa</BSTD>
-                                        @* <BSTD>@observcion  @item.Lnobserv</BSTD> *@
-                                    </BSTR>
-                                    
-                                
+                                     @* <BSTR>
+                                        
+                                        @* <BSTD>@observcion  @item.Lnobserv</BSTD> 
+                                    </BSTR>  *@
                                 }
                             </BSTBody>
                         </BSTable>
@@ -179,24 +191,32 @@
             if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
                 NavigationManager.NavigateTo("Login");
             }else{
-                IsCargado = true;
-                IsAcceso = true;
-                if(usuarioCache["usuarioD"].Contains("CONVERSION") || usuarioCache["usuarioD"].Contains("CELDA")){
-                    idCentro = 1;
-                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
-                }else if(usuarioCache["usuarioD"].Contains("MOLINO")){
-                    idCentro = 2;
-                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
-                }else if(
-                    usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS") ||
-                    usuarioCache["usuarioD"].Contains("MANTENIMIENTO") ||
-                    usuarioCache["usuarioD"].Contains("GCIA SERVICIOS INDUSTRIALES") ||
-                    usuarioCache["usuarioD"].Contains("LABORATORIO") ||
-                    usuarioCache["usuarioD"].Contains("SEGURIDAD INDUSTRIAL")
-                ){
-                    IsChempro = true;
-                    idCentro = 9;
-                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                if(usuarioCache["usuarioC"].Contains("SUPDTE") || usuarioCache["usuarioC"].Contains("GERENTE") || usuarioCache["usuarioC"].Contains("DIRECTOR") || usuarioCache["usuarioC"].Contains("SUPERINTENDENTE") || usuarioCache["usuarioD"].Contains("MEJORA CONTINUA") ||  usuarioCache["usuarioC"].Contains("MEJ. CONT") ||  usuarioCache["usuarioC"].Contains("JEFE DE TURNOS")){
+                    IsCargado = true;
+                    IsAcceso = true;
+                    if(usuarioCache["usuarioD"].Contains("CONVERSION") || usuarioCache["usuarioD"].Contains("CELDA")){
+                        idCentro = 1;
+                        listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                    }else if(usuarioCache["usuarioD"].Contains("MOLINO")){
+                        idCentro = 2;
+                        listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                    }else if(
+                        usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS") ||
+                        usuarioCache["usuarioD"].Contains("MANTENIMIENTO") ||
+                        usuarioCache["usuarioD"].Contains("GCIA SERVICIOS INDUSTRIALES") ||
+                        usuarioCache["usuarioC"].Contains("INGENIERO DE PROY. Y MEJ. CONT") ||
+                        usuarioCache["usuarioD"].Contains("LABORATORIO") ||
+                        usuarioCache["usuarioD"].Contains("SEGURIDAD INDUSTRIAL")
+                    ){
+                        IsChempro = true;
+                        idCentro = 9;
+                        listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                    }else if(usuarioCache["usuarioD"].Contains("MEJORA CONTINUA")){
+                        listaLineas = await DataLinea.ObtenerLasLineasPorCentro(0);
+                    }else{
+                        IsAcceso = false;
+                        mensaje = "No tiene acceso";
+                    }
                 }else{
                     IsAcceso = false;
                     mensaje = "No tiene acceso";
@@ -228,7 +248,7 @@
         listaNovedades = null;
         string cod = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
         if(IsChempro){
-            if (usuarioCache["usuarioC"].Contains("SUPERINTENDENTE DE PRODUCCION"))
+            if (usuarioCache["usuarioC"].Contains("SUPERINTENDENTE DE PRODUCCION") || usuarioCache["usuarioC"].Contains("INGENIERO DE PROY. Y MEJ. CONT"))
             {
                 listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
             }else{

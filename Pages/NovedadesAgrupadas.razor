@@ -331,6 +331,7 @@
             isDisabledLinea = true;
             usuarioCache = new Dictionary<string,string>();
             usuarioCache.Add("usuarioD",await sessionStorage.GetItemAsync<string>("usuarioD"));
+            usuarioCache.Add("usuarioC",await sessionStorage.GetItemAsync<string>("usuarioC"));
             if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
                 NavigationManager.NavigateTo("Login");
             }else{
@@ -353,6 +354,7 @@
                     usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS") ||
                     usuarioCache["usuarioD"].Contains("MANTENIMIENTO") ||
                     usuarioCache["usuarioD"].Contains("GCIA SERVICIOS INDUSTRIALES") ||
+                    usuarioCache["usuarioC"].Contains("INGENIERO DE PROY. Y MEJ. CONT") ||
                     usuarioCache["usuarioD"].Contains("LABORATORIO") ||
                     usuarioCache["usuarioD"].Contains("SEGURIDAD INDUSTRIAL")
                 ){

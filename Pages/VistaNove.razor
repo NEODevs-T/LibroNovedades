@@ -106,7 +106,7 @@
                                                     @if(item.LnisResu == 1){
                                                         <p>Resuelto</p>
                                                     }else{
-                                                        <p>Por Resolver</p>
+                                                        <p>Sin Resolver</p>
                                                     }
                                             </BSTD>
                                         }
@@ -128,7 +128,7 @@
                         <BSRow>
                             <BSCol Column="12">
                                 <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
-                                <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=buscar IsReset="true" >Borrar</BSButton> 
+                                @* <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=buscar IsReset="true" >Borrar</BSButton>  *@
                             </BSCol>
                         </BSRow>
                     }

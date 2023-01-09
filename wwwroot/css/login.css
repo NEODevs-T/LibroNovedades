@@ -1,0 +1,21 @@
+.fondo {
+    display: flex;
+    height: 100vh;
+    background-image: url("/img/fondologin.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.loginform {
+    padding: 2%;
+    background: rgba(228, 228, 228, 0.77) !important;
+    box-shadow: 0 8px 32px 0 rgb(109, 109, 109, 0,86) !important;
+    backdrop-filter: blur( 0.5px ) !important;
+    -webkit-backdrop-filter: blur( 0.5px ) !important;
+    border-radius: 10px !important;
+}
+#logoLogin{
+    width: 40%;
+    height: 40%;
+}

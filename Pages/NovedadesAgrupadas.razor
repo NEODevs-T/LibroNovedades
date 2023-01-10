@@ -251,7 +251,12 @@
                                     <BSFeedback For="@(() => dataNove.Lndiscrepa)"/> 
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
-                                    <BSLabel class="labelFormulario">Observación</BSLabel>
+                                    @if(dataNove.LnisResu == 1){
+                                        <BSLabel class="labelFormulario">Acción</BSLabel>
+                                    }else{
+                                        <BSLabel class="labelFormulario">Observación</BSLabel>
+                                    }
+                    
                                     <BSInput class="TextAreaMediano" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lnobserv)"/> 
                             </BSCol>
@@ -405,60 +410,64 @@
         dataNove.Lnfecha = DateTime.Now;
         if (e.Validate())
         {
-            //TODO: FALTA ACTUALIZACION DEL ESTADO DEL DE LAS LISTAS DEL GEPLINE
-            dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
-            dataNove.IdEquipo = dataNove.IdEquipo.Trim().ToUpper();
             dataNove.Lnobserv = dataNove.Lnobserv.Trim();
-            dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
-            dataNove.LntiePerMi = Math.Round(dataNove.LntiePerMi,5);
-            try
-            {
-                if(IsChempro){
-                    dataNove.IdParada = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
-                }
-                if(IsNuevo){
-                    bandera = await DataLibroNov.InsertarRegistro(dataNove);
-                }else{
-                    bandera = await  DataLibroNov.ActualizacionCompleta(dataNove.IdlibrNov,dataNove);
-                }
-                if(bandera){
-                    mensaje = "Guardado Exitosamente";
-                    int d1 = dataNove.IdAreaCar;
-                    int d2 =  dataNove.IdLinea;
-                    int d3 = -1;
-                    //if(dataNove.IdParada != null){
-                    //    d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParada.ToString()));
-                    //}
-                    string d4 = dataNove.LnfichaRes;
-                    string d5 = dataNove.IdMaquina;
-                    if(indexCambio != -1){
-                        paradas[6][indexCambio] = "1";
+            if((dataNove.LnisResu == 1 && dataNove.Lnobserv != "") || dataNove.LnisResu != 1){
+                //TODO: FALTA ACTUALIZACION DEL ESTADO DEL DE LAS LISTAS DEL GEPLINE
+                dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
+                dataNove.IdEquipo = dataNove.IdEquipo.Trim().ToUpper();
+                dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
+                dataNove.LntiePerMi = Math.Round(dataNove.LntiePerMi,5);
+                try
+                {
+                    if(IsChempro){
+                        dataNove.IdParada = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
                     }
+                    if(IsNuevo){
+                        bandera = await DataLibroNov.InsertarRegistro(dataNove);
+                    }else{
+                        bandera = await  DataLibroNov.ActualizacionCompleta(dataNove.IdlibrNov,dataNove);
+                    }
+                    if(bandera){
+                        mensaje = "Guardado Exitosamente";
+                        int d1 = dataNove.IdAreaCar;
+                        int d2 =  dataNove.IdLinea;
+                        int d3 = -1;
+                        //if(dataNove.IdParada != null){
+                        //    d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParada.ToString()));
+                        //}
+                        string d4 = dataNove.LnfichaRes;
+                        string d5 = dataNove.IdMaquina;
+                        if(indexCambio != -1){
+                            paradas[6][indexCambio] = "1";
+                        }
+                            
+                        dataNove = new LibroNove();
+                        dataNove.IdAreaCar = d1;
+                        dataNove.IdLinea = d2;
+                        dataNove.LnfichaRes = d4;
+                        dataNove.IdMaquina = d5;
+                        dataNove.IdParada = "0";
+                        dataNove.Lnturno = listaTurnoYGrupo[0];
+                        dataNove.Lngrupo = listaTurnoYGrupo[1];
                         
+                        indexCambio = -1;
+                        //index = new List<int>(paradas[0].Count());
+                        //for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
+
+                    }else{
+                        mensaje = "Error. Intente de nuevo";
+                    }
+                }
+                catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
+                {
+                    mensaje = "Ese elemento ya fue registrado. Por favor seleccione otra causa";
                     dataNove = new LibroNove();
-                    dataNove.IdAreaCar = d1;
-                    dataNove.IdLinea = d2;
-                    dataNove.LnfichaRes = d4;
-                    dataNove.IdMaquina = d5;
-                    dataNove.IdParada = "0";
                     dataNove.Lnturno = listaTurnoYGrupo[0];
                     dataNove.Lngrupo = listaTurnoYGrupo[1];
-                    
-                    indexCambio = -1;
-                    //index = new List<int>(paradas[0].Count());
-                    //for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
-
-                }else{
-                    mensaje = "Error. Intente de nuevo";
+                    usuario =null;
                 }
-            }
-            catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
-            {
-                mensaje = "Ese elemento ya fue registrado. Por favor seleccione otra causa";
-                dataNove = new LibroNove();
-                dataNove.Lnturno = listaTurnoYGrupo[0];
-                dataNove.Lngrupo = listaTurnoYGrupo[1];
-                usuario =null;
+            }else{
+                mensaje = "La descripción de la acción tomada es obligatoria";
             }
         }
         isDisabled = false;

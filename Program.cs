@@ -1,12 +1,19 @@
 using System.Text.Json;
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components.Authorization;
+
 using BlazorStrap;
 using Blazored.SessionStorage;
+using Blazored.LocalStorage;
+
 using LibroNovedades.Data;
 using LibroNovedades.Models;
 using LibroNovedades.ModelsDocIng;
-using Microsoft.EntityFrameworkCore;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +21,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorStrap();
+builder.Services.AddHttpClient();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddControllersWithViews();
+builder.Services.AddAuthorizationCore();
+
 
 builder.Services.AddBlazoredSessionStorage(config =>
 {
@@ -38,6 +50,8 @@ builder.Services.AddDbContext<DOC_IngIContext>( options =>
 
 // builder.Services.AddDbContext<DOC_IngIContext>(options =>
 //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
+
+builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider,global:: LibroNovedades.Service.Autenticacion.CustomAuthStateProvider>();
 
 
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();

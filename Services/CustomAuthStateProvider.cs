@@ -24,7 +24,7 @@ namespace LibroNovedades.Service.Autenticacion
 
         public override async  Task<AuthenticationState>  GetAuthenticationStateAsync()
         {
-            string token = await _localStorage.GetItemAsStringAsync("Autocontrol De Calidad");
+            string token = await _localStorage.GetItemAsStringAsync("LibroDeNovedades");
 
             var identity = new ClaimsIdentity();
             _http.DefaultRequestHeaders.Authorization = null;

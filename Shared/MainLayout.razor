@@ -74,12 +74,12 @@
 
     protected async Task HandleLogin(EditContext e)
     {
-        user.Proyecto = "Libro de Novedades";
+        user.Proyecto = "LibroDeNovedades";
         if (e.Validate())
         {
-            @* var result = await Http.PostAsJsonAsync("http://operaciones.papeleslatinos.com/Authentication/api/Auth/Login", user);
-            var ValidarToken = await result.Content.ReadAsStringAsync(); *@
-            var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+            var result = await Http.PostAsJsonAsync("http://operaciones.papeleslatinos.com/Authentication/api/Auth/Login", user);
+            var ValidarToken = await result.Content.ReadAsStringAsync(); 
+            //var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
             if (ValidarToken != null)
             {
                 if (ValidarToken == "NotFoundUser")
@@ -97,7 +97,7 @@
                 else
                 {
                     Console.WriteLine(ValidarToken);
-                    await LocalStorage.SetItemAsync("Autocontrol De Calidad", ValidarToken);
+                    await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
                     await AuthStateProvider.GetAuthenticationStateAsync();
                     user = new UserLoginDto();
                     NavigationManager.NavigateTo("");

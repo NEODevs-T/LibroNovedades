@@ -8,6 +8,7 @@ namespace LibroNovedades.Models
         public Empresa()
         {
             Centros = new HashSet<Centro>();
+            Planta = new HashSet<Plantum>();
         }
 
         public int IdEmpresa { get; set; }
@@ -18,5 +19,6 @@ namespace LibroNovedades.Models
 
         public virtual Pai IdPaisNavigation { get; set; } = null!;
         public virtual ICollection<Centro> Centros { get; set; }
+        public virtual ICollection<Plantum> Planta { get; set; }
     }
 }

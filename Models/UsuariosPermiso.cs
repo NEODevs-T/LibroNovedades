@@ -9,6 +9,7 @@ namespace LibroNovedades.Models
         public string UsNombre { get; set; } = null!;
         public string UsApellido { get; set; } = null!;
         public string? UsUsuario { get; set; }
+        public string UsPass { get; set; } = null!;
         public string UsFicha { get; set; } = null!;
         public string Proyecto { get; set; } = null!;
         public string? Division { get; set; }

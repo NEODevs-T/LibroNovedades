@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore;
 
     public interface IDataPizarra
     {
-        Task<bool> InsertarRegistros(List<ReunionDium> reunionDia);
+        Task<bool> InsertarRegistros(List<ReuDium> reunionDia);
     }
 
     public interface IDataClasifiTPM
@@ -180,10 +180,10 @@ using Microsoft.EntityFrameworkCore;
         {
             this._cotext = context;
         }
-        public async Task<bool> InsertarRegistros(List<ReunionDium> reunionDia){
+        public async Task<bool> InsertarRegistros(List<ReuDium> reunionDia){
             foreach (var item in reunionDia)
             {
-                this._cotext.ReunionDia.Add(item);
+                this._cotext.ReuDia.Add(item);
             }
             return await _cotext.SaveChangesAsync() > 0;
         }

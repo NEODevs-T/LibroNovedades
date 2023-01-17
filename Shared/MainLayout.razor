@@ -17,9 +17,9 @@
             </div>
 
             <main>
-                @* <div class="top-row px-4">
+                <div class="top-row px-4">
                     <BSButton Color="BSColor.Success" IsOutlined="true" @onclick="logout">Logout</BSButton>
-                </div> *@
+                </div>
 
                 <article class="content px-4">
                     @Body
@@ -63,14 +63,14 @@
 
     UserLoginDto user = new UserLoginDto();
 
-    @* protected async Task logout(){
+    protected async Task logout(){
         await sessionStorage.SetItemAsync("usuarioD", "");
         await sessionStorage.SetItemAsync("usuarioA", "");
         await sessionStorage.SetItemAsync("usuarioN", "");
         await sessionStorage.SetItemAsync("usuarioC", "");
         await sessionStorage.SetItemAsync("usuarioF", "");
         NavigationManager.NavigateTo("Login");
-        } *@
+        }
 
     protected async Task HandleLogin(EditContext e)
     {

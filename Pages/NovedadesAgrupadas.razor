@@ -394,6 +394,7 @@
         listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
         listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
+        await this.Carga();
         //ListaArea = new List<LinAre>();
         //ListaLinea = new List<Linea>();
         //paradas = new List<List<string>>();
@@ -403,7 +404,6 @@
         paradasBandera = false;
         tiempoPerdido = 0;
         IsSinTiempo = false;
-        await this.Carga();
     }
     protected async Task OK(EditContext e){
         isDisabled = true;

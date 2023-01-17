@@ -10,7 +10,7 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
 
-    <PageTitle>Historico</PageTitle>
+<PageTitle>Historico</PageTitle>
 @if(IsCargado){
     <BSContainer PaddingBottom="Padding.Large">
         <BSRow>
@@ -22,8 +22,9 @@
         <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" Dismissed="Dismissed">
             <h5>@mensaje</h5>
         </BSAlert>
-        <BSCard CardType="CardType.Body">
-            @if(IsAcceso){
+        @if(IsAcceso){
+            <BSCard CardType="CardType.Body">
+
                 <BSCard CardType="CardType.Text">
                     
                     <BSRow>
@@ -82,7 +83,9 @@
                                     @if(IsChempro == false){
                                         <BSTD>Estado</BSTD>
                                     }
-                                    <BSTD>Pizarra Unificada</BSTD>
+                                    @if(IsAccesoPizarra){
+                                        <BSTD>Pizarra Unificada</BSTD>
+                                    }
                                 </BSTR>
                             </BSTHead>
                             <BSTBody class="cuerpoTabla">
@@ -110,12 +113,14 @@
                                                     }
                                             </BSTD>
                                         }
+                                        @if(IsAccesoPizarra){
                                         <BSTD>
                                             <div Class="@BS.Form_Check_Inline">
                                                 <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
                                                 <BSLabel IsCheckLabel="true"></BSLabel>
                                             </div>
                                         </BSTD>
+                                        }
                                         @* .Substring(0,5) *@
                                     </BSTR>
                                      @* <BSTR>
@@ -134,8 +139,9 @@
                     }
                 
                 </BSCard>
-            }
         </BSCard>
+        }
+        
     </BSCard>
 }else{
     <BSRow class="carga" Justify="Justify.Center">
@@ -173,6 +179,7 @@
     private bool IsAcceso  { get; set;}
     private bool IsCargado  { get; set;}
     private bool IsChempro  { get; set;}
+    private bool IsAccesoPizarra  { get; set;}
     private Dictionary<string,string?>? usuarioCache {get; set;}
     private string observcion  { get; set;}
     private BSModal refModal;
@@ -192,31 +199,32 @@
                 NavigationManager.NavigateTo("Login");
             }else{
                 if(usuarioCache["usuarioC"].Contains("SUPDTE") || usuarioCache["usuarioC"].Contains("GERENTE") || usuarioCache["usuarioC"].Contains("DIRECTOR") || usuarioCache["usuarioC"].Contains("SUPERINTENDENTE") || usuarioCache["usuarioD"].Contains("MEJORA CONTINUA") ||  usuarioCache["usuarioC"].Contains("MEJ. CONT") ||  usuarioCache["usuarioC"].Contains("JEFE DE TURNOS")){
-                    IsCargado = true;
-                    IsAcceso = true;
-                    if(usuarioCache["usuarioD"].Contains("CONVERSION") || usuarioCache["usuarioD"].Contains("CELDA")){
-                        idCentro = 1;
-                        listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
-                    }else if(usuarioCache["usuarioD"].Contains("MOLINO")){
-                        idCentro = 2;
-                        listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
-                    }else if(
-                        usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS") ||
-                        usuarioCache["usuarioD"].Contains("MANTENIMIENTO") ||
-                        usuarioCache["usuarioD"].Contains("GCIA SERVICIOS INDUSTRIALES") ||
-                        usuarioCache["usuarioC"].Contains("INGENIERO DE PROY. Y MEJ. CONT") ||
-                        usuarioCache["usuarioD"].Contains("LABORATORIO") ||
-                        usuarioCache["usuarioD"].Contains("SEGURIDAD INDUSTRIAL")
-                    ){
-                        IsChempro = true;
-                        idCentro = 9;
-                        listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
-                    }else if(usuarioCache["usuarioD"].Contains("MEJORA CONTINUA")){
-                        listaLineas = await DataLinea.ObtenerLasLineasPorCentro(0);
-                    }else{
-                        IsAcceso = false;
-                        mensaje = "No tiene acceso";
-                    }
+                    IsAccesoPizarra = true;
+                }else{
+                    IsAccesoPizarra = false;
+                }
+
+                IsCargado = true;
+                IsAcceso = true;
+                if(usuarioCache["usuarioD"].Contains("CONVERSION") || usuarioCache["usuarioD"].Contains("CELDA")){
+                    idCentro = 1;
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                }else if(usuarioCache["usuarioD"].Contains("MOLINO")){
+                    idCentro = 2;
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                }else if(
+                    usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS") ||
+                    usuarioCache["usuarioD"].Contains("MANTENIMIENTO") ||
+                    usuarioCache["usuarioD"].Contains("GCIA SERVICIOS INDUSTRIALES") ||
+                    usuarioCache["usuarioC"].Contains("INGENIERO DE PROY. Y MEJ. CONT") ||
+                    usuarioCache["usuarioD"].Contains("LABORATORIO") ||
+                    usuarioCache["usuarioD"].Contains("SEGURIDAD INDUSTRIAL")
+                ){
+                    IsChempro = true;
+                    idCentro = 9;
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                }else if(usuarioCache["usuarioD"].Contains("MEJORA CONTINUA")){
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(0);
                 }else{
                     IsAcceso = false;
                     mensaje = "No tiene acceso";

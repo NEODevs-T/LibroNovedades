@@ -9,8 +9,8 @@
 
 <div class="page">
 
-    <AuthorizeView>
-        <Authorized>
+    @* <AuthorizeView>
+        <Authorized> *@
 
             <div class="sidebar">
                 <NavMenu />
@@ -25,26 +25,26 @@
                     @Body
                 </article>
             </main>
-        </Authorized>
+        @* </Authorized> *@
 
-        <NotAuthorized>
+        @* <NotAuthorized>
             <main>
                 <div class="text-center fondo">
                     <div class="form-signin w-25 m-auto loginform ">
                         <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
                         <BSForm Model="user" OnSubmit="HandleLogin">
-                            @* <DataAnnotationsValidator /> *@
+                            @* <DataAnnotationsValidator /> //@ 
                             <div class="form-floating">
                                 <BSLabel IsHidden="true">User</BSLabel>
                                 <BSInput InputType="InputType.Text" placeholder="Ficha/Usuario"
                                     @bind-Value="user.UserName" />
-                                @* <BSFeedback For="@(() => user.UserName)" ValidMessage="Correcto." /> *@
+                                @* <BSFeedback For="@(() => user.UserName)" ValidMessage="Correcto." /> //@ 
                             </div>
                             <div class="form-floating">
                                 <BSLabel IsHidden="true">Password</BSLabel>
                                 <BSInput InputType="InputType.Password" @bind-Value="user.Password" />
-                                @* <BSFeedback For="@(() => user.Password)" ValidMessage="Correcto." /> *@
+                                @* <BSFeedback For="@(() => user.Password)" ValidMessage="Correcto." /> //@ 
                             </div>
                             <BSButton Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge"
                                 IsSubmit> Iniciar</BSButton>
@@ -53,15 +53,15 @@
                     </div>
                 </div>
             </main>
-        </NotAuthorized>
+        </NotAuthorized> *@
 
-    </AuthorizeView>
+    @* </AuthorizeView> *@
 
 </div>
 
 @code {
 
-    UserLoginDto user = new UserLoginDto();
+    @* UserLoginDto user = new UserLoginDto(); *@
 
     protected async Task logout(){
         await sessionStorage.SetItemAsync("usuarioD", "");
@@ -72,7 +72,7 @@
         NavigationManager.NavigateTo("Login");
         }
 
-    protected async Task HandleLogin(EditContext e)
+    @* protected async Task HandleLogin(EditContext e)
     {
         user.Proyecto = "LibroDeNovedades";
         if (e.Validate())
@@ -104,5 +104,5 @@
                 }
             }
         }
-    }
+    } *@
 }

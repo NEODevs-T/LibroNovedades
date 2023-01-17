@@ -1,11 +1,13 @@
-﻿<CascadingAuthenticationState>
+﻿@* <CascadingAuthenticationState> *@
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            @* <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
                     Inicie Sesión.
                 </NotAuthorized>
             </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" /> *@
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
 
@@ -17,4 +19,4 @@
             </LayoutView>
         </NotFound>
     </Router>
-</CascadingAuthenticationState>
+@* </CascadingAuthenticationState> *@

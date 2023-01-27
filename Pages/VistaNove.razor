@@ -200,7 +200,7 @@
             if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
                 NavigationManager.NavigateTo("Login");
             }else{
-                if(usuarioCache["usuarioC"].Contains("SUPDTE") || usuarioCache["usuarioC"].Contains("GERENTE") || usuarioCache["usuarioC"].Contains("DIRECTOR") || usuarioCache["usuarioC"].Contains("SUPERINTENDENTE") || usuarioCache["usuarioD"].Contains("MEJORA CONTINUA") ||  usuarioCache["usuarioC"].Contains("MEJ. CONT") ||  usuarioCache["usuarioC"].Contains("JEFE DE TURNOS")){
+                if(usuarioCache["usuarioC"].Contains("SUPDTE") || usuarioCache["usuarioC"].Contains("GERENTE") || usuarioCache["usuarioC"].Contains("DIRECTOR") || usuarioCache["usuarioC"].Contains("SUPERINTENDENTE") || usuarioCache["usuarioD"].Contains("MEJORA CONTINUA") ||  usuarioCache["usuarioC"].Contains("MEJ. CONT") ||  usuarioCache["usuarioC"].Contains("JEFE DE TURNOS")  ||  usuarioCache["usuarioF"].Contains("J4779") ||  usuarioCache["usuarioF"].Contains("G4140")) {
                     IsAccesoPizarra = true;
                 }else{
                     IsAccesoPizarra = false;

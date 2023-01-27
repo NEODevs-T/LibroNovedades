@@ -132,7 +132,9 @@
                         </BSTable>
                         <BSRow>
                             <BSCol Column="12">
-                                <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
+                                @if(IsAccesoPizarra){
+                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
+                                }
                                 @* <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=buscar IsReset="true" >Borrar</BSButton>  *@
                             </BSCol>
                         </BSRow>

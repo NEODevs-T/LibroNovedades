@@ -197,6 +197,7 @@
             usuarioCache = new Dictionary<string,string>();
             usuarioCache.Add("usuarioD",await sessionStorage.GetItemAsync<string>("usuarioD"));
             usuarioCache.Add("usuarioC",await sessionStorage.GetItemAsync<string>("usuarioC"));
+            usuarioCache.Add("usuarioF",await sessionStorage.GetItemAsync<string>("usuarioF"));
             if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
                 NavigationManager.NavigateTo("Login");
             }else{

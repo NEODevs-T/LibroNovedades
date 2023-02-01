@@ -22,7 +22,6 @@
         <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" Dismissed="Dismissed">
             <h5>@mensaje</h5>
         </BSAlert>
-        @if(IsAcceso){
             <BSCard CardType="CardType.Body">
 
                 <BSCard CardType="CardType.Text">
@@ -140,8 +139,6 @@
                 
                 </BSCard>
         </BSCard>
-        }
-        
     </BSCard>
 }else{
     <BSRow class="carga" Justify="Justify.Center">
@@ -176,7 +173,6 @@
     private BdDiv1 temporal  {get; set;}
     private bool band1  { get; set;}
     private bool band2  { get; set;}
-    private bool IsAcceso  { get; set;}
     private bool IsCargado  { get; set;}
     private bool IsChempro  { get; set;}
     private bool IsAccesoPizarra  { get; set;}
@@ -189,7 +185,7 @@
     protected async Task cerrar(){
         await refModal.HideAsync();
     }
-    protected  async Task Carga()
+    @* protected  async Task Carga()
     {
         if(true){
             usuarioCache = new Dictionary<string,string>();
@@ -205,7 +201,6 @@
                 }
 
                 IsCargado = true;
-                IsAcceso = true;
                 if(usuarioCache["usuarioD"].Contains("CONVERSION") || usuarioCache["usuarioD"].Contains("CELDA")){
                     idCentro = 1;
                     listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
@@ -226,13 +221,12 @@
                 }else if(usuarioCache["usuarioD"].Contains("MEJORA CONTINUA")){
                     listaLineas = await DataLinea.ObtenerLasLineasPorCentro(0);
                 }else{
-                    IsAcceso = false;
                     mensaje = "No tiene acceso";
                 }
             }
         }
         IsCargado = true;
-    }
+    } *@
 
     
     
@@ -241,7 +235,7 @@
         IsChempro = false;
         refModal = new BSModal();
         IsCargado = false;
-        IsAcceso = false;
+
         mensaje = "Historico de registro de las novedades";
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
         filtroFecha = DateTime.Now.Date;
@@ -249,7 +243,7 @@
         discrepancia = "Discrepancia: ";
         observcion = "Observación: ";
         temporal = new BdDiv1();
-        await this.Carga();
+        @* await this.Carga(); *@
     }
 
     protected async Task buscar(){

@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
-@inject ILocalStorageService LocalStorage
+    @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthStateProvider
@@ -35,17 +35,24 @@
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
                         <BSForm Model="user" OnSubmit="HandleLogin">
                             @* <DataAnnotationsValidator /> *@
-                            <div class="form-floating">
-                                <BSLabel IsHidden="true">User</BSLabel>
-                                <BSInput InputType="InputType.Text" placeholder="Ficha/Usuario"
-                                    @bind-Value="user.UserName" />
+                            <BSCol class="Position.Relative" style="text-align:center ;">
+                                @* <BSLabel class="labelFormularioGrande">Ficha o Cedula</BSLabel> *@
+                                <BSInput InputType="InputType.Text" placeholder="Ficha/Cedula" @bind-Value="identificacion" />
                                 @* <BSFeedback For="@(() => user.UserName)" ValidMessage="Correcto." /> *@
-                            </div>
-                            <div class="form-floating">
-                                <BSLabel IsHidden="true">Password</BSLabel>
-                                <BSInput InputType="InputType.Password" @bind-Value="user.Password" />
+                            </BSCol>
+                            <br>
+                            <BSCol class="Position.Relative">
+                                @*<BSLabel class="labelFormulario">User</BSLabel>*@
+                                <BSInput InputType="InputType.Text" placeholder="Usuario" @bind-Value="user.UserName" />
+                                @* <BSFeedback For="@(() => user.UserName)" ValidMessage="Correcto." /> *@
+                            </BSCol>
+                            <br>
+                            <BSCol class="Position.Relative">
+                                @*<BSLabel class="labelFormulario">Password</BSLabel>*@
+                                <BSInput InputType="InputType.Password"  placeholder="Contraseña" @bind-Value="user.Password" />
                                 @* <BSFeedback For="@(() => user.Password)" ValidMessage="Correcto." /> *@
-                            </div>
+                            </BSCol>
+                            <br>
                             <BSButton Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge"
                                 IsSubmit> Iniciar</BSButton>
                             <p class="mt-5 mb-3 text-muted">Neo 2022</p>
@@ -63,14 +70,19 @@
 
     UserLoginDto user = new UserLoginDto();
 
+    private string identificacion {get; set;}
+
     protected async Task logout(){
-        await sessionStorage.SetItemAsync("usuarioD", "");
+        await LocalStorage.RemoveItemAsync("LibroDeNovedades");
+        await LocalStorage.RemoveItemAsync("Identificacion");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        @* await sessionStorage.SetItemAsync("usuarioD", "");
         await sessionStorage.SetItemAsync("usuarioA", "");
         await sessionStorage.SetItemAsync("usuarioN", "");
         await sessionStorage.SetItemAsync("usuarioC", "");
-        await sessionStorage.SetItemAsync("usuarioF", "");
-        NavigationManager.NavigateTo("Login");
-        }
+        await sessionStorage.SetItemAsync("usuarioF", ""); *@
+        //NavigationManager.NavigateTo("Login");
+    }
 
     protected async Task HandleLogin(EditContext e)
     {
@@ -79,6 +91,7 @@
         {
             var result = await Http.PostAsJsonAsync("http://operaciones.papeleslatinos.com/Authentication/api/Auth/Login", user);
             var ValidarToken = await result.Content.ReadAsStringAsync(); 
+            
             //var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
             if (ValidarToken != null)
             {
@@ -96,9 +109,11 @@
                 }
                 else
                 {
-                    Console.WriteLine(ValidarToken);
+                    //mensaje = "Accediendo...";
+                    //Console.WriteLine(ValidarToken);
                     await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
-                    await AuthStateProvider.GetAuthenticationStateAsync();
+                    await AuthStateProvider.GetAuthenticationStateAsync();    
+                    await LocalStorage.SetItemAsync("Identificacion", identificacion);
                     user = new UserLoginDto();
                     NavigationManager.NavigateTo("");
                 }

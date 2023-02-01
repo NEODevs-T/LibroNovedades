@@ -255,7 +255,7 @@
     private Dictionary<string,string>? usuarioCache {get; set;}
     private bool IsAcceso  { get; set;}
 
-    protected  async Task Carga()
+    @* protected  async Task Carga()
     {
         if(true){
             dataNove.IdParada = "0";
@@ -291,7 +291,7 @@
             }
         }
         IsCargado = true;
-    }
+    } *@
     
     protected override async Task  OnInitializedAsync()
     {
@@ -311,8 +311,6 @@
         isDisabled = false;
         paradasBandera = false;
         tiempoPerdido = 0;
-        IsSinTiempo = false;
-        await this.Carga();
     }
     protected async Task OK(EditContext e){
         isDisabled = true;

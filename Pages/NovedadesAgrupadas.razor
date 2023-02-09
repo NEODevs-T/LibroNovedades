@@ -6,6 +6,7 @@
 @inject IDataLibroNov DataLibroNov;
 @inject IDataTiParTP DataTiParTP;
 @inject IDataClasifiTPM DataClasifiTPM;
+@inject IDataEquipoEAM DataEquipoEAM;
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
 
@@ -207,8 +208,22 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="5">
                                     <BSLabel class="labelFormularioGrande">Codigo de Equipo</BSLabel>
-                                    <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdEquipo"></BSInput>
-                                    <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
+                                    @if(dataNove.IdAreaCar != 1){
+                                        <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdEquipo"></BSInput>
+                                        <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
+                                    }else{
+                                        <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdEquipo">
+                                            <option value="0">Seleccione</option>
+                                            @if(listaEquiposEAM != null){
+                                                @foreach (var item in listaEquiposEAM)
+                                                {
+                                                    <option value="@item.EcodEquiEam">@item.EcodEquiEam - @item.EnombreEam</option>
+                                                }
+                                            }else{
+                                                <option value="0">Cargando...</option>
+                                            }
+                                        </BSInput>
+                                    }
                             </BSCol>
                             <BSCol Position="Position.Relative" style="display: flex;justify-content: center;align-items: end;" Place ColumnMedium="3">
                                         @if(IsChempro){
@@ -302,7 +317,6 @@
     private List<LibroNove> listaNoveSinTiempoPerdido { get; set;}
 
     private List<ClasifiTpm> listaClasificacionTPM { get; set;}
-
     //private List<LibroNove> listaNove { get; set;}
     private List<TiParTp> listaTiposNovedad { get; set;}
     private ComponentBase contenedor { get; set;}
@@ -317,7 +331,6 @@
     private bool IsCargado  { get; set;}
     private Dictionary<string,string>? usuarioCache {get; set;}
     private bool IsAcceso  { get; set;}
-
     private bool IsChempro  { get; set;}
 
     private bool IsNuevo  { get; set;}
@@ -326,7 +339,7 @@
 
     private bool isManualGT { get; set;}
 
-    
+    private List<EquipoEam> listaEquiposEAM{ get; set;}
 
     protected  async Task Carga()
     {
@@ -417,6 +430,8 @@
                 dataNove.IdEquipo = dataNove.IdEquipo.Trim().ToUpper();
                 dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
                 dataNove.LntiePerMi = Math.Round(dataNove.LntiePerMi,5);
+                dataNove.Lndiscrepa =  dataNove.Lndiscrepa.ToUpper();
+                dataNove.Lnobserv =  dataNove.Lndiscrepa.ToLower();
                 try
                 {
                     if(IsChempro){
@@ -485,6 +500,9 @@
 
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
         dataNove.IdLinea = int.Parse(e.Value.ToString());
+        if(dataNove.IdAreaCar == 1){
+            listaEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
+        }
         Linea linea =  ListaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
         dataNove.IdMaquina = linea.Lofic;
         listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);

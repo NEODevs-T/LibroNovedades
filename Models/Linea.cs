@@ -10,6 +10,7 @@ namespace LibroNovedades.Models
     {
         public Linea()
         {
+            EquipoEams = new HashSet<EquipoEam>();
             LibroNoves = new HashSet<LibroNove>();
             LinAres = new HashSet<LinAre>();
             LinPros = new HashSet<LinPro>();
@@ -42,6 +43,7 @@ namespace LibroNovedades.Models
 
         public virtual Centro IdCentroNavigation { get; set; } = null!;
         public virtual Division? IdDivisionNavigation { get; set; }
+        public virtual ICollection<EquipoEam> EquipoEams { get; set; }
         public virtual ICollection<LibroNove> LibroNoves { get; set; }
         public virtual ICollection<LinAre> LinAres { get; set; }
         public virtual ICollection<LinPro> LinPros { get; set; }

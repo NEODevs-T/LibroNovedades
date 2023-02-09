@@ -188,4 +188,9 @@ using Microsoft.EntityFrameworkCore;
             return await _cotext.SaveChangesAsync() > 0;
         }
     }
+
+    // public interface IDataEquipoEAM
+    // {
+    //     Task<List<EcodEquiEam>> RegistroDeHoyPorLinea(int idLinea);
+    // }
 }

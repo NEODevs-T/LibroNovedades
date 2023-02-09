@@ -10,6 +10,10 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
 
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 <PageTitle>Historico</PageTitle>
 @if(IsCargado){
     <BSContainer PaddingBottom="Padding.Large">
@@ -21,7 +25,7 @@
     <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
         <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" Dismissed="Dismissed">
             <h5>@mensaje</h5>
-        </BSAlert>
+        </BSAlert> 
             <BSCard CardType="CardType.Body">
 
                 <BSCard CardType="CardType.Text">
@@ -79,12 +83,13 @@
                                     <BSTD>Turno</BSTD>
                                     <BSTD>Tiempo Perdido (min)</BSTD>
                                     <BSTD>Discrepancia</BSTD>
-                                    @if(IsChempro == false){
+                                    @if(isTPM){
                                         <BSTD>Estado</BSTD>
                                     }
-                                    @if(IsAccesoPizarra){
+                                    <AuthorizeView Roles="Admin,AdminChempro,SupIntendente,SupIntenCorpinal">
+                                        
                                         <BSTD>Pizarra Unificada</BSTD>
-                                    }
+                                    </AuthorizeView>
                                 </BSTR>
                             </BSTHead>
                             <BSTBody class="cuerpoTabla">
@@ -103,7 +108,7 @@
                                         }
                                         @* <BSTD>@item.LntiePerMi.ToString()</BSTD> *@
                                         <BSTD>@item.Lndiscrepa</BSTD>
-                                        @if(IsChempro == false){
+                                        @if(isTPM){
                                             <BSTD>
                                                     @if(item.LnisResu == 1){
                                                         <p>Resuelto</p>
@@ -112,14 +117,14 @@
                                                     }
                                             </BSTD>
                                         }
-                                        @if(IsAccesoPizarra){
-                                        <BSTD>
-                                            <div Class="@BS.Form_Check_Inline">
-                                                <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
-                                                <BSLabel IsCheckLabel="true"></BSLabel>
-                                            </div>
-                                        </BSTD>
-                                        }
+                                        <AuthorizeView Roles="Admin,AdminChempro,SupIntendente,SupIntenCorpinal">
+                                            <BSTD>
+                                                <div Class="@BS.Form_Check_Inline">
+                                                    <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
+                                                    <BSLabel IsCheckLabel="true"></BSLabel>
+                                                </div>
+                                            </BSTD>
+                                        </AuthorizeView>
                                         @* .Substring(0,5) *@
                                     </BSTR>
                                      @* <BSTR>
@@ -175,13 +180,15 @@
     private bool band2  { get; set;}
     private bool IsCargado  { get; set;}
     private bool IsChempro  { get; set;}
+
+    private bool isTPM { get; set;}
     private bool IsAccesoPizarra  { get; set;}
     private Dictionary<string,string?>? usuarioCache {get; set;}
     private string observcion  { get; set;}
     private BSModal refModal;
     private int idCentro { get; set;}
 
-
+    private List<Claim> claims { get; set; }
     protected async Task cerrar(){
         await refModal.HideAsync();
     }
@@ -225,7 +232,6 @@
                 }
             }
         }
-        IsCargado = true;
     } *@
 
     
@@ -235,6 +241,28 @@
         IsChempro = false;
         refModal = new BSModal();
         IsCargado = false;
+        isTPM = true;
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        claims = Enumerable.ToList(user.Claims);
+
+        if(claims[1].Value.Contains("Corpinal")){
+            idCentro = 11;
+            isTPM = false;
+        }else if(claims[1].Value.Contains("Admin")){
+            idCentro = 0;
+        }else if(claims[1].Value.Contains("Chempro")){
+            idCentro = 9;
+            IsChempro = true;
+            isTPM = false;
+        }else if(claims[1].Value.Contains("Conversion")){
+            idCentro = 1;
+        }else if(claims[1].Value.Contains("Molino")){
+            idCentro = 2;
+        }
+
+        listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
 
         mensaje = "Historico de registro de las novedades";
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
@@ -243,13 +271,15 @@
         discrepancia = "Discrepancia: ";
         observcion = "Observación: ";
         temporal = new BdDiv1();
+
+        IsCargado = true;
         @* await this.Carga(); *@
     }
 
     protected async Task buscar(){
         listaNovedades = null;
-        string cod = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
         if(IsChempro){
+            string cod = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
             if (usuarioCache["usuarioC"].Contains("SUPERINTENDENTE DE PRODUCCION") || usuarioCache["usuarioC"].Contains("INGENIERO DE PROY. Y MEJ. CONT"))
             {
                 listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);

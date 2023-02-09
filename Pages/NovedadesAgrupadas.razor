@@ -374,19 +374,19 @@
 
         dataNove.LnfichaRes = identificacion;
 
-        if(claims[1].Value == "UsrCorpinal"){
+        if(claims[1].Value.Contains("Corpinal")){
             dataNove.IdAreaCar = 11;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(11);
             dataNove.IdCtpm = 5;
             dataNove.LnisResu = 2;
             isTPM = false;
-        }else if(claims[1].Value == "Admin"){
+        }else if(claims[1].Value.Contains("Admin")){
             dataNove.IdAreaCar = 0;
             isDisabledArea = false;
             isDisabledLinea = false;
             isManualGT = false;
             dataNove.IdParada = "-1";
-        }else if(claims[1].Value == "UsrChempro"){
+        }else if(claims[1].Value.Contains("Chempro")){
             dataNove.IdAreaCar = 9;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(9);
             IsChempro = true;
@@ -394,10 +394,10 @@
             dataNove.IdCtpm = 5;
             dataNove.LnisResu = 2;
             isTPM = false;
-        }else if(claims[1].Value == "UsrConversion"){
+        }else if(claims[1].Value.Contains("Conversion")){
             dataNove.IdAreaCar = 1;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(1);
-        }else if(claims[1].Value == "UsrMolino"){
+        }else if(claims[1].Value.Contains("Molino")){
             dataNove.IdAreaCar = 2;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(2);
         }
@@ -481,7 +481,7 @@
                     dataNove = new LibroNove();
                     dataNove.Lnturno = listaTurnoYGrupo[0];
                     dataNove.Lngrupo = listaTurnoYGrupo[1];
-                    usuario =null;
+                    usuario = null;
                 }
             }else{
                 mensaje = "La descripción de la acción tomada es obligatoria";

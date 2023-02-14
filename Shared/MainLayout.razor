@@ -1,9 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
-    @inject ILocalStorageService LocalStorage
+@inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IDataAPI DataAPI
 
 <PageTitle>LibroNovedades</PageTitle>
 
@@ -17,7 +18,13 @@
             </div>
 
             <main>
-                <div class="top-row px-4">
+                <div class="top-row px-4 cabeza">
+                    <h5 style="text-align: start;">
+                    @if (nombre != "")
+                    {
+                        @nombre
+                    }
+                    </h5>
                     <BSButton Color="BSColor.Success" IsOutlined="true" @onclick="logout">Logout</BSButton>
                 </div>
 
@@ -29,36 +36,43 @@
 
         <NotAuthorized>
             <main>
+
                 <div class="text-center fondo">
                     <div class="form-signin w-25 m-auto loginform ">
                         <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
-                        <BSForm Model="user" OnSubmit="HandleLogin">
+                        
                             @* <DataAnnotationsValidator /> *@
-                            <BSCol class="Position.Relative" style="text-align:center ;">
-                                @* <BSLabel class="labelFormularioGrande">Ficha o Cedula</BSLabel> *@
-                                <BSInput InputType="InputType.Text" placeholder="Ficha/Cedula" @bind-Value="identificacion" />
+                            @* <div class="form-floating"> *@
+                                <BSLabel IsHidden="true">User</BSLabel>
+                                <BSInput InputType="InputType.Text" placeholder="Ficha"
+                                    @bind-Value="ficha" />
                                 @* <BSFeedback For="@(() => user.UserName)" ValidMessage="Correcto." /> *@
-                            </BSCol>
+                            @* </div> *@
                             <br>
-                            <BSCol class="Position.Relative">
-                                @*<BSLabel class="labelFormulario">User</BSLabel>*@
-                                <BSInput InputType="InputType.Text" placeholder="Usuario" @bind-Value="user.UserName" />
-                                @* <BSFeedback For="@(() => user.UserName)" ValidMessage="Correcto." /> *@
-                            </BSCol>
-                            <br>
-                            <BSCol class="Position.Relative">
-                                @*<BSLabel class="labelFormulario">Password</BSLabel>*@
-                                <BSInput InputType="InputType.Password"  placeholder="Contraseña" @bind-Value="user.Password" />
-                                @* <BSFeedback For="@(() => user.Password)" ValidMessage="Correcto." /> *@
-                            </BSCol>
-                            <br>
-                            <BSButton Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge"
+                            <BSButton @onclick=BuscarFicha Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge"
                                 IsSubmit> Iniciar</BSButton>
                             <p class="mt-5 mb-3 text-muted">Neo 2022</p>
-                        </BSForm>
+                        
                     </div>
                 </div>
+
+                @* <article class="content px-4">
+                    <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
+                        <BSCard CardType="CardType.Body">
+                            <BSCard CardType="CardType.Text">
+                                <BSRow>  
+                                    <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Ficha</BSLabel>
+                                            <BSInput InputType="InputType.Text" rows="1" @bind-Value="ficha"></BSInput>                            
+                                            <br>
+                                            <BSButton class="buttonFormularioOK" @onclick=BuscarFicha>Seleccionar</BSButton>
+                                    </BSCol>
+                                </BSRow>
+                            </BSCard>
+                        </BSCard>
+                    </BSCard>
+                </article> *@
             </main>
         </NotAuthorized>
 
@@ -69,19 +83,71 @@
 @code {
 
     UserLoginDto user = new UserLoginDto();
-
+    private string? mensaje { get; set;} = "Introdusca la ficha";
+    private string? ficha { get; set;}
     private string identificacion {get; set;}
+    private string nombre {get; set;} = "";
+    private string nombreU {get; set;} = "";
+    private Dictionary<string,string>? usuario { get; set;}
+
+
 
     protected async Task logout(){
         await LocalStorage.RemoveItemAsync("LibroDeNovedades");
-        await LocalStorage.RemoveItemAsync("Identificacion");
+        await LocalStorage.RemoveItemAsync("usuarioA");
+        await LocalStorage.RemoveItemAsync("usuarioN");
+        await LocalStorage.RemoveItemAsync("usuarioC");
+        await LocalStorage.RemoveItemAsync("usuarioF");
         await AuthStateProvider.GetAuthenticationStateAsync();
-        @* await sessionStorage.SetItemAsync("usuarioD", "");
-        await sessionStorage.SetItemAsync("usuarioA", "");
-        await sessionStorage.SetItemAsync("usuarioN", "");
-        await sessionStorage.SetItemAsync("usuarioC", "");
-        await sessionStorage.SetItemAsync("usuarioF", ""); *@
+        nombre = "";
         //NavigationManager.NavigateTo("Login");
+    }
+
+    protected async Task BuscarFicha(){
+        usuario = await DataAPI.obtenerUsuario(ficha);
+        
+        if(usuario["departamento"] == null){
+            mensaje = "Ficha no encontrada";
+        }else{
+            //await sessionStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
+            //await sessionStorage.SetItemAsync("usuarioN", usuario["nombre"]);
+            if(ficha.ToUpper() == "J4656" || ficha.ToUpper() == "J4779"){
+                await LocalStorage.SetItemAsync("usuarioD", "CONVERSION");
+            }else{
+                await LocalStorage.SetItemAsync("usuarioD", usuario["departamento"]);
+            }
+            nombre = "Bienvenido: " + usuario["nombre"] + " " + usuario["apellido"];
+            await LocalStorage.SetItemAsync("usuarioN",  usuario["nombre"]);
+            await LocalStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
+            await LocalStorage.SetItemAsync("usuarioC",  usuario["cargo"]);
+            await LocalStorage.SetItemAsync("usuarioF",  ficha);
+            mensaje = "Login Exitoso";
+            var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+            if (ValidarToken != null)
+            {
+                if (ValidarToken == "NotFoundUser")
+                {
+
+                }
+                else if (ValidarToken == "WrongPassword")
+                {
+
+                }
+                else if (ValidarToken == "null")
+                {
+
+                }
+                else
+                {
+                    //mensaje = "Accediendo...";
+                    //Console.WriteLine(ValidarToken);
+                    await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
+                    await AuthStateProvider.GetAuthenticationStateAsync();
+                    NavigationManager.NavigateTo("");
+                    ficha = "";
+                }
+            }
+        }
     }
 
     protected async Task HandleLogin(EditContext e)
@@ -90,7 +156,7 @@
         if (e.Validate())
         {
             var result = await Http.PostAsJsonAsync("http://operaciones.papeleslatinos.com/Authentication/api/Auth/Login", user);
-            var ValidarToken = await result.Content.ReadAsStringAsync(); 
+            var ValidarToken = await result.Content.ReadAsStringAsync();
             
             //var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
             if (ValidarToken != null)
@@ -114,7 +180,7 @@
                     await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
                     await AuthStateProvider.GetAuthenticationStateAsync();    
                     await LocalStorage.SetItemAsync("Identificacion", identificacion);
-                    user = new UserLoginDto();
+                    //user = new UserLoginDto();
                     NavigationManager.NavigateTo("");
                 }
             }

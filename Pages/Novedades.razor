@@ -252,44 +252,6 @@
     private bool IsCargado  { get; set;}
     private Dictionary<string,string>? usuarioCache {get; set;}
     private bool IsAcceso  { get; set;}
-
-    @* protected  async Task Carga()
-    {
-        if(true){
-            dataNove.IdParada = "0";
-            isDisabledArea = true;
-            isDisabledLinea = true;
-            usuarioCache = new Dictionary<string,string>();
-            usuarioCache.Add("usuarioD",await sessionStorage.GetItemAsync<string>("usuarioD"));
-            if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
-                NavigationManager.NavigateTo("Login");
-            }else{
-                IsCargado = true;
-                dataNove.LnfichaRes = await sessionStorage.GetItemAsync<string>("usuarioF");
-                IsAcceso = true;
-                if(usuarioCache["usuarioD"].Contains("CONVERSION") || usuarioCache["usuarioD"].Contains("CELDA")){
-                    dataNove.IdAreaCar = 1;
-                    ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(1);
-                }else if(usuarioCache["usuarioD"].Contains("MOLINO")){
-                    dataNove.IdAreaCar = 2;
-                    ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(2);
-                }else if(usuarioCache["usuarioD"].Contains("MEJORA CONTINUA")){
-                    //dataNove.IdAreaCar = 1;
-                    dataNove.IdAreaCar = 0;
-                    isDisabledArea = false;
-                    dataNove.IdParada = "-1";
-                    isDisabledLinea = false;
-                }else if(usuarioCache["usuarioD"].Contains("CONTROL DE PROCESOS")){
-                    dataNove.IdAreaCar = 9;
-                    ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(9);
-                }else{
-                    IsAcceso = false;
-                    mensaje = "No posee autorización para ingresar a este módulo";
-                }
-            }
-        }
-        IsCargado = true;
-    } *@
     
     protected override async Task  OnInitializedAsync()
     {
@@ -361,7 +323,10 @@
                 dataNove = new LibroNove();
                 dataNove.Lnturno = listaTurnoYGrupo[0];
                 dataNove.Lngrupo = listaTurnoYGrupo[1];
-                usuario =null;
+                usuario = null;
+            }
+            catch(Exception ex){
+                mensaje = ex.Message;
             }
         }
         isDisabled = false;
@@ -369,29 +334,37 @@
     }
 
     protected async Task BuscarLinea(ChangeEventArgs e){
-        dataNove.IdAreaCar = Int32.Parse(e.Value.ToString());
-        if(dataNove.IdAreaCar != 0){
-            ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(dataNove.IdAreaCar);
-        }else{
-            dataNove.IdLinea = 0;
+        try{
+            dataNove.IdAreaCar = Int32.Parse(e.Value.ToString());
+            if(dataNove.IdAreaCar != 0){
+                ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(dataNove.IdAreaCar);
+            }else{
+                dataNove.IdLinea = 0;
+            }
+        }catch(Exception ex){
+            mensaje = ex.Message;
         }
     }
     protected async Task BuscarLinea(int dato){
-        dataNove.IdAreaCar = Int32.Parse(dato.ToString());
-        if(dataNove.IdAreaCar != 0){
-            ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(dataNove.IdAreaCar);
-        }else{
-            dataNove.IdLinea = 0;
+        try{
+            dataNove.IdAreaCar = Int32.Parse(dato.ToString());
+            if(dataNove.IdAreaCar != 0){
+                ListaLinea = await DataLinea.ObtenerLasLineasPorCentro(dataNove.IdAreaCar);
+            }else{
+                dataNove.IdLinea = 0;
+            }
+        }catch(Exception ex){
+            mensaje = ex.Message;
         }
     }
 
     protected async Task BuscarFicha(){
-        dataNove.IdParada = "0";
-        usuario = await DataAPI.obtenerUsuario(dataNove.LnfichaRes);
-        string departamenteo = usuario["departamento"];
-        isDisabledArea =true;
-        isDisabledLinea = true;
         try{
+            dataNove.IdParada = "0";
+            usuario = await DataAPI.obtenerUsuario(dataNove.LnfichaRes);
+            string departamenteo = usuario["departamento"];
+            isDisabledArea =true;
+            isDisabledLinea = true;
             if(departamenteo.Contains("CONVERSION")){
                 dataNove.IdAreaCar = 1;
             }else if(departamenteo.Contains("MOLINOS")){
@@ -409,45 +382,56 @@
         }catch(System.NullReferenceException){
             usuario = null;
             mensaje = "La ficha ingresada no existe";
+        }catch(Exception ex){
+            mensaje = ex.Message;
         }
     }
 
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
-        dataNove.IdLinea = int.Parse(e.Value.ToString());
-        Linea linea =  ListaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).First();
-        dataNove.IdMaquina = linea.Lofic;
-        listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
-        paradas = await DataAPI.obtenerParadasActualesturnoPorLinea(linea.LcenCos,listaNove);
-        if(paradas.Count != 0){
-            if(paradas[0].Count == 0){
+        try{
+            dataNove.IdLinea = int.Parse(e.Value.ToString());
+            Linea linea =  ListaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).First();
+            dataNove.IdMaquina = linea.Lofic;
+            listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
+            paradas = await DataAPI.obtenerParadasActualesturnoPorLinea(linea.LcenCos,listaNove);
+            if(paradas.Count != 0){
+                if(paradas[0].Count == 0){
+                    paradasBandera = true;
+                    index = new List<int>();
+                }else{
+                    paradasBandera = false;
+                    index = new List<int>(paradas[0].Count());
+                    for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
+                }
+            }else{
                 paradasBandera = true;
                 index = new List<int>();
-            }else{
-                paradasBandera = false;
-                index = new List<int>(paradas[0].Count());
-                for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
             }
-        }else{
-            paradasBandera = true;
-            index = new List<int>();
+        }catch(Exception ex){
+            mensaje = ex.Message;
         }
     }
 
     public async Task eleccion(int item){
         //? al agregar 1 indica que son datos del Gespline
         //string a = await ReturnArrayAsync(item.ToString());
-        dataNove.IdParada =  '1' + paradas[0][item].ToString(); 
-        tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
-        dataNove.IdTipoNove = tipoParada.IdTiParTp;
-        dataNove.LntiePerMi = double.Parse(paradas[3][item].Replace(".",","));
+        try{
+            dataNove.IdParada =  '1' + paradas[0][item].ToString(); 
+            tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
+            dataNove.IdTipoNove = tipoParada.IdTiParTp;
+            dataNove.LntiePerMi = double.Parse(paradas[3][item].Replace(".",","));
+        }catch(Exception e){
+            mensaje = e.Message;
+        }
+
     }
 
     public async Task eleccionSinGespline(){
         if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
-            dataNove.IdParada = null;
-            dataNove.LntiePerMi = tiempoPerdido;
-            tiempoPerdido = 0;
-            mensaje = "";
+        dataNove.IdParada = null;
+        dataNove.LntiePerMi = tiempoPerdido;
+        tiempoPerdido = 0;
+        mensaje = "";
         }else{
             mensaje = "Coloque un tiempo mayor a 0 y una cauda especifica";
         }

@@ -337,18 +337,6 @@
     private List<Claim> claims { get; set; }
 
     private List<Linea> listaLineas { get; set;}
-
-    protected  async Task Carga()
-    {
-        if(true){
-            dataNove.IdParada = "0";
-            IsCargado = true;
-            dataNove.LnfichaRes = usuarioCache["Identificacion"];
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-        } 
-        IsCargado = true;
-    }
     
     protected override async Task  OnInitializedAsync()
     {
@@ -423,11 +411,6 @@
         tiempoPerdido = 0;
         IsSinTiempo = false;
         IsCargado = true;
-        //await this.Carga();
-        //ListaArea = new List<LinAre>();
-        //ListaLinea = new List<Linea>();
-        //paradas = new List<List<string>>();
-        //index = new List<int>();
     }
     protected async Task OK(EditContext e){
         isDisabled = true;
@@ -493,6 +476,9 @@
                     dataNove.Lngrupo = listaTurnoYGrupo[1];
                     usuario = null;
                 }
+                catch(Exception ex){
+                    mensaje = ex.Message;
+                }
             }else{
                 mensaje = "La descripción de la acción tomada es obligatoria";
             }
@@ -502,111 +488,127 @@
     }
 
     protected async Task BuscarLinea(ChangeEventArgs e){
-        dataNove.IdAreaCar = Int32.Parse(e.Value.ToString());
-        if(dataNove.IdAreaCar != 0){
-            listaLineas = await DataLinea.ObtenerLasLineasPorCentro(dataNove.IdAreaCar);
-        }else{
-            dataNove.IdLinea = 0;
+        try{
+            dataNove.IdAreaCar = Int32.Parse(e.Value.ToString());
+            if(dataNove.IdAreaCar != 0){
+                listaLineas = await DataLinea.ObtenerLasLineasPorCentro(dataNove.IdAreaCar);
+            }else{
+                dataNove.IdLinea = 0;
+            }
+        }catch(Exception ex){
+            mensaje = ex.Message;
         }
     }
 
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
-        dataNove.IdLinea = int.Parse(e.Value.ToString());
-        Linea linea =  listaLineas.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
-        dataNove.IdMaquina = linea.Lofic;
-        listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
-        listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
-        paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
-        List<string> listaDeEstado = new List<string>();
-        string temporal;
-        LibroNove? dataNov;
-        double parada;
-        
-        for (int i = 0; i < paradas[0].Count; i++)
-        {
-            temporal = paradas[0][i] + "-" + paradas[1][i] + "-" + paradas[2][i] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
-            dataNov = listaNove.Where(n => n.IdParada == temporal).FirstOrDefault();
-            if(dataNov == null){
-                listaDeEstado.Add("0");
-                continue;
-            }else{
-                parada = Math.Round(double.Parse(paradas[5][i]),5);
-                if(dataNov.LntiePerMi == parada){
-                    listaDeEstado.Add("1");
+        try{
+            dataNove.IdLinea = int.Parse(e.Value.ToString());
+            Linea linea =  listaLineas.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
+            dataNove.IdMaquina = linea.Lofic;
+            listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
+            listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
+            paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
+            List<string> listaDeEstado = new List<string>();
+            string temporal;
+            LibroNove? dataNov;
+            double parada;
+            
+            for (int i = 0; i < paradas[0].Count; i++)
+            {
+                temporal = paradas[0][i] + "-" + paradas[1][i] + "-" + paradas[2][i] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
+                dataNov = listaNove.Where(n => n.IdParada == temporal).FirstOrDefault();
+                if(dataNov == null){
+                    listaDeEstado.Add("0");
+                    continue;
                 }else{
-                    listaDeEstado.Add("2");
+                    parada = Math.Round(double.Parse(paradas[5][i]),5);
+                    if(dataNov.LntiePerMi == parada){
+                        listaDeEstado.Add("1");
+                    }else{
+                        listaDeEstado.Add("2");
+                    }
                 }
             }
-        }
-        paradas.Add(listaDeEstado);
+            paradas.Add(listaDeEstado);
 
-        if(paradas.Count != 0){
-            if(paradas[0].Count == 0){
+            if(paradas.Count != 0){
+                if(paradas[0].Count == 0){
+                    paradasBandera = true;
+                    index = new List<int>();
+                }else{
+                    paradasBandera = false;
+                    index = new List<int>(paradas[0].Count());
+                    for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
+                }
+            }else{
                 paradasBandera = true;
                 index = new List<int>();
-            }else{
-                paradasBandera = false;
-                index = new List<int>(paradas[0].Count());
-                for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
             }
-        }else{
-            paradasBandera = true;
-            index = new List<int>();
+        }catch(Exception ex){
+            mensaje = ex.Message;
         }
     }
 
     public async Task eleccion(int item){
         //? al agregar 1 indica que son datos del Gespline
         //string a = await ReturnArrayAsync(item.ToString());
-        indexCambio = item;
-        string temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
-        LibroNove data = await DataLibroNov.ObtenerPorIdParada(temporal);
-        if(data == null){
-            tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
-            dataNove.IdTipoNove = tipoParada.IdTiParTp;
-            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
-            dataNove.Lnturno = listaTurnoYGrupo[0];
-            dataNove.Lngrupo = listaTurnoYGrupo[1];
-            dataNove.IdEquipo = "";
-            dataNove.Lnobserv = "";
-            dataNove.Lndiscrepa = "";
-            dataNove.IdParada =  temporal;
-            IsNuevo = true;
-            dataNove.IdCtpm = 2;
-        }else{
-            dataNove.IdLinea = data.IdLinea;
-            dataNove.IdAreaCar = data.IdAreaCar;
-            dataNove.IdEquipo = data.IdEquipo;
-            dataNove.IdlibrNov =  data.IdlibrNov;
-            dataNove.IdMaquina = data.IdMaquina;
-            dataNove.IdParada = data.IdParada;
-            dataNove.IdTipoNove = data.IdTipoNove;
-            dataNove.Lndiscrepa = data.Lndiscrepa;
-            dataNove.Lnfecha = data.Lnfecha;
-            dataNove.LnfichaRes = data.LnfichaRes;
-            dataNove.Lngrupo = data.Lngrupo;
-            dataNove.LnisPizUni = data.LnisPizUni;
-            dataNove.Lnobserv = data.Lnobserv;
-            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
-            dataNove.Lnturno = data.Lnturno;
-            dataNove.IdCtpm = data.IdCtpm;
-            dataNove.LnisResu = data.LnisResu;
-            IsNuevo = false;
+        try{
+            indexCambio = item;
+            string temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
+            LibroNove data = await DataLibroNov.ObtenerPorIdParada(temporal);
+            if(data == null){
+                tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
+                dataNove.IdTipoNove = tipoParada.IdTiParTp;
+                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
+                dataNove.Lnturno = listaTurnoYGrupo[0];
+                dataNove.Lngrupo = listaTurnoYGrupo[1];
+                dataNove.IdEquipo = "";
+                dataNove.Lnobserv = "";
+                dataNove.Lndiscrepa = "";
+                dataNove.IdParada =  temporal;
+                IsNuevo = true;
+                dataNove.IdCtpm = 2;
+            }else{
+                dataNove.IdLinea = data.IdLinea;
+                dataNove.IdAreaCar = data.IdAreaCar;
+                dataNove.IdEquipo = data.IdEquipo;
+                dataNove.IdlibrNov =  data.IdlibrNov;
+                dataNove.IdMaquina = data.IdMaquina;
+                dataNove.IdParada = data.IdParada;
+                dataNove.IdTipoNove = data.IdTipoNove;
+                dataNove.Lndiscrepa = data.Lndiscrepa;
+                dataNove.Lnfecha = data.Lnfecha;
+                dataNove.LnfichaRes = data.LnfichaRes;
+                dataNove.Lngrupo = data.Lngrupo;
+                dataNove.LnisPizUni = data.LnisPizUni;
+                dataNove.Lnobserv = data.Lnobserv;
+                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
+                dataNove.Lnturno = data.Lnturno;
+                dataNove.IdCtpm = data.IdCtpm;
+                dataNove.LnisResu = data.LnisResu;
+                IsNuevo = false;
+            }
+        }catch(Exception e){
+            mensaje = e.Message;
         }
     }
 
     public async Task eleccionSinGespline(){
-        dataNove.Lnturno = listaTurnoYGrupo[0];
-        dataNove.Lngrupo = listaTurnoYGrupo[1];
-        dataNove.IdCtpm = 2;
-        IsNuevo = true;
-        if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
-            dataNove.IdParada = null;
-            dataNove.LntiePerMi = tiempoPerdido;
-            tiempoPerdido = 0;
-            mensaje = "";
-        }else{
-            mensaje = "Coloque un tiempo mayor a 0 y una cauda especifica";
+        try{
+            dataNove.Lnturno = listaTurnoYGrupo[0];
+            dataNove.Lngrupo = listaTurnoYGrupo[1];
+            dataNove.IdCtpm = 2;
+            IsNuevo = true;
+            if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
+                dataNove.IdParada = null;
+                dataNove.LntiePerMi = tiempoPerdido;
+                tiempoPerdido = 0;
+                mensaje = "";
+            }else{
+                mensaje = "Coloque un tiempo mayor a 0 y una cauda especifica";
+            }
+        }catch(Exception ex){
+            mensaje = ex.Message;
         }
     }
 

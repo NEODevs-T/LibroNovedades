@@ -37,6 +37,7 @@ namespace LibroNovedades.Models
         public virtual DbSet<Ksf> Ksfs { get; set; } = null!;
         public virtual DbSet<LibroNove> LibroNoves { get; set; } = null!;
         public virtual DbSet<LibroNovedadesConversion> LibroNovedadesConversions { get; set; } = null!;
+        public virtual DbSet<LibroNovedadesMolino> LibroNovedadesMolinos { get; set; } = null!;
         public virtual DbSet<LinAre> LinAres { get; set; } = null!;
         public virtual DbSet<LinPro> LinPros { get; set; } = null!;
         public virtual DbSet<Linea> Lineas { get; set; } = null!;
@@ -82,11 +83,11 @@ namespace LibroNovedades.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=AZTDTDB03\\DESARROLLO;Database=DbNeo;TrustServerCertificate=True;Persist Security Info=True;User ID=UsrEncuesta;Password=Enc2022**Ing");
-            }
+//             if (!optionsBuilder.IsConfigured)
+//             {
+// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//                 optionsBuilder.UseSqlServer("Server=AZTDTDB03\\DESARROLLO;Database=DbNeo;TrustServerCertificate=True;Persist Security Info=True;User ID=UsrEncuesta;Password=Enc2022**Ing");
+//             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -738,6 +739,54 @@ namespace LibroNovedades.Models
                 entity.HasNoKey();
 
                 entity.ToView("LibroNovedadesConversion");
+
+                entity.Property(e => e.Centro)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CodigoEquipo)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Codigo Equipo");
+
+                entity.Property(e => e.Discrepancia).IsUnicode(false);
+
+                entity.Property(e => e.FichaDelRegistrador)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("Ficha del Registrador");
+
+                entity.Property(e => e.Grupo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Linea)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Lnfecha)
+                    .HasColumnType("datetime")
+                    .HasColumnName("LNFecha");
+
+                entity.Property(e => e.Observacion).IsUnicode(false);
+
+                entity.Property(e => e.TiempoPerdido).HasColumnName("Tiempo Perdido");
+
+                entity.Property(e => e.TipoDeNovedad)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("Tipo de Novedad");
+
+                entity.Property(e => e.Turno)
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<LibroNovedadesMolino>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("LibroNovedadesMolino");
 
                 entity.Property(e => e.Centro)
                     .HasMaxLength(500)

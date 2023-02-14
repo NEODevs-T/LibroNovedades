@@ -21,6 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorStrap();
+
 builder.Services.AddHttpClient();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddControllersWithViews();
@@ -63,6 +64,7 @@ builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataTiParTP, gl
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataPizarra, global::LibroNovedades.Data.LibroNov.DataPizarra>();
 builder.Services.AddScoped<global::LibroNovedades.Logic.ILogicLibroNov, global::LibroNovedades.Logic.LogicLibroNov>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataClasifiTPM, global::LibroNovedades.Data.LibroNov.DataClasifiTPM>();
+builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataEquipoEAM, global::LibroNovedades.Data.LibroNov.DataEquipoEAM>();
 
 var app = builder.Build();
 

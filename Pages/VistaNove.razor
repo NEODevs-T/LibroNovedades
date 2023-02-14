@@ -87,10 +87,10 @@
                                     @if(isTPM){
                                         <BSTD>Estado</BSTD>
                                     }
-                                    <AuthorizeView Roles="Admin,AdminChempro,SupIntendente,SupIntenCorpinal">
+                                    @if(IsAccesoPizarra){
                                         
                                         <BSTD>Pizarra Unificada</BSTD>
-                                    </AuthorizeView>
+                                    }
                                 </BSTR>
                             </BSTHead>
                             <BSTBody class="cuerpoTabla">
@@ -118,14 +118,14 @@
                                                     }
                                             </BSTD>
                                         }
-                                        <AuthorizeView Roles="Admin,AdminChempro,SupIntendente,SupIntenCorpinal">
+                                        @if(IsAccesoPizarra){
                                             <BSTD>
                                                 <div Class="@BS.Form_Check_Inline">
                                                     <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
                                                     <BSLabel IsCheckLabel="true"></BSLabel>
                                                 </div>
                                             </BSTD>
-                                        </AuthorizeView>
+                                        }
                                         @* .Substring(0,5) *@
                                     </BSTR>
                                     @* <BSTR>
@@ -137,7 +137,9 @@
                         </BSTable>
                         <BSRow>
                             <BSCol Column="12">
-                                <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
+                                @if(IsAccesoPizarra){
+                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
+                                }
                                 @* <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=buscar IsReset="true" >Borrar</BSButton>  *@
                             </BSCol>
                         </BSRow>
@@ -189,6 +191,7 @@
     private BSModal refModal;
     private int idCentro { get; set;}
     private string? departamento { get; set;}
+    private string? cargo { get; set;}
     private List<Claim> claims { get; set; }
     protected async Task cerrar(){
         await refModal.HideAsync();
@@ -199,10 +202,11 @@
             usuarioCache = new Dictionary<string,string>();
             usuarioCache.Add("usuarioD",await sessionStorage.GetItemAsync<string>("usuarioD"));
             usuarioCache.Add("usuarioC",await sessionStorage.GetItemAsync<string>("usuarioC"));
+            usuarioCache.Add("usuarioF",await sessionStorage.GetItemAsync<string>("usuarioF"));
             if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
                 NavigationManager.NavigateTo("Login");
             }else{
-                if(usuarioCache["usuarioC"].Contains("SUPDTE") || usuarioCache["usuarioC"].Contains("GERENTE") || usuarioCache["usuarioC"].Contains("DIRECTOR") || usuarioCache["usuarioC"].Contains("SUPERINTENDENTE") || usuarioCache["usuarioD"].Contains("MEJORA CONTINUA") ||  usuarioCache["usuarioC"].Contains("MEJ. CONT") ||  usuarioCache["usuarioC"].Contains("JEFE DE TURNOS")){
+                if(usuarioCache["usuarioC"].Contains("SUPDTE") || usuarioCache["usuarioC"].Contains("GERENTE") || usuarioCache["usuarioC"].Contains("DIRECTOR") || usuarioCache["usuarioC"].Contains("SUPERINTENDENTE") || usuarioCache["usuarioD"].Contains("MEJORA CONTINUA") ||  usuarioCache["usuarioC"].Contains("MEJ. CONT") ||  usuarioCache["usuarioC"].Contains("JEFE DE TURNOS")  ||  usuarioCache["usuarioF"].Contains("J4779") ||  usuarioCache["usuarioF"].Contains("G4140")) {
                     IsAccesoPizarra = true;
                 }else{
                     IsAccesoPizarra = false;
@@ -250,11 +254,19 @@
         
         departamento = await LocalStorage.GetItemAsync<string>("usuarioD");
 
+        cargo = await LocalStorage.GetItemAsync<string>("usuarioC");
+
+        if(cargo.Contains("SUPDTE") || cargo.Contains("GERENTE") || cargo.Contains("DIRECTOR") || cargo.Contains("SUPERINTENDENTE") || cargo.Contains("MEJORA CONTINUA") ||  cargo.Contains("MEJ. CONT") || cargo.Contains("JEFE DE TURNOS")  ||  cargo.Contains("J4779") ||  cargo.Contains("G4140")) {
+            IsAccesoPizarra = true;
+        }else{
+            IsAccesoPizarra = false;
+        }
+
         if(departamento.Contains("CORPINAL")){
             idCentro = 11;
             isTPM = false;
         }else if(departamento.Contains("MEJORA CONTINUA")){
-            idCentro = 0;
+            idCentro = 0; 
         }else if(
             departamento.Contains("CONTROL DE PROCESOS") ||
             departamento.Contains("MANTENIMIENTO") ||

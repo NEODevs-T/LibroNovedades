@@ -188,4 +188,23 @@ using Microsoft.EntityFrameworkCore;
             return await _cotext.SaveChangesAsync() > 0;
         }
     }
+
+    public interface IDataEquipoEAM
+    {
+        Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea);
+    }
+
+    public class DataEquipoEAM : IDataEquipoEAM
+    {
+        private readonly DbNeoContext _cotext;
+
+        public DataEquipoEAM(DbNeoContext context)
+        {
+            this._cotext = context;
+        }
+
+        public async Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea){
+            return await _cotext.EquipoEams.Where(t => t.IdLinea == idLinea).ToListAsync();
+        }
+    }
 }

@@ -2,9 +2,11 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
+
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IDataAPI DataAPI
+
 
 <PageTitle>LibroNovedades</PageTitle>
 
@@ -32,57 +34,31 @@
                     @Body
                 </article>
             </main>
-        </Authorized>
+        </Authorized> 
 
         <NotAuthorized>
             <main>
-
                 <div class="text-center fondo">
                     <div class="form-signin w-25 m-auto loginform ">
                         <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
-                        
-                            @* <DataAnnotationsValidator /> *@
-                            @* <div class="form-floating"> *@
                                 <BSLabel IsHidden="true">User</BSLabel>
                                 <BSInput InputType="InputType.Text" placeholder="Ficha"
                                     @bind-Value="ficha" />
-                                @* <BSFeedback For="@(() => user.UserName)" ValidMessage="Correcto." /> *@
-                            @* </div> *@
                             <br>
-                            <BSButton @onclick=BuscarFicha Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge"
-                                IsSubmit> Iniciar</BSButton>
-                            <p class="mt-5 mb-3 text-muted">Neo 2022</p>
+                            <BSButton @onclick=BuscarFicha Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
                         
                     </div>
-                </div>
-
-                @* <article class="content px-4">
-                    <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-                        <BSCard CardType="CardType.Body">
-                            <BSCard CardType="CardType.Text">
-                                <BSRow>  
-                                    <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                            <BSLabel class="labelFormulario">Ficha</BSLabel>
-                                            <BSInput InputType="InputType.Text" rows="1" @bind-Value="ficha"></BSInput>                            
-                                            <br>
-                                            <BSButton class="buttonFormularioOK" @onclick=BuscarFicha>Seleccionar</BSButton>
-                                    </BSCol>
-                                </BSRow>
-                            </BSCard>
-                        </BSCard>
-                    </BSCard>
-                </article> *@
+                </div>              
             </main>
         </NotAuthorized>
 
-    </AuthorizeView>
+    </AuthorizeView> 
 
 </div>
 
 @code {
 
-    UserLoginDto user = new UserLoginDto();
     private string? mensaje { get; set;} = "Introdusca la ficha";
     private string? ficha { get; set;}
     private string identificacion {get; set;}
@@ -150,7 +126,7 @@
         }
     }
 
-    protected async Task HandleLogin(EditContext e)
+    @* protected async Task HandleLogin(EditContext e)
     {
         user.Proyecto = "LibroDeNovedades";
         if (e.Validate())
@@ -185,5 +161,5 @@
                 }
             }
         }
-    }
+    } *@
 }

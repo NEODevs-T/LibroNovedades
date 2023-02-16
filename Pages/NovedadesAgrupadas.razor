@@ -347,8 +347,6 @@
     private bool isManualGT { get; set;}
     private string identificacion { get; set;}
     private List<EquipoEam> listaEquiposEAM{ get; set;}
-
-
     private List<Claim> claims { get; set; }
 
     private List<Linea> listaLineas { get; set;}
@@ -369,9 +367,6 @@
         dataNove.LnisResu = 0;
         dataNove.IdCtpm = 2;
         dataNove.IdParada = "0";
-
-        //identificacion = await LocalStorage.GetItemAsync<string>("Identificacion");
-
         
         @* var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -397,8 +392,8 @@
             departamento.Contains("MANTENIMIENTO") ||
             departamento.Contains("GCIA SERVICIOS INDUSTRIALES") ||
             departamento.Contains("INGENIERO DE PROY. Y MEJ. CONT") ||
-            departamento.Contains("LABORATORIO") ||
-            departamento.Contains("SEGURIDAD INDUSTRIAL")
+            departamento.Contains("LABORATORIO") 
+            @* || departamento.Contains("SEGURIDAD INDUSTRIAL") *@
             ){
             dataNove.IdAreaCar = 9;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(9);
@@ -413,7 +408,19 @@
         }else if(departamento.Contains("MOLINO")){
             dataNove.IdAreaCar = 2;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(2);
-        }
+        @* }else if(departamento.Contains("CALIDAD")){
+            dataNove.IdAreaCar = 0;
+            isDisabledArea = false;
+            isDisabledLinea = false;
+            isManualGT = false;
+            dataNove.IdParada = "-1";
+         }else if(departamento.Contains("SEGURIDAD")){
+            dataNove.IdAreaCar = 0;
+            isDisabledArea = false;
+            isDisabledLinea = false;
+            isManualGT = false;
+            dataNove.IdParada = "-1"; *@
+        } 
         
         ListaCentro = await DataCentro.ObtenerTodosLosCentro();
         listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();

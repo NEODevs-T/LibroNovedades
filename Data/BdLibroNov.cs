@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
         Task<LibroNove>? ObtenerPorIdParada(string idParada);
         Task<bool> ActualizacionCompleta(int IdlibrNov,LibroNove data);
         Task<List<LibroNove>> ObtenerNovedadePorLinea(int IdLiena);
-        
     }
 
     public interface IDataPizarra
@@ -207,4 +206,24 @@ using Microsoft.EntityFrameworkCore;
             return await _cotext.EquipoEams.Where(t => t.IdLinea == idLinea).ToListAsync();
         }
     }
+
+    public interface IDataDivision
+    {
+        Task<List<Division>> ObtenerLasDiv(int idCentro);
+    }
+
+    public class DataDivision : IDataDivision
+    {
+        private readonly DbNeoContext _cotext;
+
+        public DataDivision(DbNeoContext context)
+        {
+            this._cotext = context;
+        }
+
+        public async Task<List<Division>> ObtenerLasDiv(int idCentro){
+            return await _cotext.Divisions.Where(d => d.IdCentro == idCentro).ToListAsync();
+        }
+    }
+
 }

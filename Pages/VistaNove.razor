@@ -295,36 +295,43 @@
         temporal = new BdDiv1();
 
         IsCargado = true;
-        @* await this.Carga(); *@
     }
 
     protected async Task buscar(){
-        listaNovedades = null;
-        if(IsChempro){
-            string cod = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
-            if (usuarioCache["usuarioC"].Contains("SUPERINTENDENTE DE PRODUCCION") || usuarioCache["usuarioC"].Contains("INGENIERO DE PROY. Y MEJ. CONT"))
-            {
-                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
+        try{
+            listaNovedades = null;
+            if(IsChempro){
+                string cod = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
+                if (usuarioCache["usuarioC"].Contains("SUPERINTENDENTE DE PRODUCCION") || usuarioCache["usuarioC"].Contains("INGENIERO DE PROY. Y MEJ. CONT"))
+                {
+                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
+                }else{
+                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,cod);
+                }
             }else{
-                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,cod);
+                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
             }
-        }else{
-            listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
+        }catch(Exception e){
+            mensaje = e.Message;
         }
     }
 
     protected async Task Guardar(){
-        await refModal.ShowAsync();
-        band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);
-        if(band1){
-            band2 = await DataLibroNov.UpdateRegistros(listaNovedades);
-            if(band2){
-                mensaje = "Se realizo de manera exitosa";
+        try{
+            await refModal.ShowAsync();
+            band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);
+            if(band1){
+                band2 = await DataLibroNov.UpdateRegistros(listaNovedades);
+                if(band2){
+                    mensaje = "Se realizo de manera exitosa";
+                }else{
+                    mensaje = "Falla en la actualizacion de el libro de novedades, la data fue registrada en la pizarra unificada";
+                }
             }else{
-                mensaje = "Falla en la actualizacion de el libro de novedades, la data fue registrada en la pizarra unificada";
+                mensaje = "Falla de inserción en la pizarra unificada";
             }
-        }else{
-            mensaje = "Falla de inserción en la pizarra unificada";
+        }catch(Exception e){
+            mensaje = e.Message;
         }
         //bool a = await DataPizarra.InsertarRegistro(temporal);
     }

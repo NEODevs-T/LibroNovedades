@@ -1,8 +1,4 @@
 ﻿@page "/"
-@* @inject AuthenticationStateProvider AuthStateProvider *@
-@* @inject ILocalStorageService LocalStorage *@
-@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
-@inject NavigationManager NavigationManager
 
 <PageTitle>Index</PageTitle>
     <section id="cajaPadre">
@@ -22,20 +18,3 @@
             <BSImage Source="img/Neo.png" />
         </section>
     </section>
-
-@code{
-
-    private Dictionary<string,string?>? usuarioCache {get; set;}
-    protected  async Task Carga()
-    {
-            @* usuarioCache = new Dictionary<string,string>();
-            usuarioCache.Add("usuarioD",await sessionStorage.GetItemAsync<string>("usuarioD"));
-            if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
-                NavigationManager.NavigateTo("Login");
-            } *@
-    }
-    protected override async Task  OnInitializedAsync()
-    {
-        await this.Carga();
-    }
-}

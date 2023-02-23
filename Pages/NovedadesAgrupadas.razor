@@ -7,6 +7,8 @@
 @inject IDataTiParTP DataTiParTP;
 @inject IDataClasifiTPM DataClasifiTPM;
 @inject IDataEquipoEAM DataEquipoEAM;
+@inject IDataDivision DataDivision;
+
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorage
@@ -301,7 +303,7 @@
     private string? mensaje { get; set;}
     private string? departamento { get; set;}
     private LibroNove dataNove  { get; set;}
-
+    private int idCentro  { get; set;} = 0;
     private Dictionary<string,string> usuario { get; set;}
     private TiParTp tipoParada  { get; set;}
     private List<Centro> ListaCentro { get; set;}
@@ -350,6 +352,8 @@
     private List<Claim> claims { get; set; }
 
     private List<Linea> listaLineas { get; set;}
+
+    private List<Division> listaDivisiones { get; set;}
     
     protected override async Task  OnInitializedAsync()
     {
@@ -447,7 +451,7 @@
                 dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
                 dataNove.LntiePerMi = Math.Round(dataNove.LntiePerMi,5);
                 dataNove.Lndiscrepa =  dataNove.Lndiscrepa.ToUpper();
-                dataNove.Lnobserv =  dataNove.Lndiscrepa.ToLower();
+                dataNove.Lnobserv =  dataNove.Lnobserv.ToLower();
                 try
                 {
                     if(IsChempro){
@@ -510,6 +514,19 @@
         isDisabled = false;
         _showTooltip = true;
     }
+
+    @* protected async Task BuscarDivision(ChangeEventArgs e){
+        try{
+            dataNove.IdAreaCar = Int32.Parse(e.Value.ToString());
+            if(dataNove.IdAreaCar != 0){
+                Division = await DataDivision.ObtenerLasDiv(dataNove.IdAreaCar);
+            }else{
+                dataNove.IdLinea = 0;
+            }
+        }catch(Exception ex){
+            mensaje = ex.Message;
+        }
+    } *@
 
     protected async Task BuscarLinea(ChangeEventArgs e){
         try{

@@ -65,6 +65,8 @@ builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataPizarra, gl
 builder.Services.AddScoped<global::LibroNovedades.Logic.ILogicLibroNov, global::LibroNovedades.Logic.LogicLibroNov>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataClasifiTPM, global::LibroNovedades.Data.LibroNov.DataClasifiTPM>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataEquipoEAM, global::LibroNovedades.Data.LibroNov.DataEquipoEAM>();
+builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataDivision, global::LibroNovedades.Data.LibroNov.DataDivision>();
+
 
 var app = builder.Build();
 

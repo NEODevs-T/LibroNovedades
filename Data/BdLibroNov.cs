@@ -209,7 +209,7 @@ using Microsoft.EntityFrameworkCore;
 
     public interface IDataDivision
     {
-        Task<List<Division>> ObtenerLasDiv(int idCentro);
+        Task<List<Division>> ObtenerLasDivPorCentro(int idCentro);
     }
 
     public class DataDivision : IDataDivision
@@ -221,7 +221,7 @@ using Microsoft.EntityFrameworkCore;
             this._cotext = context;
         }
 
-        public async Task<List<Division>> ObtenerLasDiv(int idCentro){
+        public async Task<List<Division>> ObtenerLasDivPorCentro(int idCentro){
             return await _cotext.Divisions.Where(d => d.IdCentro == idCentro).ToListAsync();
         }
     }

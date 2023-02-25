@@ -13,7 +13,6 @@ namespace LibroNovedades.Models
             AudCas = new HashSet<AudCa>();
             ParAres = new HashSet<ParAre>();
             ParsiOees = new HashSet<ParsiOee>();
-            TieParTps = new HashSet<TieParTp>();
         }
 
         /// <summary>
@@ -35,6 +34,5 @@ namespace LibroNovedades.Models
         public virtual ICollection<AudCa> AudCas { get; set; }
         public virtual ICollection<ParAre> ParAres { get; set; }
         public virtual ICollection<ParsiOee> ParsiOees { get; set; }
-        public virtual ICollection<TieParTp> TieParTps { get; set; }
     }
 }

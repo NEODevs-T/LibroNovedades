@@ -32,9 +32,9 @@ namespace LibroNovedades.Models
         /// duracion de la parada
         /// </summary>
         public double? Teduracion { get; set; }
-        public int? IdCaLinAre { get; set; }
+        public int? IdAreAfect { get; set; }
 
-        public virtual LinAre? IdCaLinAreNavigation { get; set; }
+        public virtual AreAfect? IdAreAfectNavigation { get; set; }
         public virtual ParaTp IdParaTpNavigation { get; set; } = null!;
         public virtual ParsiOee IdParsiOeeNavigation { get; set; } = null!;
     }

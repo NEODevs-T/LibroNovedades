@@ -1,5 +1,26 @@
-@page "/Login"
-@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@page "/login"
+
+<PageTitle>Index</PageTitle>
+    <section id="cajaPadre">
+        <section id="cajaContenido">
+            <div id="cajaLogo">
+                <BSImage id="logoindex" Source="img/LogoGris.png" />
+            </div>
+            <div id="cajaInformacion">
+                <p id="tituloInfo">Información</p>
+                <ul id="Info">
+                    <li>Pestaña Formato: Posee el formulario para el registro de novedades a lo largo del turno.</li>
+                    <li>Pestaña Histórico: Histórico de las novedades cargadas en el sistema a lo largo del tiempo.</li>
+                </ul>
+            </div>
+        </section>
+        <section id="cajaImg">
+            <BSImage Source="img/Neo.png" />
+        </section>
+    </section>
+
+
+@* @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager;
 @inject IDataAPI DataAPI
 
@@ -39,11 +60,10 @@
 @code {
 
     private string? name { get; set;}
-
-    private string? mensaje { get; set;}
     private string? ficha { get; set;}
     private bool IsCargado  { get; set;}
     private Dictionary<string,string>? usuario { get; set;}
+    private string? mensaje { get; set;}
     
     protected override async Task  OnInitializedAsync()
     {
@@ -71,4 +91,4 @@
         }
         IsCargado = true;
     }
-}
+} *@

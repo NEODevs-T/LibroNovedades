@@ -13,12 +13,11 @@ using Microsoft.EntityFrameworkCore;
         Task<LibroNove>? ObtenerPorIdParada(string idParada);
         Task<bool> ActualizacionCompleta(int IdlibrNov,LibroNove data);
         Task<List<LibroNove>> ObtenerNovedadePorLinea(int IdLiena);
-        
     }
 
     public interface IDataPizarra
     {
-        Task<bool> InsertarRegistros(List<ReunionDium> reunionDia);
+        Task<bool> InsertarRegistros(List<ReuDium> reunionDia);
     }
 
     public interface IDataClasifiTPM
@@ -180,12 +179,51 @@ using Microsoft.EntityFrameworkCore;
         {
             this._cotext = context;
         }
-        public async Task<bool> InsertarRegistros(List<ReunionDium> reunionDia){
+        public async Task<bool> InsertarRegistros(List<ReuDium> reunionDia){
             foreach (var item in reunionDia)
             {
-                this._cotext.ReunionDia.Add(item);
+                this._cotext.ReuDia.Add(item);
             }
             return await _cotext.SaveChangesAsync() > 0;
         }
     }
+
+    public interface IDataEquipoEAM
+    {
+        Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea);
+    }
+
+    public class DataEquipoEAM : IDataEquipoEAM
+    {
+        private readonly DbNeoContext _cotext;
+
+        public DataEquipoEAM(DbNeoContext context)
+        {
+            this._cotext = context;
+        }
+
+        public async Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea){
+            return await _cotext.EquipoEams.Where(t => t.IdLinea == idLinea).ToListAsync();
+        }
+    }
+
+    public interface IDataDivision
+    {
+        Task<List<Division>> ObtenerLasDivPorCentro(int idCentro);
+    }
+
+    public class DataDivision : IDataDivision
+    {
+        private readonly DbNeoContext _cotext;
+
+        public DataDivision(DbNeoContext context)
+        {
+            this._cotext = context;
+        }
+
+        public async Task<List<Division>> ObtenerLasDivPorCentro(int idCentro){
+            return await _cotext.Divisions.Where(d => d.IdCentro == idCentro).ToListAsync();
+        }
+    }
+
 }

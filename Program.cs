@@ -1,12 +1,19 @@
 using System.Text.Json;
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components.Authorization;
+
 using BlazorStrap;
 using Blazored.SessionStorage;
+using Blazored.LocalStorage;
+
 using LibroNovedades.Data;
 using LibroNovedades.Models;
 using LibroNovedades.ModelsDocIng;
-using Microsoft.EntityFrameworkCore;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +21,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorStrap();
+
+builder.Services.AddHttpClient();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddControllersWithViews();
+builder.Services.AddAuthorizationCore();
+
 
 builder.Services.AddBlazoredSessionStorage(config =>
 {
@@ -39,6 +52,8 @@ builder.Services.AddDbContext<DOC_IngIContext>( options =>
 // builder.Services.AddDbContext<DOC_IngIContext>(options =>
 //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
+builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider,global:: LibroNovedades.Service.Autenticacion.CustomAuthStateProvider>();
+
 
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataCentro, global::LibroNovedades.Data.Global.DataCentro>();
@@ -49,6 +64,9 @@ builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataTiParTP, gl
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataPizarra, global::LibroNovedades.Data.LibroNov.DataPizarra>();
 builder.Services.AddScoped<global::LibroNovedades.Logic.ILogicLibroNov, global::LibroNovedades.Logic.LogicLibroNov>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataClasifiTPM, global::LibroNovedades.Data.LibroNov.DataClasifiTPM>();
+builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataEquipoEAM, global::LibroNovedades.Data.LibroNov.DataEquipoEAM>();
+builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataDivision, global::LibroNovedades.Data.LibroNov.DataDivision>();
+
 
 var app = builder.Build();
 

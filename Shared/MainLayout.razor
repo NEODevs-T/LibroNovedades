@@ -1,33 +1,166 @@
 ﻿@inherits LayoutComponentBase
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
+
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IDataAPI DataAPI
+
 
 <PageTitle>LibroNovedades</PageTitle>
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <BSButton Color="BSColor.Success" IsOutlined="true"  @onclick="logout">Logout</BSButton>
-        </div>
+    <AuthorizeView>
+        <Authorized>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+
+            <main>
+                <div class="top-row px-4 cabeza">
+                    <h5 style="text-align: start;">
+                    @if (nombre != "")
+                    {
+                        @nombre
+                    }
+                    </h5>
+                    <BSButton Color="BSColor.Success" IsOutlined="true" @onclick="logout">Logout</BSButton>
+                </div>
+
+                <article class="content px-4">
+                    @Body
+                </article>
+            </main>
+        </Authorized> 
+
+        <NotAuthorized>
+            <main>
+                <div class="text-center fondo">
+                    <div class="form-signin w-25 m-auto loginform ">
+                        <img class="mb-4" id="logoLogin" src="./img/Neo.png">
+                        <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
+                                <BSLabel IsHidden="true">User</BSLabel>
+                                <BSInput InputType="InputType.Text" placeholder="Ficha"
+                                    @bind-Value="ficha" />
+                            <br>
+                            <BSButton @onclick=BuscarFicha Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
+                        
+                    </div>
+                </div>              
+            </main>
+        </NotAuthorized>
+
+    </AuthorizeView> 
+
 </div>
 
-@code{
+@code {
+
+    private string? mensaje { get; set;} = "Introdusca la ficha";
+    private string? ficha { get; set;}
+    private string identificacion {get; set;}
+    private string nombre {get; set;} = "";
+    private string nombreU {get; set;} = "";
+    private Dictionary<string,string>? usuario { get; set;}
+
+
 
     protected async Task logout(){
-        await sessionStorage.SetItemAsync("usuarioD", "");
-        await sessionStorage.SetItemAsync("usuarioA", "");
-        await sessionStorage.SetItemAsync("usuarioN", "");
-        await sessionStorage.SetItemAsync("usuarioC", "");
-        await sessionStorage.SetItemAsync("usuarioF", "");
-        NavigationManager.NavigateTo("Login");
+        await LocalStorage.RemoveItemAsync("LibroDeNovedades");
+        await LocalStorage.RemoveItemAsync("usuarioA");
+        await LocalStorage.RemoveItemAsync("usuarioN");
+        await LocalStorage.RemoveItemAsync("usuarioC");
+        await LocalStorage.RemoveItemAsync("usuarioF");
+        await LocalStorage.RemoveItemAsync("usuarioD");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        nombre = "";
+        //NavigationManager.NavigateTo("Login");
     }
+
+    protected async Task BuscarFicha(){
+        usuario = await DataAPI.obtenerUsuario(ficha);
+        
+        if(usuario["departamento"] == null){
+            mensaje = "Ficha no encontrada";
+        }else{
+            //await sessionStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
+            //await sessionStorage.SetItemAsync("usuarioN", usuario["nombre"]);
+            if(ficha.ToUpper() == "J4656" || ficha.ToUpper() == "J4779"){
+                await LocalStorage.SetItemAsync("usuarioD", "CONVERSION");
+            }else{
+                await LocalStorage.SetItemAsync("usuarioD", usuario["departamento"]);
+            }
+            nombre = "Bienvenido: " + usuario["nombre"] + " " + usuario["apellido"];
+            await LocalStorage.SetItemAsync("usuarioN",  usuario["nombre"]);
+            await LocalStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
+            await LocalStorage.SetItemAsync("usuarioC",  usuario["cargo"]);
+            await LocalStorage.SetItemAsync("usuarioF",  ficha);
+            mensaje = "Login Exitoso";
+            var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+            if (ValidarToken != null)
+            {
+                if (ValidarToken == "NotFoundUser")
+                {
+
+                }
+                else if (ValidarToken == "WrongPassword")
+                {
+
+                }
+                else if (ValidarToken == "null")
+                {
+
+                }
+                else
+                {
+                    //mensaje = "Accediendo...";
+                    //Console.WriteLine(ValidarToken);
+                    await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
+                    await AuthStateProvider.GetAuthenticationStateAsync();
+                    NavigationManager.NavigateTo("");
+                    ficha = "";
+                }
+            }
+        }
+    }
+
+    @* protected async Task HandleLogin(EditContext e)
+    {
+        user.Proyecto = "LibroDeNovedades";
+        if (e.Validate())
+        {
+            var result = await Http.PostAsJsonAsync("http://operaciones.papeleslatinos.com/Authentication/api/Auth/Login", user);
+            var ValidarToken = await result.Content.ReadAsStringAsync();
+            
+            //var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+            if (ValidarToken != null)
+            {
+                if (ValidarToken == "NotFoundUser")
+                {
+
+                }
+                else if (ValidarToken == "WrongPassword")
+                {
+
+                }
+                else if (ValidarToken == "null")
+                {
+
+                }
+                else
+                {
+                    //mensaje = "Accediendo...";
+                    //Console.WriteLine(ValidarToken);
+                    await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
+                    await AuthStateProvider.GetAuthenticationStateAsync();    
+                    await LocalStorage.SetItemAsync("Identificacion", identificacion);
+                    //user = new UserLoginDto();
+                    NavigationManager.NavigateTo("");
+                }
+            }
+        }
+    } *@
 }

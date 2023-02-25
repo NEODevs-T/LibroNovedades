@@ -7,7 +7,7 @@ namespace LibroNovedades.Models
     {
         public AreaTra()
         {
-            Personals = new HashSet<Personal>();
+            Puestos = new HashSet<Puesto>();
         }
 
         public int IdAreaTra { get; set; }
@@ -18,6 +18,6 @@ namespace LibroNovedades.Models
         public bool? Atestado { get; set; }
 
         public virtual Plantum? IdPlantaNavigation { get; set; }
-        public virtual ICollection<Personal> Personals { get; set; }
+        public virtual ICollection<Puesto> Puestos { get; set; }
     }
 }

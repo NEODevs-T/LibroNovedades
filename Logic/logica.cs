@@ -6,7 +6,8 @@ using Newtonsoft.Json;
 using LibroNovedades.Models;
 using LibroNovedades.ModelsDocIng;
 using LibroNovedades.Data.LibroNov;
- 
+
+
 
 namespace LibroNovedades.Logic{
     public interface ILogicLibroNov
@@ -18,14 +19,13 @@ namespace LibroNovedades.Logic{
     {
 
         public async Task<bool> CambiosBDLibro(int idCentro,List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad){
-            var builder = WebApplication.CreateBuilder();
             DbNeoContext contex = new DbNeoContext();
-            DOC_IngIContext contexIng = new DOC_IngIContext();
             IDataLibroNov dataLibroNov = new DataLibroNov(contex);
             IDataPizarra dataPizarra = new DataPizarra(contex);
             LibroNove? temporal;
             ReunionDium registro = new ReunionDium();
-            List<ReunionDium> listaPizarra = new List<ReunionDium>(listaNovedades.Count);
+            ReuDium registroNuevo = new ReuDium();
+            List<ReuDium> listaPizarra = new List<ReuDium>(listaNovedades.Count);
             List<LibroNove> listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
 
             foreach (var item in listaNovedades)
@@ -47,24 +47,24 @@ namespace LibroNovedades.Logic{
                         //     registro.Div = "PD&CL";
                         // }
                         if(temporal.IdTipoNove == 8){
-                            registro.AfectadoKsf = "Calidad";
+                            registroNuevo.Idksf = 3;
                         }else if(temporal.IdTipoNove == 13){
-                            registro.AfectadoKsf = "Seguridad";
+                            registroNuevo.Idksf = 5;
                         }else{
-                            registro.AfectadoKsf = "Producción";
+                            registroNuevo.Idksf = 1;
                         }
-                        registro.Div = temporal.IdLineaNavigation.IdCentroNavigation.Cnom;
-                        registro.Division = temporal.IdLineaNavigation.IdDivisionNavigation.Dnombre;
-                        registro.Area = temporal.IdLineaNavigation.Lnom;
-                        registro.CodigoEquipo = temporal.IdEquipo;
-                        registro.Discrepancia = temporal.Lndiscrepa;
-                        registro.Fecha = temporal.Lnfecha.AddDays(1);   
-                        registro.FechaTrab = temporal.Lnfecha.AddDays(1);   
-                        registro.Fecha2 = temporal.Lnfecha.AddDays(1).ToString("yyyyMMdd");
-                        registro.Status = "Pendiente";
-                        registro.Responsable = "Por Definir";
-                        listaPizarra.Add(registro);
-                        registro = new ReunionDium();
+                        registroNuevo.Rdcentro = temporal.IdLineaNavigation.IdCentroNavigation.Cnom;
+                        registroNuevo.Rddiv = temporal.IdLineaNavigation.IdDivisionNavigation.Dnombre;
+                        registroNuevo.Rdarea = temporal.IdLineaNavigation.Lnom;
+                        registroNuevo.RdcodEq = temporal.IdEquipo;
+                        registroNuevo.Rddisc = temporal.Lndiscrepa;
+                        registroNuevo.RdfecReu = temporal.Lnfecha;   
+                        registroNuevo.RdfecTra = temporal.Lnfecha;
+                        registroNuevo.Rdstatus = "Pendiente";
+                        registroNuevo.IdResReu =  11;
+                        registroNuevo.IdPais = 1;
+                        listaPizarra.Add(registroNuevo);
+                        registroNuevo = new ReuDium();
                     }
                 }else{
                     continue;

@@ -10,6 +10,7 @@ namespace LibroNovedades.Models
     {
         public RspnsblP()
         {
+            ProResps = new HashSet<ProResp>();
             Proyectos = new HashSet<Proyecto>();
         }
 
@@ -27,6 +28,7 @@ namespace LibroNovedades.Models
         public bool Rpestatus { get; set; }
         public string Rpusuario { get; set; } = null!;
 
+        public virtual ICollection<ProResp> ProResps { get; set; }
         public virtual ICollection<Proyecto> Proyectos { get; set; }
     }
 }

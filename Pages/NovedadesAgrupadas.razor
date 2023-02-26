@@ -418,9 +418,13 @@
             isDisabledLinea = false;
             dataNove.IdParada = "-1";
         }
-        
         ListaCentro = await DataCentro.ObtenerTodosLosCentro();
-        listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
+        //TODO: Cambiar
+        @* //? listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo(); *@
+        listaTurnoYGrupo = new List<string>();
+        listaTurnoYGrupo.Add("1");
+        listaTurnoYGrupo.Add("A");
+
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
         listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
 
@@ -453,6 +457,9 @@
                         dataNove.IdParada = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
                     }
                     if(IsNuevo){
+                        //TODO: Cambiar
+                        @* //! Quitar *@
+                        dataNove.IdlibrNov = 1;
                         bandera = await DataLibroNov.InsertarRegistro(dataNove);
                     }else{
                         bandera = await  DataLibroNov.ActualizacionCompleta(dataNove.IdlibrNov,dataNove);

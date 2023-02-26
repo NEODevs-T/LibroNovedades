@@ -317,6 +317,7 @@
     }
 
     protected async Task Guardar(){
+        isDisabled = true;
         try{
             await refModal.ShowAsync();
             band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);
@@ -333,6 +334,7 @@
         }catch(Exception e){
             mensaje = e.Message;
         }
+        isDisabled = false;
         //bool a = await DataPizarra.InsertarRegistro(temporal);
     }
 

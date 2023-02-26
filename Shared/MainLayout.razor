@@ -7,6 +7,10 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IDataAPI DataAPI
 
+@inject IDataUser DataUser
+@inject IDataNivel DataNivel
+@inject IDataProyectoUsr DataProyectoUsr
+
 
 <PageTitle>LibroNovedades</PageTitle>
 
@@ -40,13 +44,16 @@
             <main>
                 <div class="text-center fondo">
                     <div class="form-signin w-25 m-auto loginform ">
+                        <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo">
+                            <h5>@mensaje</h5>
+                        </BSAlert> 
                         <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
                                 <BSLabel IsHidden="true">User</BSLabel>
                                 <BSInput InputType="InputType.Text" placeholder="Ficha"
                                     @bind-Value="ficha" />
                             <br>
-                            <BSButton @onclick=BuscarFicha Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
+                            <BSButton IsDisabled="@isDisabled" @onclick=BuscarFicha Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
                         
                     </div>
                 </div>              
@@ -60,11 +67,20 @@
 @code {
 
     private string? mensaje { get; set;} = "Introdusca la ficha";
-    private string? ficha { get; set;}
-    private string identificacion {get; set;}
+    private string? ficha { get; set;} = "";
     private string nombre {get; set;} = "";
     private string nombreU {get; set;} = "";
     private Dictionary<string,string>? usuario { get; set;}
+    private bool isDisabled  { get; set;} = false;
+
+    private string usu {get; set;} = "";
+
+
+    private string username {get; set;} = "";
+    private string password {get; set;} = "";
+    private Usuario? ObjUsuario {get; set;} 
+    private ProyectoUsr? proyecto {get; set;} 
+    private List<Nivel>? nivelUsuario {get; set;} 
 
 
 
@@ -77,54 +93,60 @@
         await LocalStorage.RemoveItemAsync("usuarioD");
         await AuthStateProvider.GetAuthenticationStateAsync();
         nombre = "";
-        //NavigationManager.NavigateTo("Login");
     }
 
+    protected async Task Login(){
+        
+        if (username != "" && password != ""){
+            ObjUsuario = await DataUser.ObtenerUsuario(username, password);
+            if (ObjUsuario != null) {
+                proyecto = await DataProyectoUsr.ObtenerProyectoSegunNombre("LibroNovedades");
+                if(proyecto != null) {
+                    nivelUsuario = await DataNivel.ObtenerNivelesDelUsuarioSegunProyecto(ObjUsuario,proyecto);
+                }else{
+                    mensaje = "Esta aplicacion se encuenta desactivada. Por favor espere o comuniquece con mejora continua";
+                }
+            }else{
+                mensaje = "El usurio o contraseña no coinciden. Por favor verificar los datos o comuniquece con mejora continua";
+            }
+        }else{
+            mensaje = "Coloque un Usuario y contraseña valida";
+        }
+    }
+
+
     protected async Task BuscarFicha(){
-        usuario = await DataAPI.obtenerUsuario(ficha);
+        isDisabled = true;
+        mensaje = "Cargando...";
+
+        //TODO: Cambiar
+        ////? usuario = await DataAPI.obtenerUsuario(ficha);
+        usuario = new Dictionary<string,string>();
+        usuario.Add("nombre","Gabriel");
+        usuario.Add("apellido","Arcila");
+        usuario.Add("cargo","Ingeniero");
+        usuario.Add("departamento","SEGURIDAD");
         
         if(usuario["departamento"] == null){
             mensaje = "Ficha no encontrada";
         }else{
-            //await sessionStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
-            //await sessionStorage.SetItemAsync("usuarioN", usuario["nombre"]);
             if(ficha.ToUpper() == "J4656" || ficha.ToUpper() == "J4779"){
                 await LocalStorage.SetItemAsync("usuarioD", "CONVERSION");
             }else{
                 await LocalStorage.SetItemAsync("usuarioD", usuario["departamento"]);
             }
             nombre = "Bienvenido: " + usuario["nombre"] + " " + usuario["apellido"];
+            await LocalStorage.SetItemAsync("usuarioF",  ficha);
             await LocalStorage.SetItemAsync("usuarioN",  usuario["nombre"]);
             await LocalStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
             await LocalStorage.SetItemAsync("usuarioC",  usuario["cargo"]);
-            await LocalStorage.SetItemAsync("usuarioF",  ficha);
             mensaje = "Login Exitoso";
             var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-            if (ValidarToken != null)
-            {
-                if (ValidarToken == "NotFoundUser")
-                {
-
-                }
-                else if (ValidarToken == "WrongPassword")
-                {
-
-                }
-                else if (ValidarToken == "null")
-                {
-
-                }
-                else
-                {
-                    //mensaje = "Accediendo...";
-                    //Console.WriteLine(ValidarToken);
-                    await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
-                    await AuthStateProvider.GetAuthenticationStateAsync();
-                    NavigationManager.NavigateTo("");
-                    ficha = "";
-                }
-            }
+            await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
+            await AuthStateProvider.GetAuthenticationStateAsync();
+            NavigationManager.NavigateTo(""); 
         }
+        isDisabled = false;
     }
 
     @* protected async Task HandleLogin(EditContext e)

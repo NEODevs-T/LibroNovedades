@@ -46,6 +46,8 @@ namespace LibroNovedades.Data.Global
                 return await _cotext.Lineas.Where(x => x.Lestado == true).ToListAsync();
             }else{
                 return await _cotext.Lineas.Where(x => x.IdCentro == idCentro && x.Lestado == true).ToListAsync();
+                //TODO: cambiar el return
+                //return await _cotext.Lineas.Include(l => l.IdDivisionNavigation).Where(l => l.IdDivisionNavigation.IdCentro == idCentro).ToListAsync();
             }
         }
         public async Task<List<Linea>> ObtenerTodasLasLineas(){

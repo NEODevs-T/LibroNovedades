@@ -318,6 +318,7 @@
 
     protected async Task Guardar(){
         isDisabled = true;
+
         try{
             await refModal.ShowAsync();
             band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);

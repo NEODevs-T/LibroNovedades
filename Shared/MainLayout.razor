@@ -47,6 +47,7 @@
                         <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo">
                             <h5>@mensaje</h5>
                         </BSAlert> 
+
                         <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
                                 <BSLabel IsHidden="true">User</BSLabel>
@@ -54,7 +55,6 @@
                                     @bind-Value="ficha" />
                             <br>
                             <BSButton IsDisabled="@isDisabled" @onclick=BuscarFicha Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
-                        
                     </div>
                 </div>              
             </main>
@@ -72,15 +72,14 @@
     private string nombreU {get; set;} = "";
     private Dictionary<string,string>? usuario { get; set;}
     private bool isDisabled  { get; set;} = false;
-
     private string usu {get; set;} = "";
-
 
     private string username {get; set;} = "";
     private string password {get; set;} = "";
     private Usuario? ObjUsuario {get; set;} 
     private ProyectoUsr? proyecto {get; set;} 
     private List<Nivel>? nivelUsuario {get; set;} 
+
 
 
 
@@ -93,6 +92,7 @@
         await LocalStorage.RemoveItemAsync("usuarioD");
         await AuthStateProvider.GetAuthenticationStateAsync();
         nombre = "";
+
     }
 
     protected async Task Login(){
@@ -130,6 +130,7 @@
         if(usuario["departamento"] == null){
             mensaje = "Ficha no encontrada";
         }else{
+
             if(ficha.ToUpper() == "J4656" || ficha.ToUpper() == "J4779"){
                 await LocalStorage.SetItemAsync("usuarioD", "CONVERSION");
             }else{

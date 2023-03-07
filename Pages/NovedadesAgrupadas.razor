@@ -19,7 +19,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Formato</PageTitle>
-@* //TODO: 
+@* //TODO:
 •   cargado mejor de la busqueda
 *@
 
@@ -35,9 +35,9 @@
         </BSAlert>
         <BSCard CardType="CardType.Body">
                 <BSCard CardType="CardType.Text">
-                    @if(dataNove.IdParada == "0"  || dataNove.IdParada == "-1"){
+                    @if(dataNove.IdParada == "0"){
                         <BSRow> 
-                            @if(dataNove.IdParada == "-1"){
+                            @if(isAccesoCentro){
                                 <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Centro</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarLinea">
@@ -214,34 +214,27 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="5">
                                     <BSLabel class="labelFormularioGrande">Codigo de Equipo</BSLabel>
-                                    @if(idCentro != 1){
-                                        <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdEquipo"></BSInput>
-                                        <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
-                                    }else{
-                                        <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdEquipo">
-                                            <option value="0">Seleccione</option>
-                                            @if(listaEquiposEAM != null){
-                                                @foreach (var item in listaEquiposEAM)
-                                                {
-                                                    <option value="@item.EcodEquiEam">@item.EcodEquiEam - @item.EnombreEam</option>
-                                                }
-                                            }else{
-                                                <option value="0">Cargando...</option>
+                                    <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdEquipo">
+                                        <option value="0">Seleccione</option>
+                                        @if(listaEquiposEAM != null){
+                                            @foreach (var item in listaEquiposEAM)
+                                            {
+                                                <option value="@item.EcodEquiEam">@item.EcodEquiEam - @item.EnombreEam</option>
                                             }
-                                        </BSInput>
-                                    }
+                                        }else{
+                                            <option value="0">Cargando...</option>
+                                        }
+                                    </BSInput>
+                                    <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
                             </BSCol>
                             <BSCol Position="Position.Relative" style="display: flex;justify-content: center;align-items: end;" Place ColumnMedium="3">
-                                        @if(IsChempro){
-                                            <BSButton class="buttonFormularioOK" @onclick=IdMaquina>Cargar al EDIF</BSButton>
-                                        }else{
-                                            <BSButton class="buttonFormularioOK" @onclick=IdMaquina>Cargar al OFIC</BSButton>
-                                        }
-                            </BSCol>
+                                    <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdEquipo"></BSInput>
+                                    <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
+                            </BSCol> 
                             @if(isTPM){
                                 <BSCol Position="Position.Relative" Place ColumnMedium="5">
                                     <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
-                                    <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
+                                    <BSInput IsDisabled="@isManualCTPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
                                         @if(listaClasificacionTPM != null){
                                             <option value="0">Seleccione</option>
                                             @foreach (var item in listaClasificacionTPM)
@@ -354,10 +347,16 @@
 
     private List<Division> listaDivisiones { get; set;}
     
+    private bool isManualCTPM {get;set;}
+
+    private bool isAccesoCentro {get;set;}
+    
     protected override async Task  OnInitializedAsync()
     {
         IsChempro = false;
         isManualGT = true;
+        isManualCTPM = false;
+        isAccesoCentro = false;
         IsCargado = false;
         isDisabledArea = true;
         isDisabledLinea = true;
@@ -376,6 +375,7 @@
 
         if(departamento.Contains("CORPINAL")){
             dataNove.IdAreaCar = 1;
+            idCentro = 11;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(11);
             dataNove.IdCtpm = 5;
             dataNove.LnisResu = 2;
@@ -385,16 +385,17 @@
             isDisabledArea = false;
             isDisabledLinea = false;
             isManualGT = false;
-            dataNove.IdParada = "-1";
+            isAccesoCentro = true;
         }else if( 
-            departamento.Contains("CONTROL DE PROCESOS") ||
-            departamento.Contains("MANTENIMIENTO") ||
-            departamento.Contains("GCIA SERVICIOS INDUSTRIALES") ||
-            departamento.Contains("INGENIERO DE PROY. Y MEJ. CONT") 
+            departamento.Contains("CONTROL DE PROCESOS")
+            @* departamento.Contains("MANTENIMIENTO") || *@
+            @* departamento.Contains("GCIA SERVICIOS INDUSTRIALES") || *@
+            @* departamento.Contains("INGENIERO DE PROY. Y MEJ. CONT")  *@
             @* || departamento.Contains("LABORATORIO")  *@
             @* || departamento.Contains("SEGURIDAD INDUSTRIAL") *@
             ){
             dataNove.IdAreaCar = 1;
+            idCentro = 9;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(9);
             IsChempro = true;
             isManualGT = false;
@@ -403,28 +404,35 @@
             isTPM = false;
         }else if(departamento.Contains("CONVERSION")){
             dataNove.IdAreaCar = 1;
+            idCentro = 1;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(1);
         }else if(departamento.Contains("MOLINO")){
             dataNove.IdAreaCar = 1;
+            idCentro = 2;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(2);
         }else if(departamento.Contains("CALIDAD")){
             dataNove.IdAreaCar = 2;
             isDisabledArea = false;
             isDisabledLinea = false;
-            dataNove.IdParada = "-1";
-         }else if(departamento.Contains("SEGURIDAD")){
+            isManualCTPM = true;
+            dataNove.IdCtpm = 4;
+            isAccesoCentro = true;
+        }
+        @* else if(departamento.Contains("SEGURIDAD")){
             dataNove.IdAreaCar = 3;
             isDisabledArea = false;
             isDisabledLinea = false;
-            dataNove.IdParada = "-1";
+            isManualCTPM = true;
+            dataNove.IdCtpm = 1;
+            isAccesoCentro = true;   
+        } *@
+        else{
+            mensaje = "No tiene acceso";
         }
         
         ListaCentro = await DataCentro.ObtenerTodosLosCentro();
-        //TODO: Cambiar
-        @* //? listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo(); *@
-        listaTurnoYGrupo = new List<string>();
-        listaTurnoYGrupo.Add("1");
-        listaTurnoYGrupo.Add("A");
+
+        listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
 
         listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
         listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
@@ -458,9 +466,6 @@
                         dataNove.IdParada = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
                     }
                     if(IsNuevo){
-                        //TODO: Cambiar
-                        @* //! Quitar *@
-                        dataNove.IdlibrNov = 1;
                         bandera = await DataLibroNov.InsertarRegistro(dataNove);
                     }else{
                         bandera = await  DataLibroNov.ActualizacionCompleta(dataNove.IdlibrNov,dataNove);
@@ -484,6 +489,7 @@
                             dataNove.IdCtpm = 5;
                             dataNove.LnisResu = 2;
                         }
+                        dataNove.LnisResu = 0;
                         dataNove.IdAreaCar = d1;
                         dataNove.IdLinea = d2;
                         dataNove.LnfichaRes = d4;
@@ -498,7 +504,7 @@
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
                 {
-                    mensaje = "Ese elemento ya fue registrado. Por favor seleccione otra causa";
+                    mensaje = "Error Intente de nuevo";
                     @* dataNove = new LibroNove();
                     dataNove.Lnturno = listaTurnoYGrupo[0];
                     dataNove.Lngrupo = listaTurnoYGrupo[1];
@@ -542,9 +548,7 @@
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
         try{
             dataNove.IdLinea = int.Parse(e.Value.ToString());
-            if(idCentro == 1){
-                listaEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
-            }
+            listaEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
             Linea linea =  listaLineas.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
             dataNove.IdMaquina = linea.Lofic;
             listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
@@ -640,7 +644,7 @@
         try{
             dataNove.Lnturno = listaTurnoYGrupo[0];
             dataNove.Lngrupo = listaTurnoYGrupo[1];
-            dataNove.IdCtpm = 2;
+            //dataNove.IdCtpm = 2;
             IsNuevo = true;
             if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
                 dataNove.IdParada = null;
@@ -665,21 +669,23 @@
         dataNove.IdEquipo = "";
         dataNove.LntiePerMi = -1;
         dataNove.IdTipoNove = 19;
-        dataNove.IdCtpm = 2;
+        //dataNove.IdCtpm = 2;
         tiempoPerdido = 0;
         mensaje = "";
     }
 
     public async Task atras1(){
         usuario = null;
+        string a = dataNove.IdParada;
         dataNove = new LibroNove();
         paradas = null;
+        dataNove.IdParada = a;
         dataNove.Lnturno = listaTurnoYGrupo[0];
         dataNove.Lngrupo = listaTurnoYGrupo[1];
     }
 
     public async Task atras2(){
-        dataNove.IdParada = "0";
+            dataNove.IdParada = "0";
     }
 
     public async Task IdMaquina(){

@@ -5,6 +5,12 @@ namespace LibroNovedades.Models
 {
     public partial class ReuDium
     {
+        public ReuDium()
+        {
+            CambFecs = new HashSet<CambFec>();
+            CambStats = new HashSet<CambStat>();
+        }
+
         /// <summary>
         /// id tabla
         /// </summary>
@@ -78,5 +84,7 @@ namespace LibroNovedades.Models
         public virtual Pai IdPaisNavigation { get; set; } = null!;
         public virtual RespoReu IdResReuNavigation { get; set; } = null!;
         public virtual Ksf IdksfNavigation { get; set; } = null!;
+        public virtual ICollection<CambFec> CambFecs { get; set; }
+        public virtual ICollection<CambStat> CambStats { get; set; }
     }
 }

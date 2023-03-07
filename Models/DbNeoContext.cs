@@ -18,12 +18,15 @@ namespace LibroNovedades.Models
 
         public virtual DbSet<AreAfect> AreAfects { get; set; } = null!;
         public virtual DbSet<Area> Areas { get; set; } = null!;
+        public virtual DbSet<AreaCarga> AreaCargas { get; set; } = null!;
         public virtual DbSet<AreaTra> AreaTras { get; set; } = null!;
         public virtual DbSet<AsentamientoMol> AsentamientoMols { get; set; } = null!;
         public virtual DbSet<AsisPm> AsisPms { get; set; } = null!;
         public virtual DbSet<AsistenReu> AsistenReus { get; set; } = null!;
         public virtual DbSet<AudCa> AudCas { get; set; } = null!;
         public virtual DbSet<AutenUsr> AutenUsrs { get; set; } = null!;
+        public virtual DbSet<CambFec> CambFecs { get; set; } = null!;
+        public virtual DbSet<CambStat> CambStats { get; set; } = null!;
         public virtual DbSet<CargoPm> CargoPms { get; set; } = null!;
         public virtual DbSet<CargoReu> CargoReus { get; set; } = null!;
         public virtual DbSet<Centro> Centros { get; set; } = null!;
@@ -85,10 +88,8 @@ namespace LibroNovedades.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //TODO: Cambiar
-                optionsBuilder.UseSqlServer("Server=KAILO\\MSSQLSERVER2;Database=LibroNov;TrustServerCertificate=True;Persist Security Info=True;User ID=sa;Password=12345");
-// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//                 optionsBuilder.UseSqlServer("Server=AZTDTDB03\\DESARROLLO;Database=DbNeo;TrustServerCertificate=True;Persist Security Info=True;User ID=UsrEncuesta;Password=Enc2022**Ing");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=AZTDTDB03\\DESARROLLO;Database=DbNeo;TrustServerCertificate=True;Persist Security Info=True;User ID=UsrEncuesta;Password=Enc2022**Ing");
             }
         }
 
@@ -137,6 +138,26 @@ namespace LibroNovedades.Models
                     .IsUnicode(false)
                     .HasColumnName("ANom")
                     .HasComment("nombre del area");
+            });
+
+            modelBuilder.Entity<AreaCarga>(entity =>
+            {
+                entity.HasKey(e => e.IdAreaCarg);
+
+                entity.ToTable("AreaCarga");
+
+                entity.Property(e => e.IdAreaCarg).HasColumnName("idAreaCarg");
+
+                entity.Property(e => e.Acdetalle)
+                    .IsUnicode(false)
+                    .HasColumnName("ACDetalle");
+
+                entity.Property(e => e.Acestado).HasColumnName("ACEstado");
+
+                entity.Property(e => e.Acnombre)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("ACNombre");
             });
 
             modelBuilder.Entity<AreaTra>(entity =>
@@ -405,6 +426,59 @@ namespace LibroNovedades.Models
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<CambFec>(entity =>
+            {
+                entity.HasKey(e => e.IdCambFec);
+
+                entity.ToTable("CambFec");
+
+                entity.Property(e => e.Cffec)
+                    .HasColumnType("datetime")
+                    .HasColumnName("CFFec");
+
+                entity.Property(e => e.CffecNew)
+                    .HasColumnType("datetime")
+                    .HasColumnName("CFFecNew");
+
+                entity.Property(e => e.Cfuser)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("CFUser");
+
+                entity.HasOne(d => d.IdReuDiaNavigation)
+                    .WithMany(p => p.CambFecs)
+                    .HasForeignKey(d => d.IdReuDia)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CambFec_ReuDia1");
+            });
+
+            modelBuilder.Entity<CambStat>(entity =>
+            {
+                entity.HasKey(e => e.IdCambStat);
+
+                entity.ToTable("CambStat");
+
+                entity.Property(e => e.Cbfecha)
+                    .HasColumnType("datetime")
+                    .HasColumnName("CBFecha");
+
+                entity.Property(e => e.Cbstat)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("CBStat");
+
+                entity.Property(e => e.Cbuser)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("CBUser");
+
+                entity.HasOne(d => d.IdReuDiaNavigation)
+                    .WithMany(p => p.CambStats)
+                    .HasForeignKey(d => d.IdReuDia)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CambStat_ReuDia");
+            });
+
             modelBuilder.Entity<CargoPm>(entity =>
             {
                 entity.HasKey(e => e.IdCargoPm);
@@ -618,6 +692,10 @@ namespace LibroNovedades.Models
                     .IsUnicode(false)
                     .HasColumnName("ECodEquiEAM");
 
+                entity.Property(e => e.EdescriEam)
+                    .IsUnicode(false)
+                    .HasColumnName("EDescriEAM");
+
                 entity.Property(e => e.EnombreEam)
                     .HasMaxLength(200)
                     .IsUnicode(false)
@@ -716,7 +794,7 @@ namespace LibroNovedades.Models
                     .WithMany(p => p.LibroNoves)
                     .HasForeignKey(d => d.IdAreaCar)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_LibroNove_Centro");
+                    .HasConstraintName("FK_LibroNove_AreaCarga");
 
                 entity.HasOne(d => d.IdCtpmNavigation)
                     .WithMany(p => p.LibroNoves)

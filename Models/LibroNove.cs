@@ -7,6 +7,7 @@ namespace LibroNovedades.Models
 {
     public partial class LibroNove
     {
+
         public int IdlibrNov { get; set; }
         [ValidDiferenteACero]
         public int IdLinea { get; set; }
@@ -32,11 +33,11 @@ namespace LibroNovedades.Models
         public string? Lnobserv { get; set; }
         public string? IdParada { get; set; }
         public bool LnisPizUni { get; set; }
-
+        [ValidDiferenteACero]
         public int? IdCtpm { get; set; }
         public int? LnisResu { get; set; }
 
-        public virtual Centro IdAreaCarNavigation { get; set; } = null!;
+        public virtual AreaCarga IdAreaCarNavigation { get; set; } = null!;
         public virtual ClasifiTpm? IdCtpmNavigation { get; set; }
         public virtual Linea IdLineaNavigation { get; set; } = null!;
         public virtual TiParTp IdTipoNoveNavigation { get; set; } = null!;

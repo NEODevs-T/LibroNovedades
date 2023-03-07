@@ -44,10 +44,10 @@ namespace LibroNovedades.Data.Global
         {
             if(idCentro == 0){
                 return await _cotext.Lineas.Where(x => x.Lestado == true).ToListAsync();
+            }else if(idCentro == -1){
+                return null;
             }else{
-                return await _cotext.Lineas.Where(x => x.IdCentro == idCentro && x.Lestado == true).ToListAsync();
-                //TODO: cambiar el return
-                //return await _cotext.Lineas.Include(l => l.IdDivisionNavigation).Where(l => l.IdDivisionNavigation.IdCentro == idCentro).ToListAsync();
+                return await _cotext.Lineas.Include(l => l.IdDivisionNavigation).Where(l => l.IdDivisionNavigation.IdCentro == idCentro).ToListAsync();
             }
         }
         public async Task<List<Linea>> ObtenerTodasLasLineas(){

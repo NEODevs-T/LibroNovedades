@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using LibroNovedades.Validate;
+﻿// using System;
+// using System.Collections.Generic;
+// using System.ComponentModel.DataAnnotations;
+// using LibroNovedades.Validate;
 
-// namespace LibroNovedades.Models
+// namespace LibroNovedades.Modelss
 // {
 //     public partial class LibroNove
 //     {

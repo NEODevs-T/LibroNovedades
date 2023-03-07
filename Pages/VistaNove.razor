@@ -190,6 +190,7 @@
     private string observcion  { get; set;}
     private BSModal refModal;
     private int idCentro { get; set;}
+    private int idAreCargada { get; set;}
     private string? departamento { get; set;}
     private string? cargo { get; set;}
     private List<Claim> claims { get; set; }
@@ -234,6 +235,7 @@
                     listaLineas = await DataLinea.ObtenerLasLineasPorCentro(0);
                 }else{
                     mensaje = "No tiene acceso";
+                    idCentro = -1;
                 }
             }
         }
@@ -247,6 +249,7 @@
         refModal = new BSModal();
         IsCargado = false;
         isTPM = true;
+        idAreCargada = 0;
 
         @* var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -268,12 +271,7 @@
         }else if(departamento.Contains("MEJORA CONTINUA")){
             idCentro = 0; 
         }else if(
-            departamento.Contains("CONTROL DE PROCESOS") ||
-            departamento.Contains("MANTENIMIENTO") ||
-            departamento.Contains("GCIA SERVICIOS INDUSTRIALES") ||
-            departamento.Contains("INGENIERO DE PROY. Y MEJ. CONT") ||
-            departamento.Contains("LABORATORIO") 
-            @* || departamento.Contains("SEGURIDAD INDUSTRIAL") *@
+            departamento.Contains("CONTROL DE PROCESOS") 
             ){
             idCentro = 9;
             IsChempro = true;
@@ -282,6 +280,15 @@
             idCentro = 1;
         }else if(departamento.Contains("MOLINO")){
             idCentro = 2;
+        }else if(departamento.Contains("CALIDAD")){
+            idCentro = 0; 
+            idAreCargada = 2;
+        }else if(departamento.Contains("SEGURIDAD")){
+            idCentro = 0; 
+            idAreCargada = 3;
+        }else{
+            mensaje = "No tiene acceso";
+            idCentro = -1;
         }
 
         listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
@@ -300,16 +307,10 @@
     protected async Task buscar(){
         try{
             listaNovedades = null;
-            if(IsChempro){
-                string cod = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
-                if (usuarioCache["usuarioC"].Contains("SUPERINTENDENTE DE PRODUCCION") || usuarioCache["usuarioC"].Contains("INGENIERO DE PROY. Y MEJ. CONT"))
-                {
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
-                }else{
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,cod);
-                }
+            if(idAreCargada == 0){
+                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad);
             }else{
-                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
+                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCarga(filtroFecha,filtroLinea,filtroTipoNovedad,idAreCargada);
             }
         }catch(Exception e){
             mensaje = e.Message;

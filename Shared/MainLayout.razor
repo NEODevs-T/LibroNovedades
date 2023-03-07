@@ -66,7 +66,7 @@
 
 @code {
 
-    private string? mensaje { get; set;} = "Introdusca la ficha";
+    private string? mensaje { get; set;} = "Ingrese la ficha";
     private string? ficha { get; set;} = "";
     private string nombre {get; set;} = "";
     private string nombreU {get; set;} = "";
@@ -79,7 +79,13 @@
     private Usuario? ObjUsuario {get; set;} 
     private ProyectoUsr? proyecto {get; set;} 
     private List<Nivel>? nivelUsuario {get; set;} 
+    
 
+    protected override async Task  OnInitializedAsync()
+    {
+        mensaje = "Ingrese la ficha";
+        ficha = "";
+    }
 
 
 
@@ -119,33 +125,30 @@
         isDisabled = true;
         mensaje = "Cargando...";
 
-        //TODO: Cambiar
-        ////? usuario = await DataAPI.obtenerUsuario(ficha);
-        usuario = new Dictionary<string,string>();
-        usuario.Add("nombre","Gabriel");
-        usuario.Add("apellido","Arcila");
-        usuario.Add("cargo","Ingeniero");
-        usuario.Add("departamento","SEGURIDAD");
+        usuario = await DataAPI.obtenerUsuario(ficha);
         
         if(usuario["departamento"] == null){
             mensaje = "Ficha no encontrada";
         }else{
 
-            if(ficha.ToUpper() == "J4656" || ficha.ToUpper() == "J4779"){
+            if(ficha.ToUpper() == "J4779"){
                 await LocalStorage.SetItemAsync("usuarioD", "CONVERSION");
+                await LocalStorage.SetItemAsync("usuarioC", "SUPDTE. PRODUCCION CONVERSION");
             }else{
                 await LocalStorage.SetItemAsync("usuarioD", usuario["departamento"]);
+                await LocalStorage.SetItemAsync("usuarioC",  usuario["cargo"]);
             }
-            nombre = "Bienvenido: " + usuario["nombre"] + " " + usuario["apellido"];
+            //nombre = "Bienvenido: " + usuario["nombre"] + " " + usuario["apellido"];
             await LocalStorage.SetItemAsync("usuarioF",  ficha);
             await LocalStorage.SetItemAsync("usuarioN",  usuario["nombre"]);
             await LocalStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
-            await LocalStorage.SetItemAsync("usuarioC",  usuario["cargo"]);
             mensaje = "Login Exitoso";
             var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
             await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
             await AuthStateProvider.GetAuthenticationStateAsync();
             NavigationManager.NavigateTo(""); 
+            ficha = "";
+            mensaje = "Ingrese la ficha";
         }
         isDisabled = false;
     }

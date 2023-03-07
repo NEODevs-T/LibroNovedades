@@ -26,7 +26,7 @@ namespace LibroNovedades.Logic{
             ReunionDium registro = new ReunionDium();
             ReuDium registroNuevo = new ReuDium();
             List<ReuDium> listaPizarra = new List<ReuDium>(listaNovedades.Count);
-            List<LibroNove> listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad,null);
+            List<LibroNove> listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad);
 
             foreach (var item in listaNovedades)
             {
@@ -46,12 +46,14 @@ namespace LibroNovedades.Logic{
                         // }else if(temporal.IdLineaNavigation.IdCentro == 10){
                         //     registro.Div = "PD&CL";
                         // }
-                        if(temporal.IdTipoNove == 8){
+                        if(temporal.IdTipoNove == 8 || temporal.IdAreaCar == 2){
+                            //* Calidad
                             registroNuevo.Idksf = 3;
-                        }else if(temporal.IdTipoNove == 13){
+                        }else if(temporal.IdTipoNove == 13 || temporal.IdAreaCar == 3){
+                            //* Seguridad
                             registroNuevo.Idksf = 5;
                         }else{
-                            registroNuevo.Idksf = 1;
+                            registroNuevo.Idksf = 1; 
                         }
                         registroNuevo.Rdcentro = temporal.IdLineaNavigation.IdCentroNavigation.Cnom;
                         registroNuevo.Rddiv = temporal.IdLineaNavigation.IdDivisionNavigation.Dnombre;

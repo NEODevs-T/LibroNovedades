@@ -25,7 +25,9 @@ builder.Services.AddBlazorStrap();
 builder.Services.AddHttpClient();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddControllersWithViews();
+builder.Services.AddOptions();  
 builder.Services.AddAuthorizationCore();
+
 
 
 builder.Services.AddBlazoredSessionStorage(config =>
@@ -53,6 +55,8 @@ builder.Services.AddDbContext<DOC_IngIContext>( options =>
 //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
 builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider,global:: LibroNovedades.Service.Autenticacion.CustomAuthStateProvider>();
+
+
 
 
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();

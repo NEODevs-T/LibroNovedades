@@ -26,10 +26,6 @@
             <main>
                 <div class="top-row px-4 cabeza">
                     <h5 style="text-align: start;">
-                    @if (nombre != "")
-                    {
-                        @nombre
-                    }
                     </h5>
                     <BSButton Color="BSColor.Success" IsOutlined="true" @onclick="logout">Logout</BSButton>
                 </div>
@@ -51,10 +47,14 @@
                         <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
                                 <BSLabel IsHidden="true">User</BSLabel>
-                                <BSInput InputType="InputType.Text" placeholder="Ficha"
-                                    @bind-Value="ficha" />
+
+                                <BSInput InputType="InputType.Text" placeholder="Usuario"
+                                    @bind-Value="usuario" />
+                        
+                                <BSInput InputType="InputType.Password" placeholder="Contraseña"
+                                    @bind-Value="contrasena" />
                             <br>
-                            <BSButton IsDisabled="@isDisabled" @onclick=BuscarFicha Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
+                            <BSButton IsDisabled="@isDisabled" @onclick=login Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
                     </div>
                 </div>              
             </main>
@@ -66,42 +66,38 @@
 
 @code {
 
-    private string? mensaje { get; set;} = "Ingrese la ficha";
-    private string? ficha { get; set;} = "";
-    private string nombre {get; set;} = "";
-    private string nombreU {get; set;} = "";
-    private Dictionary<string,string>? usuario { get; set;}
+    private string? mensaje { get; set;} = "Bienvenido";
     private bool isDisabled  { get; set;} = false;
-    private string usu {get; set;} = "";
+    private string proyecto { get; set;} = "";
+    private string usuario {get; set;} = "";
+    private string contrasena {get; set;} = "";
 
-    private string username {get; set;} = "";
-    private string password {get; set;} = "";
-    private Usuario? ObjUsuario {get; set;} 
+    private UserLoginDto userDto {get; set;}
+
+    private HttpResponseMessage result {get; set;}
+
+    private string validarToken  {get; set;}
+
+    @* private Usuario? ObjUsuario {get; set;}
     private ProyectoUsr? proyecto {get; set;} 
-    private List<Nivel>? nivelUsuario {get; set;} 
+    private List<Nivel>? nivelUsuario {get; set;}  *@
     
 
     protected override async Task  OnInitializedAsync()
     {
         mensaje = "Ingrese la ficha";
-        ficha = "";
+        proyecto = "LibroDeNovedades";
+        userDto = new UserLoginDto() ;
     }
 
 
 
     protected async Task logout(){
         await LocalStorage.RemoveItemAsync("LibroDeNovedades");
-        await LocalStorage.RemoveItemAsync("usuarioA");
-        await LocalStorage.RemoveItemAsync("usuarioN");
-        await LocalStorage.RemoveItemAsync("usuarioC");
-        await LocalStorage.RemoveItemAsync("usuarioF");
-        await LocalStorage.RemoveItemAsync("usuarioD");
         await AuthStateProvider.GetAuthenticationStateAsync();
-        nombre = "";
-
     }
 
-    protected async Task Login(){
+    @* protected async Task Login(){
         
         if (username != "" && password != ""){
             ObjUsuario = await DataUser.ObtenerUsuario(username, password);
@@ -118,37 +114,45 @@
         }else{
             mensaje = "Coloque un Usuario y contraseña valida";
         }
-    }
+    } *@
 
 
-    protected async Task BuscarFicha(){
+    protected async Task login(){
         isDisabled = true;
         mensaje = "Cargando...";
-
-        usuario = await DataAPI.obtenerUsuario(ficha);
-        
-        if(usuario["departamento"] == null){
-            mensaje = "Ficha no encontrada";
-        }else{
-
-            if(ficha.ToUpper() == "J4779"){
-                await LocalStorage.SetItemAsync("usuarioD", "CONVERSION");
-                await LocalStorage.SetItemAsync("usuarioC", "SUPDTE. PRODUCCION CONVERSION");
+        if (usuario.Trim() != "" && contrasena.Trim() != "")
+        {
+            userDto.Proyecto = proyecto;
+            userDto.UserName = usuario;
+            userDto.Password = contrasena;
+            result = await Http.PostAsJsonAsync("http://neo.paveca.com.ve/Authentication/api/Auth/Login", userDto);
+            validarToken = await result.Content.ReadAsStringAsync();
+            if (validarToken != null)
+            {
+                if (validarToken == "NotFoundUser")
+                {
+                    mensaje = "Verifique el usuario";
+                }
+                else if (validarToken == "WrongPassword")
+                {
+                    mensaje = "Verifique la contraseña";
+                }
+                else if (validarToken == "null")
+                {
+                    mensaje = "Verifique el usuario";
+                }
+                else
+                {
+                    await LocalStorage.SetItemAsync("LibroDeNovedades", validarToken);
+                    await AuthStateProvider.GetAuthenticationStateAsync();    
+                    NavigationManager.NavigateTo("");
+                    mensaje = "Bienvenido";
+                }
             }else{
-                await LocalStorage.SetItemAsync("usuarioD", usuario["departamento"]);
-                await LocalStorage.SetItemAsync("usuarioC",  usuario["cargo"]);
+                mensaje = "Hubo un error. Por favor intende de nuevo";
             }
-            //nombre = "Bienvenido: " + usuario["nombre"] + " " + usuario["apellido"];
-            await LocalStorage.SetItemAsync("usuarioF",  ficha);
-            await LocalStorage.SetItemAsync("usuarioN",  usuario["nombre"]);
-            await LocalStorage.SetItemAsync("usuarioA",  usuario["apellido"]);
-            mensaje = "Login Exitoso";
-            var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-            await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
-            await AuthStateProvider.GetAuthenticationStateAsync();
-            NavigationManager.NavigateTo(""); 
-            ficha = "";
-            mensaje = "Ingrese la ficha";
+        }else{
+            mensaje = "Ingrese un usuario y contraseña valida";
         }
         isDisabled = false;
     }

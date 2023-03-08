@@ -295,7 +295,6 @@
     private string? mensaje { get; set;}
     private string? departamento { get; set;}
     private LibroNove dataNove  { get; set;}
-    private int idCentro  { get; set;} = 0;
     private Dictionary<string,string> usuario { get; set;}
     private TiParTp tipoParada  { get; set;}
     private List<Centro> ListaCentro { get; set;}
@@ -303,7 +302,6 @@
     private BSAlert _alertRef;
     private double tiempoPerdido { get; set;}
     private bool _showTooltip;
-    private int idLinea { get; set;}
     
     private bool _buttonDisabled = true;
 
@@ -341,7 +339,6 @@
     private bool isManualGT { get; set;}
     private string identificacion { get; set;}
     private List<EquipoEam> listaEquiposEAM{ get; set;}
-    private List<Claim> claims { get; set; }
 
     private List<Linea> listaLineas { get; set;}
 
@@ -350,9 +347,70 @@
     private bool isManualCTPM {get;set;}
 
     private bool isAccesoCentro {get;set;}
-    
+
+
+
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+    private int idPais { get; set; }
+    private int idEmpresa { get; set; }
+    private int idCentro  { get; set;} = 0;
+    private int idDivision { get; set; }
+    private int idLinea { get; set; }
+
     protected override async Task  OnInitializedAsync()
     {
+        mensaje = "Registre una Novedad";
+
+
+        dataNove = new LibroNove();
+        dataNove.Lnobserv = "";
+        dataNove.Lndiscrepa = "";
+        dataNove.LnisResu = 0;
+        dataNove.IdParada = "0";
+
+        if (authenticationState is not null)
+        {
+            AuthenticationState? authState = await authenticationState;
+            ClaimsPrincipal? user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                claims = user.Claims;
+
+                if(user.IsInRole("SuperUser")){
+
+                }else if(user.IsInRole("UserPais")){
+
+                }else if(user.IsInRole("UserEmpresa")){
+
+                }else if(user.IsInRole("UserCentro")){
+
+                }else if(user.IsInRole("UserDivision")){
+
+                }else if(user.IsInRole("User")){
+
+                    idCentro = int.Parse(user.FindFirst(c => c.Type == "idCentro")?.Value ?? "0") ;
+                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                    if(user.IsInRole("UserCalidad")){
+                        dataNove.IdAreaCar = 2;
+                    
+                    }else if(user.IsInRole("UserSeguridad")){
+                        dataNove.IdAreaCar = 3;
+
+                    }else if(user.IsInRole("UserMantenimiento")){
+                        dataNove.IdAreaCar = 4;
+                    }else if(user.IsInRole("UserOperaciones")){
+                        dataNove.IdAreaCar = 1;
+                    }
+                }else{
+                    mensaje = "Hubo un erro por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua";
+                }
+            }
+        }
+
         IsChempro = false;
         isManualGT = true;
         isManualCTPM = false;
@@ -362,13 +420,7 @@
         isDisabledLinea = true;
         isTPM = true;
 
-        mensaje = "Registre una Novedad";
-        dataNove = new LibroNove();
-        dataNove.Lnobserv = "";
-        dataNove.Lndiscrepa = "";
-        dataNove.LnisResu = 0;
-        dataNove.IdCtpm = 2;
-        dataNove.IdParada = "0";
+        
 
         dataNove.LnfichaRes = await LocalStorage.GetItemAsync<string>("usuarioF");
         departamento = await LocalStorage.GetItemAsync<string>("usuarioD");

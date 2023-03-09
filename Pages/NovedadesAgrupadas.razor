@@ -364,6 +364,14 @@
     {
         mensaje = "Registre una Novedad";
 
+        IsChempro = false;
+        isManualGT = true;
+        isManualCTPM = false;
+        isAccesoCentro = false;
+        IsCargado = false;
+        isDisabledArea = true;
+        isDisabledLinea = true;
+        isTPM = true;
 
         dataNove = new LibroNove();
         dataNove.Lnobserv = "";
@@ -379,66 +387,68 @@
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
                 claims = user.Claims;
+                idCentro = int.Parse(user.FindFirst(c => c.Type == "idCentro")?.Value ?? "0") ;
+                idPais = int.Parse(user.FindFirst(c => c.Type == "idPais")?.Value ?? "0") ;
+                idDivision = int.Parse(user.FindFirst(c => c.Type == "idDivision")?.Value ?? "0") ;
+                idEmpresa = int.Parse(user.FindFirst(c => c.Type == "idEmpresa")?.Value ?? "0") ;
 
-                if(user.IsInRole("SuperUser")){
+                listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
 
+                if(user.IsInRole("SuperAdmin")){
+                    isDisabledArea = false;
+                    isDisabledLinea = false;
+                    isManualGT = false;
+                    isAccesoCentro = true;
+                    // Todos los paises con todas las emppreses centros, divisiones y lineas
+                }else if(user.IsInRole("SuperUser")){
+                    // Todos los paises con todas las empresas centros, divisiones y lineas
                 }else if(user.IsInRole("UserPais")){
-
+                    // Todas las empresas de ese pais con sus centros, divisiones y lineas
                 }else if(user.IsInRole("UserEmpresa")){
-
-                }else if(user.IsInRole("UserCentro")){
-
+                    // todos los centros,divisiones y lineas de esa empresa
+                }else if(user.IsInRole("UserCentro")){ 
+                    // todas las divisiones y lineas de ese centro
                 }else if(user.IsInRole("UserDivision")){
-
-                }else if(user.IsInRole("User")){
-
-                    idCentro = int.Parse(user.FindFirst(c => c.Type == "idCentro")?.Value ?? "0") ;
-                    listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
-                    if(user.IsInRole("UserCalidad")){
-                        dataNove.IdAreaCar = 2;
-                    
-                    }else if(user.IsInRole("UserSeguridad")){
-                        dataNove.IdAreaCar = 3;
-
-                    }else if(user.IsInRole("UserMantenimiento")){
-                        dataNove.IdAreaCar = 4;
-                    }else if(user.IsInRole("UserOperaciones")){
-                        dataNove.IdAreaCar = 1;
-                    }
+                    // todas las lineas de esa division
+                }
+                
+                if(user.IsInRole("UserCalidad")){
+                    dataNove.IdAreaCar = 2;
+                    isDisabledArea = false;
+                    isDisabledLinea = false;
+                    isManualCTPM = true;
+                    dataNove.IdCtpm = 4;
+                    isAccesoCentro = true;
+                }else if(user.IsInRole("UserSeguridad")){
+                    dataNove.IdAreaCar = 3;
+                    isDisabledArea = false;
+                    isDisabledLinea = false;
+                    isManualCTPM = true;
+                    dataNove.IdCtpm = 1;
+                    isAccesoCentro = true;
+                }else if(user.IsInRole("UserMantenimiento")){
+                    dataNove.IdAreaCar = 4;
+                    isDisabledArea = false;
+                    isDisabledLinea = false;
+                    isManualCTPM = true;
+                    dataNove.IdCtpm = 1;
+                    isAccesoCentro = true;
+                }else if(user.IsInRole("UserOperaciones")){
+                    dataNove.IdAreaCar = 1;
+                }else if(user.IsInRole("UserSinTPM")){
+                    @* dataNove.IdAreaCar = 1;
+                    dataNove.IdCtpm = 5;
+                    dataNove.LnisResu = 2;
+                    isTPM = false; *@
                 }else{
-                    mensaje = "Hubo un erro por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua";
+                    mensaje = "Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua";
                 }
             }
         }
 
-        IsChempro = false;
-        isManualGT = true;
-        isManualCTPM = false;
-        isAccesoCentro = false;
-        IsCargado = false;
-        isDisabledArea = true;
-        isDisabledLinea = true;
-        isTPM = true;
-
         
 
-        dataNove.LnfichaRes = await LocalStorage.GetItemAsync<string>("usuarioF");
-        departamento = await LocalStorage.GetItemAsync<string>("usuarioD");
-
-        if(departamento.Contains("CORPINAL")){
-            dataNove.IdAreaCar = 1;
-            idCentro = 11;
-            listaLineas = await DataLinea.ObtenerLasLineasPorCentro(11);
-            dataNove.IdCtpm = 5;
-            dataNove.LnisResu = 2;
-            isTPM = false;
-        }else if(departamento.Contains("MEJORA CONTINUA")){
-            dataNove.IdAreaCar = 1;
-            isDisabledArea = false;
-            isDisabledLinea = false;
-            isManualGT = false;
-            isAccesoCentro = true;
-        }else if( 
+            if( 
             departamento.Contains("CONTROL DE PROCESOS")
             @* departamento.Contains("MANTENIMIENTO") || *@
             @* departamento.Contains("GCIA SERVICIOS INDUSTRIALES") || *@
@@ -454,32 +464,6 @@
             dataNove.IdCtpm = 5;
             dataNove.LnisResu = 2;
             isTPM = false;
-        }else if(departamento.Contains("CONVERSION")){
-            dataNove.IdAreaCar = 1;
-            idCentro = 1;
-            listaLineas = await DataLinea.ObtenerLasLineasPorCentro(1);
-        }else if(departamento.Contains("MOLINO")){
-            dataNove.IdAreaCar = 1;
-            idCentro = 2;
-            listaLineas = await DataLinea.ObtenerLasLineasPorCentro(2);
-        }else if(departamento.Contains("CALIDAD")){
-            dataNove.IdAreaCar = 2;
-            isDisabledArea = false;
-            isDisabledLinea = false;
-            isManualCTPM = true;
-            dataNove.IdCtpm = 4;
-            isAccesoCentro = true;
-        }
-        @* else if(departamento.Contains("SEGURIDAD")){
-            dataNove.IdAreaCar = 3;
-            isDisabledArea = false;
-            isDisabledLinea = false;
-            isManualCTPM = true;
-            dataNove.IdCtpm = 1;
-            isAccesoCentro = true;   
-        } *@
-        else{
-            mensaje = "No tiene acceso";
         }
         
         ListaCentro = await DataCentro.ObtenerTodosLosCentro();
@@ -573,7 +557,7 @@
         _showTooltip = true;
     }
 
-    protected async Task BuscarDivision(ChangeEventArgs e){
+    @* protected async Task BuscarDivision(ChangeEventArgs e){
         try{
             if(idCentro != 0){
                 listaDivisiones = await DataDivision.ObtenerLasDivPorCentro(idCentro);
@@ -581,7 +565,7 @@
         }catch(Exception ex){
             mensaje = ex.Message;
         }
-    }
+    } *@
 
     protected async Task BuscarLinea(ChangeEventArgs e){
         idCentro = int.Parse(e.Value.ToString());

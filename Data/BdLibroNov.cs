@@ -199,42 +199,4 @@ using Microsoft.EntityFrameworkCore;
         }
     }
 
-    public interface IDataEquipoEAM
-    {
-        Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea);
-    }
-
-    public class DataEquipoEAM : IDataEquipoEAM
-    {
-        private readonly DbNeoContext _cotext;
-
-        public DataEquipoEAM(DbNeoContext context)
-        {
-            this._cotext = context;
-        }
-
-        public async Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea){
-            return await _cotext.EquipoEams.Where(t => t.IdLinea == idLinea).ToListAsync();
-        }
-    }
-
-    public interface IDataDivision
-    {
-        Task<List<Division>> ObtenerLasDivPorCentro(int idCentro);
-    }
-
-    public class DataDivision : IDataDivision
-    {
-        private readonly DbNeoContext _cotext;
-
-        public DataDivision(DbNeoContext context)
-        {
-            this._cotext = context;
-        }
-
-        public async Task<List<Division>> ObtenerLasDivPorCentro(int idCentro){
-            return await _cotext.Divisions.Where(d => d.IdCentro == idCentro).ToListAsync();
-        }
-    }
-
 }

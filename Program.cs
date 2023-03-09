@@ -58,10 +58,14 @@ builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization
 
 
 
-
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataPais, global::LibroNovedades.Data.Global.DataPais>();
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataEmpresa, global::LibroNovedades.Data.Global.DataEmpresa>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataCentro, global::LibroNovedades.Data.Global.DataCentro>();
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataDivision, global::LibroNovedades.Data.Global.DataDivision>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataLinea, global::LibroNovedades.Data.Global.DataLinea>();
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataEquipoEAM, global::LibroNovedades.Data.Global.DataEquipoEAM>();
+
 
 builder.Services.AddScoped<global::LibroNovedades.Data.API.IDataAPI, global::LibroNovedades.Data.API.DataAPI>();
 
@@ -69,8 +73,7 @@ builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataLibroNov, g
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataTiParTP, global::LibroNovedades.Data.LibroNov.DataTiParTP>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataPizarra, global::LibroNovedades.Data.LibroNov.DataPizarra>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataClasifiTPM, global::LibroNovedades.Data.LibroNov.DataClasifiTPM>();
-builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataEquipoEAM, global::LibroNovedades.Data.LibroNov.DataEquipoEAM>();
-builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataDivision, global::LibroNovedades.Data.LibroNov.DataDivision>();
+
 
 
 builder.Services.AddScoped<global::LibroNovedades.Data.User.IDataNivel, global::LibroNovedades.Data.User.DataNivel>();

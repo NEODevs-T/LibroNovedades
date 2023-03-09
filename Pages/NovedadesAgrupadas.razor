@@ -610,7 +610,7 @@
                 dataNove.Lnturno = listaTurnoYGrupo[0];
                 dataNove.Lngrupo = listaTurnoYGrupo[1];
                 dataNove.IdEquipo = "";
-                dataNove.Lnobserv = "";
+                dataNove.Lnobserv = "Nota: " + paradas[4][item] + " - " + paradas[3][item];;
                 dataNove.Lndiscrepa = "";
                 dataNove.IdParada =  temporal;
                 IsNuevo = true;
@@ -647,7 +647,9 @@
             //dataNove.IdCtpm = 2;
             IsNuevo = true;
             if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
+                dataNove.Lnobserv = "";
                 dataNove.IdParada = null;
+                dataNove.Lndiscrepa = "";
                 dataNove.LntiePerMi = tiempoPerdido;
                 tiempoPerdido = 0;
                 mensaje = "";

@@ -1,12 +1,16 @@
 @page "/FormatoAgrupado"
-@inject IDataArea DataArea;
+
+
+@inject IDataPais DataPais;
+@inject IDataEmpresa DataEmpresa;
 @inject IDataCentro DataCentro;
+@inject IDataDivision DataDivision;
 @inject IDataLinea DataLinea;
+@inject IDataEquipoEAM DataEquipoEAM;
 @inject IDataAPI DataAPI;
 @inject IDataLibroNov DataLibroNov;
 @inject IDataTiParTP DataTiParTP;
 @inject IDataClasifiTPM DataClasifiTPM;
-@inject IDataEquipoEAM DataEquipoEAM;
 @inject IDataDivision DataDivision;
 
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
@@ -346,9 +350,8 @@
     
     private bool isManualCTPM {get;set;}
 
-    private bool isAccesoCentro {get;set;}
 
-
+    
 
 
     [CascadingParameter]
@@ -360,6 +363,16 @@
     private int idDivision { get; set; }
     private int idLinea { get; set; }
 
+    private bool isAccesoPais {get;set;}
+    private bool isAccesoEmpresa {get;set;}
+    private bool isAccesoCentro {get;set;}
+    private bool isAccesoDivision {get;set;}
+    private bool isAccesoLinea {get;set;}
+    private List<Pai> listaPais {get;set;}    
+    private List<Empresa> listaEmpresa {get;set;}
+    private List<Centro> listaCentro {get;set;}
+    private List<Division> listaDivision {get;set;}
+    private List<Linea> listaLinea {get;set;}
     protected override async Task  OnInitializedAsync()
     {
         mensaje = "Registre una Novedad";
@@ -392,26 +405,66 @@
                 idDivision = int.Parse(user.FindFirst(c => c.Type == "idDivision")?.Value ?? "0") ;
                 idEmpresa = int.Parse(user.FindFirst(c => c.Type == "idEmpresa")?.Value ?? "0") ;
 
-                listaLineas = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
+                isAccesoPais = false;
+                isAccesoEmpresa = false;
+                isAccesoCentro = false;
+                isAccesoDivision = false;
+                isAccesoLinea = false;
 
                 if(user.IsInRole("SuperAdmin")){
+                    isAccesoPais = true;
+                    isAccesoEmpresa = true;
+                    isAccesoCentro = true;
+                    isAccesoDivision = true;
+                    isAccesoLinea = true;
+                    
+                    // Todos los paises con todas las empresas centros, divisiones y lineas
+                    listaPais = await DataPais.ObtenerTodosLosPaises();
+
+                    //TODO: Revisar
                     isDisabledArea = false;
                     isDisabledLinea = false;
                     isManualGT = false;
-                    isAccesoCentro = true;
-                    // Todos los paises con todas las emppreses centros, divisiones y lineas
+
                 }else if(user.IsInRole("SuperUser")){
+                    isAccesoPais = true;
+                    isAccesoEmpresa = true;
+                    isAccesoCentro = true;
+                    isAccesoDivision = true;
+                    isAccesoLinea = true;
+                    
                     // Todos los paises con todas las empresas centros, divisiones y lineas
+                    listaPais = await DataPais.ObtenerTodosLosPaises();
+
                 }else if(user.IsInRole("UserPais")){
+                    isAccesoEmpresa = true;
+                    isAccesoCentro = true;
+                    isAccesoDivision = true;
+                    isAccesoLinea = true;
+
                     // Todas las empresas de ese pais con sus centros, divisiones y lineas
+                    listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
                 }else if(user.IsInRole("UserEmpresa")){
+                    isAccesoCentro = true;
+                    isAccesoDivision = true;
+                    isAccesoLinea = true;
+
                     // todos los centros,divisiones y lineas de esa empresa
+                    listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
                 }else if(user.IsInRole("UserCentro")){ 
+                    isAccesoDivision = true;
+                    isAccesoLinea = true;
+
                     // todas las divisiones y lineas de ese centro
+                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
                 }else if(user.IsInRole("UserDivision")){
+                    isAccesoLinea = true;
+
                     // todas las lineas de esa division
+                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
                 }
                 
+
                 if(user.IsInRole("UserCalidad")){
                     dataNove.IdAreaCar = 2;
                     isDisabledArea = false;

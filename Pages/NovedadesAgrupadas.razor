@@ -198,7 +198,7 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Grupo</BSLabel>
-                                    <BSInput IsDisabled="@isManualGT"  InputType="InputType.Select" @bind-Value="dataNove.Lngrupo">
+                                    <BSInput IsDisabled="@isDisableManualGT"  InputType="InputType.Select" @bind-Value="dataNove.Lngrupo">
                                         <option value="0">Seleccionar Grupo</option>
                                         <option value="A">Grupo A</option>
                                         <option value="B">Grupo B</option>
@@ -209,7 +209,7 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Turno</BSLabel>
-                                    <BSInput  IsDisabled="@isManualGT" InputType="InputType.Select" @bind-Value="dataNove.Lnturno">
+                                    <BSInput  IsDisabled="@isDisableManualGT" InputType="InputType.Select" @bind-Value="dataNove.Lnturno">
                                         <option value="0">Seleccionar Grupo</option>
                                         <option value="1">1er turno</option>
                                         <option value="2">2do truno</option>
@@ -238,7 +238,7 @@
                             @if(isTPM){
                                 <BSCol Position="Position.Relative" Place ColumnMedium="5">
                                     <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
-                                    <BSInput IsDisabled="@isManualCTPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
+                                    <BSInput IsDisabled="@isDisableManualCTPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
                                         @if(listaClasificacionTPM != null){
                                             <option value="0">Seleccione</option>
                                             @foreach (var item in listaClasificacionTPM)
@@ -279,8 +279,8 @@
                                     <BSFeedback For="@(() => dataNove.Lnobserv)"/> 
                             </BSCol>
                             <BSCol Column="12">
-                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" IsSubmit="true">Registrar</BSButton>
-                                    <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=atras2 IsReset="true" >Atras</BSButton> 
+                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabledButton" IsSubmit="true">Registrar</BSButton>
+                                    <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabledButton" @onclick=atras2 IsReset="true" >Atras</BSButton> 
                             </BSCol>
                         </BSForm>
                     }
@@ -322,25 +322,17 @@
     private List<TiParTp> listaTiposNovedad { get; set;}
     private ComponentBase contenedor { get; set;}
     private InputText inputTextReferencia {get; set;}
-    private bool isDisabled  { get; set;}
     private bool paradasBandera {get; set;}
-    private bool isDisabledArea { get; set;}
-    private bool isDisabledLinea { get; set;}
     private bool bandera  { get; set;}
     private List<string> listaTurnoYGrupo { get; set;}
-    private bool IsSinTiempo { get; set;}
     private bool IsCargado  { get; set;}
     private Dictionary<string,string>? usuarioCache {get; set;}
 
-    private bool IsChempro  { get; set;}
-
     private bool IsNuevo  { get; set;}
 
-    private bool isTPM  { get; set;}
 
     private int indexCambio  { get; set;}
 
-    private bool isManualGT { get; set;}
     private string identificacion { get; set;}
     private List<EquipoEam> listaEquiposEAM{ get; set;}
 
@@ -348,7 +340,7 @@
 
     private List<Division> listaDivisiones { get; set;}
     
-    private bool isManualCTPM {get;set;}
+
 
 
     
@@ -362,12 +354,15 @@
     private int idCentro  { get; set;} = 0;
     private int idDivision { get; set; }
     private int idLinea { get; set; }
-
     private bool isAccesoPais {get;set;}
     private bool isAccesoEmpresa {get;set;}
     private bool isAccesoCentro {get;set;}
     private bool isAccesoDivision {get;set;}
     private bool isAccesoLinea {get;set;}
+    private bool isDisableManualCTPM {get;set;}
+    private bool isDisableManualGT { get; set;}
+    private bool isDisabledButton  { get; set;}
+    private bool isTPM  { get; set;}
     private List<Pai> listaPais {get;set;}    
     private List<Empresa> listaEmpresa {get;set;}
     private List<Centro> listaCentro {get;set;}
@@ -375,22 +370,6 @@
     private List<Linea> listaLinea {get;set;}
     protected override async Task  OnInitializedAsync()
     {
-        mensaje = "Registre una Novedad";
-
-        IsChempro = false;
-        isManualGT = true;
-        isManualCTPM = false;
-        isAccesoCentro = false;
-        IsCargado = false;
-        isDisabledArea = true;
-        isDisabledLinea = true;
-        isTPM = true;
-
-        dataNove = new LibroNove();
-        dataNove.Lnobserv = "";
-        dataNove.Lndiscrepa = "";
-        dataNove.LnisResu = 0;
-        dataNove.IdParada = "0";
 
         if (authenticationState is not null)
         {
@@ -399,6 +378,19 @@
 
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
+                IsCargado = false;
+                mensaje = "Registre una Novedad";
+
+                isDisableManualGT = true;
+                isTPM = true;
+                isDisabledButton = false;
+
+                dataNove = new LibroNove();
+                dataNove.Lnobserv = "";
+                dataNove.Lndiscrepa = "";
+                dataNove.LnisResu = 0;
+                dataNove.IdParada = "0"; //TODO: Revisar para que funciona
+
                 claims = user.Claims;
                 idCentro = int.Parse(user.FindFirst(c => c.Type == "idCentro")?.Value ?? "0") ;
                 idPais = int.Parse(user.FindFirst(c => c.Type == "idPais")?.Value ?? "0") ;
@@ -411,6 +403,10 @@
                 isAccesoDivision = false;
                 isAccesoLinea = false;
 
+                listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
+                listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
+                listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
+
                 if(user.IsInRole("SuperAdmin")){
                     isAccesoPais = true;
                     isAccesoEmpresa = true;
@@ -422,9 +418,7 @@
                     listaPais = await DataPais.ObtenerTodosLosPaises();
 
                     //TODO: Revisar
-                    isDisabledArea = false;
-                    isDisabledLinea = false;
-                    isManualGT = false;
+                    isDisableManualGT = false;
 
                 }else if(user.IsInRole("SuperUser")){
                     isAccesoPais = true;
@@ -467,27 +461,20 @@
 
                 if(user.IsInRole("UserCalidad")){
                     dataNove.IdAreaCar = 2;
-                    isDisabledArea = false;
-                    isDisabledLinea = false;
-                    isManualCTPM = true;
-                    dataNove.IdCtpm = 4;
-                    isAccesoCentro = true;
+                    isDisableManualCTPM = true;
+                    dataNove.IdCtpm = 4; //TODO: Revisar clasificacion TPM
                 }else if(user.IsInRole("UserSeguridad")){
                     dataNove.IdAreaCar = 3;
-                    isDisabledArea = false;
-                    isDisabledLinea = false;
-                    isManualCTPM = true;
-                    dataNove.IdCtpm = 1;
-                    isAccesoCentro = true;
+                    isDisableManualCTPM = true;
+                    dataNove.IdCtpm = 1; //TODO: Revisar clasificacion TPM
                 }else if(user.IsInRole("UserMantenimiento")){
                     dataNove.IdAreaCar = 4;
-                    isDisabledArea = false;
-                    isDisabledLinea = false;
-                    isManualCTPM = true;
-                    dataNove.IdCtpm = 1;
-                    isAccesoCentro = true;
+                    isDisableManualCTPM = true;
+                    dataNove.IdCtpm = 1; //TODO: Revisar clasificacion TPM
                 }else if(user.IsInRole("UserOperaciones")){
                     dataNove.IdAreaCar = 1;
+                    isDisableManualCTPM = false;
+                    dataNove.IdCtpm = 1; //TODO: Revisar clasificacion TPM
                 }else if(user.IsInRole("UserSinTPM")){
                     @* dataNove.IdAreaCar = 1;
                     dataNove.IdCtpm = 5;
@@ -499,44 +486,36 @@
             }
         }
 
-        
+        //TODO: Revisar las variables 
+        indexCambio = -1;
+        paradasBandera = false;
+        tiempoPerdido = 0;
 
-            if( 
+        IsCargado = true;
+
+        //TODO: Queda Pendiente Chempro
+        @* if( 
             departamento.Contains("CONTROL DE PROCESOS")
-            @* departamento.Contains("MANTENIMIENTO") || *@
-            @* departamento.Contains("GCIA SERVICIOS INDUSTRIALES") || *@
-            @* departamento.Contains("INGENIERO DE PROY. Y MEJ. CONT")  *@
-            @* || departamento.Contains("LABORATORIO")  *@
-            @* || departamento.Contains("SEGURIDAD INDUSTRIAL") *@
+            departamento.Contains("MANTENIMIENTO") ||
+            departamento.Contains("GCIA SERVICIOS INDUSTRIALES") ||
+            departamento.Contains("INGENIERO DE PROY. Y MEJ. CONT") 
+            || departamento.Contains("LABORATORIO") 
+            || departamento.Contains("SEGURIDAD INDUSTRIAL")
             ){
             dataNove.IdAreaCar = 1;
             idCentro = 9;
             listaLineas = await DataLinea.ObtenerLasLineasPorCentro(9);
-            IsChempro = true;
-            isManualGT = false;
+            isDisableManualGT = false;
             dataNove.IdCtpm = 5;
             dataNove.LnisResu = 2;
             isTPM = false;
-        }
+        } *@
         
-        ListaCentro = await DataCentro.ObtenerTodosLosCentro();
-
-        listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
-
-        listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
-        listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
-
-        indexCambio = -1;
-        isDisabled = false;
-        paradasBandera = false;
-        tiempoPerdido = 0;
-        IsSinTiempo = false;
-        IsCargado = true;
     }
 
     //TODO: Pendiente por revisar
     protected async Task OK(EditContext e){
-        isDisabled = true;
+        isDisabledButton = true;
         dataNove.Lnfecha = DateTime.Now;
         if (e.Validate())
         {
@@ -551,9 +530,6 @@
                 dataNove.Lnobserv =  dataNove.Lnobserv.ToLower();
                 try
                 {
-                    if(IsChempro){
-                        dataNove.IdParada = "CH-" + usuarioCache["usuarioD"].Replace(" ","").Substring(0,7);
-                    }
                     if(IsNuevo){
                         bandera = await DataLibroNov.InsertarRegistro(dataNove);
                     }else{
@@ -606,7 +582,7 @@
                 mensaje = "La descripción de la acción tomada es obligatoria";
             }
         }
-        isDisabled = false;
+        isDisabledButton = false;
         _showTooltip = true;
     }
 

@@ -591,7 +591,12 @@
                 index = new List<int>();
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            if(ex.Message.Contains("Response status code does not indicate success: 500 (Internal Server Error).")){
+                mensaje = "Error al consultar al gespline.";
+                paradasBandera = true;
+            }else{
+                mensaje = ex.Message;
+            }
         }
     }
 

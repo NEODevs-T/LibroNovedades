@@ -22,7 +22,7 @@ namespace LibroNovedades.Data.API
         private HttpClient cliente;
         public async Task<List<List<string>>>? obtenerParadasActuales1turnoPorLinea(string centroCosto){
             List<List<string>> data;
-            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/obtenerParadasActuales1turnoPorLinea/" + centroCosto;
+            string url = "http://neo.paveca.com.ve/neoapi/gespline/obtenerParadasActuales1turnoPorLinea/" + centroCosto;
             this.cliente = new HttpClient();
             data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
             return data;
@@ -30,7 +30,7 @@ namespace LibroNovedades.Data.API
 
         public async Task<List<List<string>>>? obtenerParadasActuales1turnoPorLineaAgrupados(string centroCosto){
             List<List<string>> data;
-            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasGesplienActualesAgrupados1turno/" + centroCosto;
+            string url = "http://neo.paveca.com.ve/neoapi/gespline/ObtenerParadasGesplienActualesAgrupados1turno/" + centroCosto;
             this.cliente = new HttpClient();
             data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
             return data;
@@ -38,14 +38,14 @@ namespace LibroNovedades.Data.API
 
         public async Task<List<List<string>>>? obtenerParadasActuales2turnoPorLineaAgrupadosDespuesDeLas0am(string centroCosto){
             List<List<string>> data;
-            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasGesplienActualesAgrupados2turnoDespuesDeLas0am/" + centroCosto;
+            string url = "http://neo.paveca.com.ve/neoapi/gespline/ObtenerParadasGesplienActualesAgrupados2turnoDespuesDeLas0am/" + centroCosto;
             this.cliente = new HttpClient();
             data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
             return data;
         }
         public async Task<List<List<string>>>? obtenerParadasActuales2turnoPorLineaAgrupadosAntesDeLas0am(string centroCosto){
             List<List<string>> data;
-            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasGesplienActualesAgrupados2turnoAntesDeLas0am/" + centroCosto;
+            string url = "http://neo.paveca.com.ve/neoapi/gespline/ObtenerParadasGesplienActualesAgrupados2turnoAntesDeLas0am/" + centroCosto;
             this.cliente = new HttpClient();
             data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
             return data;
@@ -55,7 +55,7 @@ namespace LibroNovedades.Data.API
 
         public async Task<List<List<string>>>? obtenerParadasActuales2turnoPorLinea(string centroCosto){
             List<List<string>> data;
-            string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasSegundoTurnoPorMaquina/" + centroCosto;
+            string url = "http://neo.paveca.com.ve/neoapi/gespline/ObtenerParadasSegundoTurnoPorMaquina/" + centroCosto;
             this.cliente = new HttpClient();
             data = await cliente.GetFromJsonAsync<List<List<string>>>(url);
             return data;
@@ -97,7 +97,7 @@ namespace LibroNovedades.Data.API
                 if(ParadasIgnorar == "[]"){
                     return await this.obtenerParadasActuales1turnoPorLinea(centroCosto);
                 }
-                string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/obtenerParadasActuales1turnoPorLinea/" + centroCosto + "/" + ParadasIgnorar;
+                string url = "http://neo.paveca.com.ve/neoapi/gespline/obtenerParadasActuales1turnoPorLinea/" + centroCosto + "/" + ParadasIgnorar;
                 data = await cliente.GetFromJsonAsync<List<List<string>>>(url);     
                 return data;
             }
@@ -126,7 +126,7 @@ namespace LibroNovedades.Data.API
                     }
                     ParadasIgnorar += "]";
                 }
-                string url = "http://operaciones.papeleslatinos.com/neoapi/gespline/ObtenerParadasSegundoTurnoPorMaquina/" + centroCosto + "/" + ParadasIgnorar;
+                string url = "http://neo.paveca.com.ve/neoapi/gespline/ObtenerParadasSegundoTurnoPorMaquina/" + centroCosto + "/" + ParadasIgnorar;
                 data = await cliente.GetFromJsonAsync<List<List<string>>>(url);     
                 return data;
             }
@@ -140,9 +140,10 @@ namespace LibroNovedades.Data.API
                 return await this.obtenerParadasActuales2turnoPorLinea(centroCosto,listaNove);
             }
         }
+        
         public async Task<Dictionary<string,string>>? obtenerUsuario(string ficha){
             Dictionary<string,string> usuario = new Dictionary<string,string>();
-            string url = "http://operaciones.papeleslatinos.com/neoapi/usuario/BuscarUsuarioPorFicha/" + ficha;
+            string url = "http://neo.paveca.com.ve/neoapi/usuario/BuscarUsuarioPorFicha/" + ficha;
             this.cliente = new HttpClient();
             usuario = await cliente.GetFromJsonAsync<Dictionary<string,string>>(url);
             return usuario;
@@ -150,7 +151,7 @@ namespace LibroNovedades.Data.API
 
         public async Task<List<string>>? ObtenerTurnoYGrupo(){
             List<string> usuario;
-            string url = "http://operaciones.papeleslatinos.com/neoapi/turno/ObtenerTurnoYGrupoActual";
+            string url = "http://neo.paveca.com.ve/neoapi/turno/ObtenerTurnoYGrupoActual";
             this.cliente = new HttpClient();
             usuario = await cliente.GetFromJsonAsync<List<string>>(url);
             return usuario;

@@ -24,7 +24,8 @@
 
 <PageTitle>Formato</PageTitle>
 @* //TODO:
-•   cargado mejor de la busqueda
+    •   cargado mejor de la busqueda
+    •  FALTA ACTUALIZACION DEL ESTADO DEL DE LAS LISTAS DEL GEPLINE
 *@
 
 @if(IsCargado){
@@ -180,7 +181,7 @@
                                             <BSTD ColSpan="5">Coloque una Linea</BSTD>
                                         </BSTR>
                                     }else{
-                                        @foreach (var item in index)
+                                        @foreach (var item in indexParadas)
                                         {
                                             <BSTR>
                                                 <BSTD>@item</BSTD>
@@ -362,6 +363,9 @@
 
     private string? rol { get; set;} 
     private LibroNove dataNove  { get; set;}
+    private TiParTp tipoParada  { get; set;}
+    private List<List<string>> paradas { get; set;}
+    private List<LibroNove> listaNove { get; set;}
     private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
     private int idPais { get; set; }
     private int idEmpresa { get; set; }
@@ -387,19 +391,19 @@
     private List<ClasifiTpm> listaClasificacionTPM { get; set;}
     private List<TiParTp> listaTiposNovedad { get; set;}
     private List<string> listaTurnoYGrupo { get; set;}
+    private List<int> indexParadas  { get; set;}
     private bool causaCargada { get; set;}
-
-    //TODO: Variables por revisar
-    private TiParTp tipoParada  { get; set;}
-    private double tiempoPerdido { get; set;}
-    private List<List<string>> paradas { get; set;}
-    private List<int> index  { get; set;}
-    private List<LibroNove> listaNove { get; set;}
-    private List<LibroNove> listaNoveSinTiempoPerdido { get; set;}
     private bool paradasBandera {get; set;}
-    private bool bandera  { get; set;}
     private bool IsNuevo  { get; set;}
+
+    private bool bandera  { get; set;}
+    private double tiempoPerdido { get; set;}
     private int indexCambio  { get; set;}
+
+
+    //TODO: Pendiente por mejorar private List<LibroNove> listaNoveSinTiempoPerdido { get; set;}
+
+
 
     protected override async Task  OnInitializedAsync()
     {
@@ -412,11 +416,14 @@
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
                 IsCargado = false;
+                tiempoPerdido = 0;
                 mensaje = "Registre una Novedad";
 
                 isDisableManualGT = true;
                 isTPM = true;
                 isDisabledButton = false;
+                indexCambio = -1;
+                paradasBandera = false;
 
                 dataNove = new LibroNove();
                 dataNove.Lnobserv = "";
@@ -447,12 +454,10 @@
                     isAccesoCentro = true;
                     isAccesoDivision = true;
                     isAccesoLinea = true;
+                    isDisableManualGT = false;
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
                     listaPais = await DataPais.ObtenerTodosLosPaises();
-
-                    //TODO: Revisar
-                    isDisableManualGT = false;
 
                 }else if(rol.Contains("SuperUser")){
                     isAccesoPais = true;
@@ -519,12 +524,6 @@
                 }
             }
         }
-
-        //TODO: Revisar las variables 
-        indexCambio = -1;
-        paradasBandera = false;
-        tiempoPerdido = 0;
-
         IsCargado = true;
 
         //TODO: Queda Pendiente Chempro
@@ -604,7 +603,6 @@
         }
     }
 
-    //TODO: Pendiente por revisar
     protected async Task OK(EditContext e){
         isDisabledButton = true;
         dataNove.Lnfecha = DateTime.Now;
@@ -612,13 +610,14 @@
         {
             dataNove.Lnobserv = dataNove.Lnobserv.Trim();
             if((dataNove.LnisResu == 1 && dataNove.Lnobserv != "") || dataNove.LnisResu != 1){
-                //TODO: FALTA ACTUALIZACION DEL ESTADO DEL DE LAS LISTAS DEL GEPLINE
+                
                 dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
                 dataNove.IdEquipo = dataNove.IdEquipo.Trim().ToUpper();
                 dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
                 dataNove.LntiePerMi = Math.Round(dataNove.LntiePerMi,5);
                 dataNove.Lndiscrepa =  dataNove.Lndiscrepa.ToUpper();
                 dataNove.Lnobserv =  dataNove.Lnobserv.ToLower();
+
                 try
                 {
                     if(IsNuevo){
@@ -626,25 +625,25 @@
                     }else{
                         bandera = await  DataLibroNov.ActualizacionCompleta(dataNove.IdlibrNov,dataNove);
                     }
+
                     if(bandera){
                         mensaje = "Guardado Exitosamente";
                         int d1 = dataNove.IdAreaCar;
                         int d2 =  dataNove.IdLinea;
-                        int d3 = -1;
-                        //if(dataNove.IdParada != null){
-                        //    d3 = paradas[0].FindIndex(d => d.Contains(dataNove.IdParada.ToString()));
-                        //}
                         string d4 = dataNove.LnfichaRes;
                         string d5 = dataNove.IdMaquina;
+
                         if(indexCambio != -1){
                             paradas[6][indexCambio] = "1";
                         }
                             
                         dataNove = new LibroNove();
+
                         if(!isTPM){ 
                             dataNove.IdCtpm = 5;
                             dataNove.LnisResu = 2;
                         }
+                        
                         dataNove.LnisResu = 0;
                         dataNove.IdAreaCar = d1;
                         dataNove.IdLinea = d2;
@@ -676,32 +675,22 @@
         _showTooltip = true;
     }
 
-    @* protected async Task BuscarDivision(ChangeEventArgs e){
-        try{
-            if(idCentro != 0){
-                listaDivisiones = await DataDivision.ObtenerLasDivPorCentro(idCentro);
-            }
-        }catch(Exception ex){
-            mensaje = ex.Message;
-        }
-    } *@
-
-    
-
-    //TODO: Pendiente por revisar
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
         try{
-            dataNove.IdLinea = int.Parse(e.Value.ToString());
-            listaEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
-            Linea linea =  listaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
-            dataNove.IdMaquina = linea.Lofic;
-            listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
-            listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
-            paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
-            List<string> listaDeEstado = new List<string>();
+            Linea linea;
             string temporal;
+            List<string> listaDeEstado;
             LibroNove? dataNov;
             double parada;
+
+            dataNove.IdLinea = int.Parse(e.Value.ToString());
+            listaEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
+            linea =  listaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
+            dataNove.IdMaquina = linea.Lofic;
+            listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
+            // TODO: pendinete para mejorar listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
+            paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
+            listaDeEstado = new List<string>();
             
             for (int i = 0; i < paradas[0].Count; i++)
             {
@@ -724,31 +713,31 @@
             if(paradas.Count != 0){
                 if(paradas[0].Count == 0){
                     paradasBandera = true;
-                    index = new List<int>();
+                    indexParadas = new List<int>();
                 }else{
                     paradasBandera = false;
-                    index = new List<int>(paradas[0].Count());
-                    for (int i = 0; i < index.Capacity; i++){  index.Add(i); }
+                    indexParadas = new List<int>(paradas[0].Count());
+                    for (int i = 0; i < indexParadas.Capacity; i++){  indexParadas.Add(i); }
                 }
             }else{
                 paradasBandera = true;
-                index = new List<int>();
+                indexParadas = new List<int>();
             }
         }catch(Exception ex){
             mensaje = ex.Message;
         }
     }
-
-    //TODO: Pendiente por revisar
     public async Task eleccion(int item){
-        //? al agregar 1 indica que son datos del Gespline
-        //string a = await ReturnArrayAsync(item.ToString());
         try{
+            string temporal;
+            LibroNove data;
+
             indexCambio = item;
-            string temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
-            LibroNove data = await DataLibroNov.ObtenerPorIdParada(temporal);
+            temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
+            data = await DataLibroNov.ObtenerPorIdParada(temporal);
+
             if(data == null){
-                tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]); // TODO: Revisar Data
+                tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
                 dataNove.IdTipoNove = tipoParada.IdTiParTp;
                 dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
                 dataNove.Lnturno = listaTurnoYGrupo[0];
@@ -789,7 +778,6 @@
         try{
             dataNove.Lnturno = listaTurnoYGrupo[0];
             dataNove.Lngrupo = listaTurnoYGrupo[1];
-            //dataNove.IdCtpm = 2;
             IsNuevo = true;
             if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
                 dataNove.IdParada = null;
@@ -816,7 +804,6 @@
         dataNove.IdEquipo = "";
         dataNove.LntiePerMi = -1;
         dataNove.IdTipoNove = 19;
-        //dataNove.IdCtpm = 2;
         tiempoPerdido = 0;
         mensaje = "";
     }
@@ -825,13 +812,6 @@
         causaCargada = false;
     }
     
-    //[JSInvokable]
-    //public static Task<string> ReturnArrayAsync(string item)
-    //{
-    //    return Task.FromResult(item);
-    //}
-
-
 }
 
 

@@ -48,11 +48,14 @@
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
                                 <BSLabel IsHidden="true">User</BSLabel>
 
-                                <BSInput InputType="InputType.Text" placeholder="Usuario"
+                                <BSInput InputType="InputType.Text" Required placeholder="Usuario"
                                     @bind-Value="usuario" />
                         
-                                <BSInput InputType="InputType.Password" placeholder="Contraseña"
+                                <BSInput InputType="InputType.Password" Required placeholder="Contraseña"
                                     @bind-Value="contrasena" />
+                                
+                                <BSInput InputType="InputType.Password" Required placeholder="Contraseña"
+                                    @bind-Value="ficha" />
                             <br>
                             <BSButton IsDisabled="@isDisabled" @onclick=login Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
                     </div>
@@ -70,6 +73,7 @@
     private bool isDisabled  { get; set;} = false;
     private string proyecto { get; set;} = "";
     private string usuario {get; set;} = "";
+    private string ficha {get; set;} = "";
     private string contrasena {get; set;} = "";
 
     private UserLoginDto userDto {get; set;}
@@ -120,7 +124,8 @@
     protected async Task login(){
         isDisabled = true;
         mensaje = "Cargando...";
-        if (usuario.Trim() != "" && contrasena.Trim() != "")
+        int numCaracteres = ficha.Trim().Count();
+        if (usuario.Trim() != "" && contrasena.Trim() != "" && ficha.Trim() != "" && numCaracteres == 5)
         {
             userDto.Proyecto = proyecto;
             userDto.UserName = usuario;
@@ -144,6 +149,7 @@
                 else
                 {
                     await LocalStorage.SetItemAsync("LibroDeNovedades", validarToken);
+                    await LocalStorage.SetItemAsync("ficha", ficha);
                     await AuthStateProvider.GetAuthenticationStateAsync();    
                     NavigationManager.NavigateTo("");
                     mensaje = "Bienvenido";
@@ -152,7 +158,7 @@
                 mensaje = "Hubo un error. Por favor intende de nuevo";
             }
         }else{
-            mensaje = "Ingrese un usuario y contraseña valida";
+            mensaje = "Ingrese un usuario, contraseña valida y ficha valida";
         }
         isDisabled = false;
     }

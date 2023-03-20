@@ -431,6 +431,8 @@
                 dataNove.LnisResu = 0;
                 causaCargada = false;
 
+                dataNove.LnfichaRes = await LocalStorage.GetItemAsync<string>("ficha");
+
                 claims = user.Claims;
                 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
                 idCentro = int.Parse(user.FindFirst(c => c.Type == "IdCentro")?.Value ?? "0");
@@ -455,6 +457,7 @@
                     isAccesoDivision = true;
                     isAccesoLinea = true;
                     isDisableManualGT = false;
+                    dataNove.IdAreaCar = 10;
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
                     listaPais = await DataPais.ObtenerTodosLosPaises();
@@ -465,6 +468,7 @@
                     isAccesoCentro = true;
                     isAccesoDivision = true;
                     isAccesoLinea = true;
+                    dataNove.IdAreaCar = 11;
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
                     listaPais = await DataPais.ObtenerTodosLosPaises();
@@ -632,6 +636,7 @@
                         int d2 =  dataNove.IdLinea;
                         string d4 = dataNove.LnfichaRes;
                         string d5 = dataNove.IdMaquina;
+                        int d6 = dataNove.IdCtpm ?? 0;
 
                         if(indexCambio != -1){
                             paradas[6][indexCambio] = "1";
@@ -652,6 +657,7 @@
                         causaCargada = false;
                         dataNove.Lnturno = listaTurnoYGrupo[0];
                         dataNove.Lngrupo = listaTurnoYGrupo[1];
+                        dataNove.IdCtpm = d6;
                         indexCambio = -1;
                     }else{
                         mensaje = "Error. Intente de nuevo";

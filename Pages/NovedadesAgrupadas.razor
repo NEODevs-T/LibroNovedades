@@ -508,6 +508,7 @@
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
                 {
+                    //TODO:cambiar ----> mensaje = "Error: " + a.Message;
                     mensaje = a.Message;
                     @* dataNove = new LibroNove();
                     dataNove.Lnturno = listaTurnoYGrupo[0];

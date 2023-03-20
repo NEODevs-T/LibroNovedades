@@ -261,7 +261,7 @@
 
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
                                     <BSLabel class="labelFormulario">Discrepancia</BSLabel>
-                                    <BSInput class="TextAreaMediano" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
+                                    <BSInput class="TextAreaMediano" placeholder="@nota" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lndiscrepa)"/> 
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
@@ -271,7 +271,7 @@
                                         <BSLabel class="labelFormulario">Observación</BSLabel>
                                     }
                     
-                                    <BSInput class="TextAreaMediano" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
+                                    <BSInput class="TextAreaMediano" InputType="InputType.TextArea"  rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lnobserv)"/> 
                             </BSCol>
                             <BSCol Column="12">
@@ -293,6 +293,7 @@
 }
 @code{
     private string? mensaje { get; set;}
+    private string nota { get; set;}
     private string? departamento { get; set;}
     private LibroNove dataNove  { get; set;}
     private int idCentro  { get; set;} = 0;
@@ -370,6 +371,8 @@
         dataNove.IdCtpm = 2;
         dataNove.IdParada = "0";
 
+        nota = "";
+        
         dataNove.LnfichaRes = await LocalStorage.GetItemAsync<string>("usuarioF");
         departamento = await LocalStorage.GetItemAsync<string>("usuarioD");
 
@@ -472,6 +475,7 @@
                     }
                     if(bandera){
                         mensaje = "Guardado Exitosamente";
+                        nota = "";
                         int d1 = dataNove.IdAreaCar;
                         int d2 =  dataNove.IdLinea;
                         int d3 = -1;
@@ -504,7 +508,7 @@
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
                 {
-                    mensaje = "Error Intente de nuevo";
+                    mensaje = a.Message;
                     @* dataNove = new LibroNove();
                     dataNove.Lnturno = listaTurnoYGrupo[0];
                     dataNove.Lngrupo = listaTurnoYGrupo[1];
@@ -615,7 +619,8 @@
                 dataNove.Lnturno = listaTurnoYGrupo[0];
                 dataNove.Lngrupo = listaTurnoYGrupo[1];
                 dataNove.IdEquipo = "";
-                dataNove.Lnobserv = "Nota: " + paradas[4][item] + " - " + paradas[3][item];;
+                dataNove.Lnobserv = "";
+                nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];;
                 dataNove.Lndiscrepa = "";
                 dataNove.IdParada =  temporal;
                 IsNuevo = true;
@@ -656,6 +661,7 @@
                 dataNove.IdParada = null;
                 dataNove.Lndiscrepa = "";
                 dataNove.LntiePerMi = tiempoPerdido;
+                nota = "";
                 tiempoPerdido = 0;
                 mensaje = "";
             }else{
@@ -679,6 +685,7 @@
         //dataNove.IdCtpm = 2;
         tiempoPerdido = 0;
         mensaje = "";
+        nota = "";
     }
 
     public async Task atras1(){
@@ -686,6 +693,7 @@
         string a = dataNove.IdParada;
         dataNove = new LibroNove();
         paradas = null;
+        nota = "";
         dataNove.IdParada = a;
         dataNove.Lnturno = listaTurnoYGrupo[0];
         dataNove.Lngrupo = listaTurnoYGrupo[1];
@@ -693,6 +701,7 @@
 
     public async Task atras2(){
             dataNove.IdParada = "0";
+            nota = "";
     }
 
     public async Task IdMaquina(){

@@ -237,4 +237,31 @@ using Microsoft.EntityFrameworkCore;
         }
     }
 
+    public interface IDataChismoso
+    {
+        Task<bool> InsertarRegistros(List<CambFec> data,List<CambStat> data2);
+    }
+
+     public class DataChismoso : IDataChismoso
+    {
+        private readonly DbNeoContext _cotext;
+
+        public DataChismoso(DbNeoContext context)
+        {
+            this._cotext = context;
+        }
+
+        public async Task<bool> InsertarRegistros(List<CambFec> data,List<CambStat> data2){
+            foreach (var item in data)
+            {
+                this._cotext.CambFecs.Add(item);
+            }
+            foreach (var item in data2)
+            {
+                this._cotext.CambStats.Add(item);
+            }
+            return await _cotext.SaveChangesAsync() > 0;
+        }
+    }
+
 }

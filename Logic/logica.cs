@@ -12,19 +12,24 @@ using LibroNovedades.Data.LibroNov;
 namespace LibroNovedades.Logic{
     public interface ILogicLibroNov
     {
-        Task<bool> CambiosBDLibro(int idCentro,List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad);
+        Task<bool> CambiosBDLibro(int idCentro,List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad,string nombre);
     }
 
     public class LogicLibroNov : ILogicLibroNov
     {
 
-        public async Task<bool> CambiosBDLibro(int idCentro,List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad){
+        public async Task<bool> CambiosBDLibro(int idCentro,List<LibroNove> listaNovedades,DateTime filtroFecha,int filtroLinea,int filtroTipoNovedad,string nombre){
             DbNeoContext contex = new DbNeoContext();
             IDataLibroNov dataLibroNov = new DataLibroNov(contex);
             IDataPizarra dataPizarra = new DataPizarra(contex);
+            IDataChismoso dataChismoso = new DataChismoso(contex);
             LibroNove? temporal;
             ReunionDium registro = new ReunionDium();
             ReuDium registroNuevo = new ReuDium();
+            CambFec ChismosoCambioFecha =  new CambFec();
+            CambStat ChismosoCambioEstado = new  CambStat();
+            List<CambFec> ListaChismosoCambioFecha  = new List<CambFec>();
+            List<CambStat> ListaChismosoCambioEstado  = new List<CambStat>();
             List<ReuDium> listaPizarra = new List<ReuDium>(listaNovedades.Count);
             List<LibroNove> listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFecha,filtroLinea,filtroTipoNovedad);
 
@@ -33,19 +38,6 @@ namespace LibroNovedades.Logic{
                 temporal = listaNovedades2.Find(x=> x.IdlibrNov == item.IdlibrNov);
                 if(temporal != null){
                     if((temporal.LnisPizUni != item.LnisPizUni) && (item.LnisPizUni == true)){
-                        // if(temporal.IdLineaNavigation.IdCentro == 1){
-                        //     registro.Div = "DIV 1 Prueba";
-                        // }else if(temporal.IdLineaNavigation.IdCentro == 2){
-                        //     registro.Div = "Mol";
-                        // }else if(temporal.IdLineaNavigation.IdCentro == 5){
-                        //     registro.Div = "Generación";
-                        // }else if(temporal.IdLineaNavigation.IdCentro == 6){
-                        //     registro.Div = "AMB";
-                        // }else if(temporal.IdLineaNavigation.IdCentro == 8){
-                        //     registro.Div = "PP";
-                        // }else if(temporal.IdLineaNavigation.IdCentro == 10){
-                        //     registro.Div = "PD&CL";
-                        // }
                         if(temporal.IdTipoNove == 8 || temporal.IdAreaCar == 2){
                             //* Calidad
                             registroNuevo.Idksf = 3;
@@ -60,20 +52,36 @@ namespace LibroNovedades.Logic{
                         registroNuevo.Rdarea = temporal.IdLineaNavigation.Lnom;
                         registroNuevo.RdcodEq = temporal.IdEquipo;
                         registroNuevo.Rddisc = temporal.Lndiscrepa;
-                        registroNuevo.RdfecReu = temporal.Lnfecha;   
-                        registroNuevo.RdfecTra = temporal.Lnfecha;
+                        registroNuevo.RdfecReu = DateTime.Now;   
+                        registroNuevo.RdfecTra = DateTime.Now;
                         registroNuevo.Rdstatus = "Pendiente";
                         registroNuevo.IdResReu =  11;
                         registroNuevo.IdPais = 1;
                         listaPizarra.Add(registroNuevo);
+
+                        ChismosoCambioFecha.IdReuDiaNavigation = registroNuevo;
+                        ChismosoCambioFecha.Cffec = DateTime.Now;
+                        ChismosoCambioFecha.CffecNew = DateTime.Now;
+                        ChismosoCambioFecha.Cfuser = nombre;
+                        ListaChismosoCambioFecha.Add(ChismosoCambioFecha);
+
+                        ChismosoCambioEstado.Cbuser = nombre;
+                        ChismosoCambioEstado.Cbstat = "Pendiente";
+                        ChismosoCambioEstado.Cbfecha =  DateTime.Now;
+                        ChismosoCambioEstado.IdReuDiaNavigation =  registroNuevo;
+                        ListaChismosoCambioEstado.Add(ChismosoCambioEstado);
+
                         registroNuevo = new ReuDium();
+                        ChismosoCambioFecha = new CambFec();
+                        ChismosoCambioEstado = new  CambStat();
                     }
                 }else{
                     continue;
                 }
             }
             if(listaPizarra.Count > 0){
-                dataPizarra.InsertarRegistros(listaPizarra);
+                //dataPizarra.InsertarRegistros(listaPizarra);
+                dataChismoso.InsertarRegistros(ListaChismosoCambioFecha,ListaChismosoCambioEstado);
                 return true;
             }else{
                 return false;

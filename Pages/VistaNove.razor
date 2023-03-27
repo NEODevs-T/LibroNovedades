@@ -204,6 +204,7 @@
             usuarioCache.Add("usuarioD",await sessionStorage.GetItemAsync<string>("usuarioD"));
             usuarioCache.Add("usuarioC",await sessionStorage.GetItemAsync<string>("usuarioC"));
             usuarioCache.Add("usuarioF",await sessionStorage.GetItemAsync<string>("usuarioF"));
+
             if(usuarioCache["usuarioD"] == "" ||  usuarioCache["usuarioD"]  == null){
                 NavigationManager.NavigateTo("Login");
             }else{
@@ -247,6 +248,7 @@
     {
         IsChempro = false;
         refModal = new BSModal();
+        usuarioCache = new Dictionary<string,string>();
         IsCargado = false;
         isTPM = true;
         idAreCargada = 0;
@@ -258,6 +260,12 @@
         departamento = await LocalStorage.GetItemAsync<string>("usuarioD");
 
         cargo = await LocalStorage.GetItemAsync<string>("usuarioC");
+
+        usuarioCache.Add("usuarioN",await LocalStorage.GetItemAsync<string>("usuarioN"));
+        usuarioCache.Add("usuarioA",await LocalStorage.GetItemAsync<string>("usuarioA"));
+                
+        usuarioCache["usuarioN"] =  usuarioCache["usuarioN"][0] + usuarioCache["usuarioN"].Substring(1,usuarioCache["usuarioN"].Length -1).ToLower();
+        usuarioCache["usuarioA"] =  usuarioCache["usuarioA"][0] + usuarioCache["usuarioA"].Substring(1,usuarioCache["usuarioA"].Length -1).ToLower();
 
         if(cargo.Contains("SUPDTE") || cargo.Contains("GERENTE") || cargo.Contains("DIRECTOR") || cargo.Contains("SUPERINTENDENTE") || cargo.Contains("MEJORA CONTINUA") ||  cargo.Contains("MEJ. CONT") || cargo.Contains("JEFE DE TURNOS")  ||  cargo.Contains("J4779") ||  cargo.Contains("G4140")) {
             IsAccesoPizarra = true;
@@ -322,7 +330,7 @@
 
         try{
             await refModal.ShowAsync();
-            band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);
+            band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad,usuarioCache["usuarioN"] + " " + usuarioCache["usuarioA"]);
             if(band1){
                 band2 = await DataLibroNov.UpdateRegistros(listaNovedades);
                 if(band2){

@@ -45,7 +45,7 @@
                         <BSRow> 
 
                             @if(isAccesoPais){
-                                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Pais</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
                                             @if(listaPais != null){
@@ -62,7 +62,7 @@
                             }
 
                             @if(isAccesoEmpresa){
-                                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Empresas</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
                                             @if(listaEmpresa != null){
@@ -79,7 +79,7 @@
                             }
 
                             @if(isAccesoCentro){
-                                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Centro</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
                                             @if(listaCentro != null){
@@ -96,7 +96,7 @@
                             }
 
                             @if(isAccesoDivision){
-                                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Divisiones</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
                                             @if(listaDivision != null){
@@ -112,7 +112,7 @@
                                 </BSCol>
                             }
 
-                            <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                            <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Linea</BSLabel>
                                         <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
                                             @if (idDivision != 0)
@@ -132,7 +132,7 @@
                                         </BSInput>
                             </BSCol>
 
-                            <BSCol Position="Position.Relative" Align="Align.End"  AlignRow="OTRAlignRow" Place ColumnMedium="4">
+                            <BSCol class="item" Position="Position.Relative" Align="Align.End"  AlignRow="OTRAlignRow" Place ColumnMedium="4">
                                 @if(dataNove.IdLinea != 0){
                                     <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>Sin Perdida De tiempo</BSButton>
                                 }
@@ -200,38 +200,27 @@
                                     }
                                 </BSTBody>
                             </BSTable>
-
-                            @* @if(listaNoveSinTiempoPerdido != null){
-                                            @foreach (var item in listaNoveSinTiempoPerdido)
-                                            {
-                                                <BSTR>
-                                                    <BSTD>Sin seccion</BSTD>
-                                                    <BSTD>@paradas[4][item]</BSTD>
-                                                    <BSTD>@paradas[3][item]</BSTD>
-                                                    <BSTD>@paradas[5][item].Substring(0,5).Replace(".",",")</BSTD>
-                                                    
-                                                </BSTR>
-                                            }
-                                        } *@
                         }
                     }else{
                         <BSForm Model="dataNove" IsRow="true" Gutters="Gutters.Medium" OnSubmit="OK">
                             <DataAnnotationsValidator />
-                            <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                    <BSLabel class="labelFormulario">Centro</BSLabel>
-                                    <BSInput IsDisabled="true" InputType="InputType.Select" @bind-Value="idCentro"> 
-                                        @* @onchange="BuscarLinea" *@
-                                        @if(listaCentro != null){
-                                            <option value="0">Seleccione un Centro</option>
-                                            @foreach (var item in listaCentro)
-                                            {
-                                                <option value="@item.IdCentro">@item.Cnom</option>
+                            @if(isAccesoCentro){
+                                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                        <BSLabel class="labelFormulario">Centro</BSLabel>
+                                        <BSInput IsDisabled="true" InputType="InputType.Select" @bind-Value="idCentro"> 
+                                            @* @onchange="BuscarLinea" *@
+                                            @if(listaCentro != null){
+                                                <option value="0">Seleccione un Centro</option>
+                                                @foreach (var item in listaCentro)
+                                                {
+                                                    <option value="@item.IdCentro">@item.Cnom</option>
+                                                }
+                                            }else{
+                                                <option value="0">Cargando...</option>
                                             }
-                                        }else{
-                                            <option value="0">Cargando...</option>
-                                        }
-                                    </BSInput>
-                            </BSCol>
+                                        </BSInput>
+                                </BSCol>
+                            }
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Linea</BSLabel>
                                     <BSInput InputType="InputType.Select" IsDisabled="true" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
@@ -355,13 +344,11 @@
 
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
-
     private bool _showTooltip;
     private BSAlert _alertRef;
-
     private string? mensaje { get; set;}    
-
     private string? rol { get; set;} 
+    private string? ficha { get; set;} 
     private LibroNove dataNove  { get; set;}
     private TiParTp tipoParada  { get; set;}
     private List<List<string>> paradas { get; set;}
@@ -431,14 +418,13 @@
                 dataNove.LnisResu = 0;
                 causaCargada = false;
 
-                dataNove.LnfichaRes = await LocalStorage.GetItemAsync<string>("ficha");
-
                 claims = user.Claims;
                 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
                 idCentro = int.Parse(user.FindFirst(c => c.Type == "IdCentro")?.Value ?? "0");
                 idPais = int.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0") ;
                 idDivision = int.Parse(user.FindFirst(c => c.Type == "IdDivision")?.Value ?? "0") ;
                 idEmpresa = int.Parse(user.FindFirst(c => c.Type == "IdEmpresa")?.Value ?? "0") ;
+                ficha = user.FindFirst(c => c.Type == "Ficha")?.Value ?? "" ;
 
                 isAccesoPais = false;
                 isAccesoEmpresa = false;
@@ -461,6 +447,10 @@
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
                     listaPais = await DataPais.ObtenerTodosLosPaises();
+                    listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
+                    listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
+                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
 
                 }else if(rol.Contains("SuperUser")){
                     isAccesoPais = true;
@@ -472,6 +462,10 @@
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
                     listaPais = await DataPais.ObtenerTodosLosPaises();
+                    listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
+                    listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
+                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
 
                 }else if(rol.Contains("UserPais")){
                     isAccesoEmpresa = true;
@@ -481,6 +475,9 @@
 
                     // Todas las empresas de ese pais con sus centros, divisiones y lineas
                     listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
+                    listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
+                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
                 }else if(rol.Contains("UserEmpresa")){
                     isAccesoCentro = true;
                     isAccesoDivision = true;
@@ -488,12 +485,15 @@
 
                     // todos los centros,divisiones y lineas de esa empresa
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
+                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
                 }else if(rol.Contains("UserCentro")){ 
                     isAccesoDivision = true;
                     isAccesoLinea = true;
 
                     // todas las divisiones y lineas de ese centro
                     listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
                 }else if(rol.Contains("UserDivision")){
                     isAccesoLinea = true;
 
@@ -551,7 +551,11 @@
     }
 
     protected async Task BuscarEmpresas(ChangeEventArgs e){
-        int idPais = int.Parse(e.Value.ToString());
+        idPais = int.Parse(e.Value.ToString());
+        idEmpresa = 0;
+        idCentro = 0;
+        idDivision = 0;
+        idLinea = 0;
         try{
             if(idCentro != 0){
                 listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
@@ -562,7 +566,10 @@
     }
 
     protected async Task BuscarCentros(ChangeEventArgs e){
-        int idEmpresa = int.Parse(e.Value.ToString());
+        idEmpresa = int.Parse(e.Value.ToString());
+        idCentro = 0;
+        idDivision = 0;
+        idLinea = 0;
         try{
             if(idCentro != 0){
                 listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
@@ -573,7 +580,9 @@
     }
 
     protected async Task BuscarDivisiones(ChangeEventArgs e){
-        int idCentro = int.Parse(e.Value.ToString());
+        idCentro = int.Parse(e.Value.ToString());
+        idDivision = 0;
+        idLinea = 0;
         try{
             if(idCentro != 0){
                 listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
@@ -584,7 +593,9 @@
     }
 
     protected async Task BuscarLinea(ChangeEventArgs e){
-        int idDivision = int.Parse(e.Value.ToString());
+        idDivision = int.Parse(e.Value.ToString());
+        idLinea = 0;
+        dataNove.IdLinea = 0;
         try{
             if(idCentro != 0){
                 listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
@@ -610,6 +621,7 @@
     protected async Task OK(EditContext e){
         isDisabledButton = true;
         dataNove.Lnfecha = DateTime.Now;
+        dataNove.LnfichaRes = ficha;
         if (e.Validate())
         {
             dataNove.Lnobserv = dataNove.Lnobserv.Trim();

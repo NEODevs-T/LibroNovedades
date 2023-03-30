@@ -53,9 +53,6 @@
                         
                                 <BSInput InputType="InputType.Password" Required placeholder="Contraseña"
                                     @bind-Value="contrasena" />
-                                
-                                <BSInput InputType="InputType.Password" Required placeholder="Contraseña"
-                                    @bind-Value="ficha" />
                             <br>
                             <BSButton IsDisabled="@isDisabled" @onclick=login Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
                     </div>
@@ -73,13 +70,9 @@
     private bool isDisabled  { get; set;} = false;
     private string proyecto { get; set;} = "";
     private string usuario {get; set;} = "";
-    private string ficha {get; set;} = "";
     private string contrasena {get; set;} = "";
-
     private UserLoginDto userDto {get; set;}
-
     private HttpResponseMessage result {get; set;}
-
     private string validarToken  {get; set;}
 
     @* private Usuario? ObjUsuario {get; set;}
@@ -93,9 +86,6 @@
         proyecto = "LibroDeNovedades";
         userDto = new UserLoginDto() ;
     }
-
-
-
     protected async Task logout(){
         await LocalStorage.RemoveItemAsync("LibroDeNovedades");
         await AuthStateProvider.GetAuthenticationStateAsync();
@@ -124,8 +114,7 @@
     protected async Task login(){
         isDisabled = true;
         mensaje = "Cargando...";
-        int numCaracteres = ficha.Trim().Count();
-        if (usuario.Trim() != "" && contrasena.Trim() != "" && ficha.Trim() != "" && numCaracteres == 5)
+        if (usuario.Trim() != "" && contrasena.Trim() != "")
         {
             userDto.Proyecto = proyecto;
             userDto.UserName = usuario;
@@ -149,7 +138,6 @@
                 else
                 {
                     await LocalStorage.SetItemAsync("LibroDeNovedades", validarToken);
-                    await LocalStorage.SetItemAsync("ficha", ficha);
                     await AuthStateProvider.GetAuthenticationStateAsync();    
                     NavigationManager.NavigateTo("");
                     mensaje = "Bienvenido";

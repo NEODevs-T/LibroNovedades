@@ -73,7 +73,7 @@ builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataLibroNov, g
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataTiParTP, global::LibroNovedades.Data.LibroNov.DataTiParTP>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataPizarra, global::LibroNovedades.Data.LibroNov.DataPizarra>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataClasifiTPM, global::LibroNovedades.Data.LibroNov.DataClasifiTPM>();
-
+builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataChismoso, global::LibroNovedades.Data.LibroNov.DataChismoso>();
 
 
 builder.Services.AddScoped<global::LibroNovedades.Data.User.IDataNivel, global::LibroNovedades.Data.User.DataNivel>();

@@ -10,7 +10,6 @@
 @inject IDataLibroNov DataLibroNov;
 @inject IDataTiParTP DataTiParTP;
 @inject IDataClasifiTPM DataClasifiTPM;
-@inject IDataDivision DataDivision;
 @inject ILogicLibroNov LogicLibroNov;
 
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
@@ -276,9 +275,11 @@
     private int idDivision { get; set; }
     private int idLinea { get; set; }
     private int idAreCargada { get; set;}
-    private BSAlert _alertRef;
-    private BSModal refModal;
 
+    private BSAlert _alertRef { get; set;}
+    private BSModal refModal { get; set;}
+    private string nombre  { get; set;}
+    private string apellido  { get; set;}
     protected override async Task  OnInitializedAsync()
     {
         IsCargado = false;
@@ -296,11 +297,12 @@
                 filtroFecha = DateTime.Now.Date;
 
                 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
+                nombre = user.FindFirst(c => c.Type.Contains("givenname"))?.Value ?? "";
+                apellido = user.FindFirst(c => c.Type.Contains("surname"))?.Value ?? "";
                 idCentro = int.Parse(user.FindFirst(c => c.Type == "IdCentro")?.Value ?? "0");
                 idPais = int.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0") ;
                 idDivision = int.Parse(user.FindFirst(c => c.Type == "IdDivision")?.Value ?? "0") ;
                 idEmpresa = int.Parse(user.FindFirst(c => c.Type == "IdEmpresa")?.Value ?? "0") ;
-
                 isAccesoPais = false;
                 isAccesoEmpresa = false;
                 isAccesoCentro = false;
@@ -476,7 +478,7 @@
 
         try{
             await refModal.ShowAsync();
-            band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad);
+            band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFecha,filtroLinea,filtroTipoNovedad,nombre + " " + apellido);
             if(band1){
                 band2 = await DataLibroNov.UpdateRegistros(listaNovedades);
                 if(band2){

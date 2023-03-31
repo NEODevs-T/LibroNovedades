@@ -11,7 +11,7 @@
 @inject IDataLibroNov DataLibroNov;
 @inject IDataTiParTP DataTiParTP;
 @inject IDataClasifiTPM DataClasifiTPM;
-@inject IDataDivision DataDivision;
+
 
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
@@ -310,7 +310,7 @@
 
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
                                     <BSLabel class="labelFormulario">Discrepancia</BSLabel>
-                                    <BSInput class="TextAreaMediano" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
+                                    <BSInput class="TextAreaMediano" placeholder="@nota" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lndiscrepa)"/> 
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
@@ -320,7 +320,7 @@
                                         <BSLabel class="labelFormulario">Observación</BSLabel>
                                     }
                     
-                                    <BSInput class="TextAreaMediano" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
+                                    <BSInput class="TextAreaMediano" InputType="InputType.TextArea"  rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lnobserv)"/> 
                             </BSCol>
                             <BSCol Column="12">
@@ -344,9 +344,11 @@
 
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
+
     private bool _showTooltip;
     private BSAlert _alertRef;
-    private string? mensaje { get; set;}    
+    private string? mensaje { get; set;}  
+    private string? nota { get; set;}   
     private string? rol { get; set;} 
     private string? ficha { get; set;} 
     private LibroNove dataNove  { get; set;}
@@ -399,6 +401,7 @@
         {
             AuthenticationState? authState = await authenticationState;
             ClaimsPrincipal? user = authState?.User;
+
 
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
@@ -644,6 +647,7 @@
 
                     if(bandera){
                         mensaje = "Guardado Exitosamente";
+                        nota = "";
                         int d1 = dataNove.IdAreaCar;
                         int d2 =  dataNove.IdLinea;
                         string d4 = dataNove.LnfichaRes;
@@ -677,7 +681,8 @@
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
                 {
-                    mensaje = "Error Intente de nuevo";
+                    //TODO:cambiar ----> mensaje = "Error: " + a.Message;
+                    mensaje = a.Message;
                     @* dataNove = new LibroNove();
                     dataNove.Lnturno = listaTurnoYGrupo[0];
                     dataNove.Lngrupo = listaTurnoYGrupo[1];*@
@@ -742,7 +747,12 @@
                 indexParadas = new List<int>();
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            if(ex.Message.Contains("Response status code does not indicate success: 500 (Internal Server Error).")){
+                mensaje = "Error al consultar al gespline.";
+                paradasBandera = true;
+            }else{
+                mensaje = ex.Message;
+            }
         }
     }
     public async Task eleccion(int item){
@@ -762,6 +772,7 @@
                 dataNove.Lngrupo = listaTurnoYGrupo[1];
                 dataNove.IdEquipo = "";
                 dataNove.Lnobserv = "";
+                nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];;
                 dataNove.Lndiscrepa = "";
                 dataNove.IdParada =  temporal;
                 IsNuevo = true;
@@ -798,9 +809,12 @@
             dataNove.Lngrupo = listaTurnoYGrupo[1];
             IsNuevo = true;
             if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
+                dataNove.Lnobserv = "";
                 dataNove.IdParada = null;
                 causaCargada = true;
+                dataNove.Lndiscrepa = "";
                 dataNove.LntiePerMi = tiempoPerdido;
+                nota = "";
                 tiempoPerdido = 0;
                 mensaje = "";
             }else{
@@ -824,6 +838,7 @@
         dataNove.IdTipoNove = 19;
         tiempoPerdido = 0;
         mensaje = "";
+        nota = "";
     }
 
     public async Task atras(){

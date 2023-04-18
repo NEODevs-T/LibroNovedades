@@ -1,3 +1,4 @@
+using System.Linq;
 using LibroNovedades.Models;
 using LibroNovedades.ModelsDocIng;
 using Microsoft.EntityFrameworkCore;
@@ -164,6 +165,17 @@ using Microsoft.EntityFrameworkCore;
                 return await this._cotext.LibroNoves.Where(t => (t.Lnfecha >= fecha && t.Lnfecha < fecha.AddDays(1)) && ((t.IdTipoNove == tipoNov) && (t.IdLinea == idLinea)) && t.IdAreaCar == IdAreaCar).Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).ToListAsync();
             }
         }
+        // public async Task<void> IndicadoresCumplimiento(DateTime fechaIncio,DateTime fechaFinal,string idLinea)
+        // {
+        //     await this._cotext.LibroNoves
+        //     .Where(l => l.Lnfecha.Date >= fechaIncio && l.Lnfecha <= fechaFinal)
+        //     .OrderBy(l => l.Lnfecha.Date)
+        //     .GroupBy(l => new { l.IdLinea,l.Lnfecha.Date})
+        //     .Select(s =>  new {s.Key, Cantidad = s.Count(l => int.TryParse(l.IdlibrNov.ToString()))})
+        //     .ToListAsync();
+        //     // .Select(s =>  new {s.Key, Cantidad = s.(l => l.IdlibrNov)})
+        //     // .ToListAsync();
+        // }
     }
     public class DataTiParTP : IDataTiParTP
     {

@@ -72,7 +72,7 @@
                 </BSCol>
 
                 <BSCol Position="Position.Relative" Class="AbajoBoton" Place ColumnMedium="3">
-                    <BSButton class="buttonFormularioOK" @onclick="Buscar">Buscar</BSButton>
+                    <BSButton IsDisabled="@isDesactivadoBoton" class="buttonFormularioOK" @onclick="Buscar">Buscar</BSButton>
                 </BSCol>
             </BSRow> 
         </Authorized>
@@ -89,9 +89,10 @@
 
 @code{
     [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
-    public DateTime fechaInicio {get; set;}
-    public DateTime fechaFinal {get; set;}
+    private Task<AuthenticationState>? authenticationState { get; set;}
+    private DateTime fechaInicio {get; set;}
+    private DateTime fechaFinal {get; set;}
+    private TimeSpan difFechas { get; set;}
     private string? rol { get; set;} 
     private string? mensaje { get; set;}
     private string? idCentro { get; set;}
@@ -100,10 +101,13 @@
     private List<Centro> listaCentro { get; set;}
     private List<Division> listaDivision { get; set;}
     private List<Linea> listaLinea { get; set;}
+    private bool isDesactivadoBoton { get; set;}
+    private int numDias { get; set;}
+
 
     protected override async Task  OnInitializedAsync()
     {
-        if (authenticationState is not null)
+        @* if (authenticationState is not null)
         {
             AuthenticationState? authState = await authenticationState;
             ClaimsPrincipal? user = authState?.User;
@@ -112,10 +116,12 @@
             {
                 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
             }
-        }
+        } *@
         fechaInicio = DateTime.Now;
         fechaFinal = DateTime.Now;
+        isDesactivadoBoton = false;
         listaCentro = await DataCentro.ObtenerTodosLosCentro();
+        
     }
 
     protected async Task BuscarDivisiones(ChangeEventArgs e){
@@ -138,6 +144,13 @@
         }
     }
     public async Task Buscar(){
+        isDesactivadoBoton = true;
         
+        if(idLinea != "0" && idLinea != null){
+            difFechas = fechaFinal - fechaInicio;
+            numDias = difFechas.Days;
+        }
+
+        isDesactivadoBoton = false;
     }
 }

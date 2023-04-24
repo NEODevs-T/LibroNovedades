@@ -85,7 +85,9 @@
         userDto = new UserLoginDto() ;
     }
     protected async Task logout(){
-        await LocalStorage.RemoveItemAsync("LibroDeNovedades");
+        usuario = "";
+        contrasena = "";
+        await LocalStorage.RemoveItemAsync("LibroDeNovedadesNew");
         await AuthStateProvider.GetAuthenticationStateAsync();
     }
 
@@ -135,7 +137,7 @@
                 }
                 else
                 {
-                    await LocalStorage.SetItemAsync("LibroDeNovedades", validarToken);
+                    await LocalStorage.SetItemAsync("LibroDeNovedadesNew", validarToken);
                     await AuthStateProvider.GetAuthenticationStateAsync();    
                     NavigationManager.NavigateTo("");
                     mensaje = "Bienvenido";
@@ -176,7 +178,7 @@
                 {
                     //mensaje = "Accediendo...";
                     //Console.WriteLine(ValidarToken);
-                    await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
+                    await LocalStorage.SetItemAsync("LibroDeNovedadesNew", ValidarToken);
                     await AuthStateProvider.GetAuthenticationStateAsync();    
                     await LocalStorage.SetItemAsync("Identificacion", identificacion);
                     //user = new UserLoginDto();

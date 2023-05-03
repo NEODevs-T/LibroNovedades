@@ -1,13 +1,138 @@
 @page "/cumplimiento"
+
+@inject NotificationService notificationService
+
 @inject IDataLibroNov DataLibroNov
 
+@inject IDataPais DataPais;
+@inject IDataEmpresa DataEmpresa;
+@inject IDataCentro DataCentro;
+@inject IDataDivision DataDivision;
+@inject IDataLinea DataLinea;
+@inject IDataEquipoEAM DataEquipoEAM;
+
+
+
+<AuthorizeView Roles="SuperAdmin,SuperUser">
+
+
+    <Authorized>
+        <RadzenStack Orientation="Orientation.Vertical" Gap="1rem" Class="rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+            <div class="rz-p-sm-12 rz-text-align-center">
+                <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+                    <RadzenColumn Size="12" SizeMD="6">
+                        <RadzenFormField style="width: 80%;" Size="12" SizeMD="12" Text="Tipo de parada">
+
+                        </RadzenFormField>
+                    </RadzenColumn>
+                </RadzenRow>
+            </div>
+        </RadzenStack>
+        
+    </Authorized>
+
+    <NotAuthorized>
+        <BSContainer PaddingBottom="Padding.Large">
+            <BSRow>
+                <h1 class="titulo">Sin Acceso</h1>
+            </BSRow>
+        </BSContainer>
+    </NotAuthorized>
+
+</AuthorizeView>
 
 
 @code{
+    private List<Pai> listaPais {get;set;} 
+    private List<Empresa> listaEmpresa {get;set;}
+    private List<Centro> listaCentro {get;set;}
+    private List<Division> listaDivision {get;set;}
+    private List<Linea> listaLinea {get;set;}
+
+    private int idPais { get; set; }
+    private int idEmpresa { get; set; }
+    private int idCentro  { get; set;}
+    private int idDivision { get; set; }
+    private int idLinea { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         DateTime fechaI = new DateTime(2023,4,1);
         DateTime fechaF = new DateTime(2023,4,30);
         await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,"division",1);
     }
+
+    protected async Task BuscarEmpresas(ChangeEventArgs e){
+        idPais = int.Parse(e.Value.ToString());
+        idEmpresa = 0;
+        idCentro = 0;
+        idDivision = 0;
+        idLinea = 0;
+        try{
+            if(idCentro != 0){
+                listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
+            }
+        }catch(Exception ex){
+            Notificacion("error","Error en el programa. ",ex.Message);
+        }
+    }
+
+    protected async Task BuscarCentros(ChangeEventArgs e){
+        idEmpresa = int.Parse(e.Value.ToString());
+        idCentro = 0;
+        idDivision = 0;
+        idLinea = 0;
+        try{
+            if(idCentro != 0){
+                listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
+            }
+        }catch(Exception ex){
+            Notificacion("error","Error en el programa. ",ex.Message);
+        }
+    }
+
+    protected async Task BuscarDivisiones(ChangeEventArgs e){
+        idCentro = int.Parse(e.Value.ToString());
+        idDivision = 0;
+        idLinea = 0;
+        try{
+            if(idCentro != 0){
+                listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
+            }
+        }catch(Exception ex){
+            Notificacion("error","Error en el programa. ",ex.Message);
+        }
+    }
+
+    protected async Task BuscarLinea(ChangeEventArgs e){
+        idDivision = int.Parse(e.Value.ToString());
+        idLinea = 0;
+        try{
+            if(idCentro != 0){
+                listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+            }
+        }catch(Exception ex){
+            Notificacion("error","Error en el programa. ",ex.Message);
+        }
+    }
+
+    public void Notificacion(string tipo,string mensaje,string detalle)
+    {
+
+        NotificationMessage notificacion;
+        if(tipo == "error"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Error, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "info"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Info, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "exito"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Success, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "advertencia"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }
+    }
+
 }

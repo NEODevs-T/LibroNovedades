@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components.Authorization;
+using Radzen;
 
 using BlazorStrap;
 using Blazored.SessionStorage;
@@ -28,7 +29,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddOptions();  
 builder.Services.AddAuthorizationCore();
 
-
+builder.Services.AddScoped<NotificationService>();
 
 builder.Services.AddBlazoredSessionStorage(config =>
 {

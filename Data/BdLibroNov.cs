@@ -15,6 +15,8 @@ using Microsoft.EntityFrameworkCore;
         Task<bool> ActualizacionCompleta(int IdlibrNov,LibroNove data);
         Task<List<LibroNove>> ObtenerNovedadePorLinea(int IdLiena);
         Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha,int idLinea,int tipoNov,int IdAreaCar);
+
+        Task<(IEnumerable<IGrouping<int, LibroNove>>,int,int,double)> CalcularCumplimiento(DateTime fechaInicion,DateTime fechafinal,string tipo,int idCondicional);
     }
 
     public interface IDataPizarra
@@ -165,17 +167,26 @@ using Microsoft.EntityFrameworkCore;
                 return await this._cotext.LibroNoves.Where(t => (t.Lnfecha >= fecha && t.Lnfecha < fecha.AddDays(1)) && ((t.IdTipoNove == tipoNov) && (t.IdLinea == idLinea)) && t.IdAreaCar == IdAreaCar).Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).ToListAsync();
             }
         }
-        // public async Task<void> IndicadoresCumplimiento(DateTime fechaIncio,DateTime fechaFinal,string idLinea)
-        // {
-        //     await this._cotext.LibroNoves
-        //     .Where(l => l.Lnfecha.Date >= fechaIncio && l.Lnfecha <= fechaFinal)
-        //     .OrderBy(l => l.Lnfecha.Date)
-        //     .GroupBy(l => new { l.IdLinea,l.Lnfecha.Date})
-        //     .Select(s =>  new {s.Key, Cantidad = s.Count(l => int.TryParse(l.IdlibrNov.ToString()))})
-        //     .ToListAsync();
-        //     // .Select(s =>  new {s.Key, Cantidad = s.(l => l.IdlibrNov)})
-        //     // .ToListAsync();
-        // }
+        public async Task<(IEnumerable<IGrouping<int, LibroNove>>,int,int,double)> CalcularCumplimiento(DateTime fechaInicion,DateTime fechafinal,string tipo,int idCondicional)
+        {
+            IEnumerable<IGrouping<int, LibroNove>> data;
+            List<LibroNove> libroNov = new List<LibroNove>();
+            int diasReales = 0;
+            double cumplimiento;
+            int diasToricos = (fechafinal.Day - fechaInicion.Day) + 1;
+            if(tipo == "centro"){
+                libroNov = await this._cotext.LibroNoves.Where(l => l.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCondicional && (l.Lnfecha.Date >= fechaInicion.Date &&  l.Lnfecha.Date <= fechafinal.Date)).Select(l => new LibroNove() {Lnfecha = l.Lnfecha}).ToListAsync();
+            }else if(tipo == "division"){
+                libroNov = await this._cotext.LibroNoves.Where(l => l.IdLineaNavigation.IdDivision == idCondicional && (l.Lnfecha.Date >= fechaInicion.Date &&  l.Lnfecha.Date <= fechafinal.Date)).Select(l => new LibroNove() {Lnfecha = l.Lnfecha}).ToListAsync();
+            }else if(tipo == "linea"){
+                libroNov = await this._cotext.LibroNoves.Where(l => l.IdLineaNavigation.IdLinea == idCondicional && (l.Lnfecha.Date >= fechaInicion.Date &&  l.Lnfecha.Date <= fechafinal.Date)).Select(l => new LibroNove() {Lnfecha = l.Lnfecha}).ToListAsync();
+            }
+            data = libroNov.GroupBy(l => l.Lnfecha.Day);
+            diasReales = data.Count();
+            cumplimiento = (double) diasReales / diasToricos;
+
+            return (data,diasToricos,diasReales,cumplimiento);
+        }
     }
     public class DataTiParTP : IDataTiParTP
     {

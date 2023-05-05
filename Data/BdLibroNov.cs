@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
         Task<bool> ActualizacionCompleta(int IdlibrNov,LibroNove data);
         Task<List<LibroNove>> ObtenerNovedadePorLinea(int IdLiena);
         Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha,int idLinea,int tipoNov,int IdAreaCar);
-        Task<(IEnumerable<IGrouping<int, LibroNove>>,int,int,double)> CalcularCumplimiento(DateTime fechaInicion,DateTime fechafinal,string tipo,int idCondicional);
+        Task<(IEnumerable<IGrouping<DateTime, LibroNove>>,int,int,double)> CalcularCumplimiento(DateTime fechaInicion,DateTime fechafinal,string tipo,int idCondicional);
         Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltroEntreFechas(int idCentro,DateTime fechaInicion,DateTime fechaFinal,int idLinea,int tipoNov);
         Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(DateTime fechaInicio,DateTime fechaFinal,int idLinea,int tipoNov,int IdAreaCar);
     }
@@ -206,24 +206,23 @@ using Microsoft.EntityFrameworkCore;
                 return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicio.Date && t.Lnfecha.Date <= fechaFinal.Date) && ((t.IdTipoNove == tipoNov) && (t.IdLinea == idLinea)) && t.IdAreaCar == IdAreaCar).Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).ToListAsync();
             }
         }
-        public async Task<(IEnumerable<IGrouping<int, LibroNove>>,int,int,double)> CalcularCumplimiento(DateTime fechaInicion,DateTime fechafinal,string tipo,int idCondicional)
+        public async Task<(IEnumerable<IGrouping<DateTime, LibroNove>>,int,int,double)> CalcularCumplimiento(DateTime fechaInicion,DateTime fechafinal,string tipo,int idCondicional)
         {
-            IEnumerable<IGrouping<int, LibroNove>> data;
+            IEnumerable<IGrouping<DateTime, LibroNove>> data;
             List<LibroNove> libroNov = new List<LibroNove>();
             int diasReales = 0;
             double cumplimiento;
             int diasToricos = (fechafinal.Day - fechaInicion.Day) + 1;
-            if(tipo == "centro"){
-                libroNov = await this._cotext.LibroNoves.Where(l => l.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCondicional && (l.Lnfecha.Date >= fechaInicion.Date &&  l.Lnfecha.Date <= fechafinal.Date)).Select(l => new LibroNove() {Lnfecha = l.Lnfecha}).ToListAsync();
-            }else if(tipo == "division"){
-                libroNov = await this._cotext.LibroNoves.Where(l => l.IdLineaNavigation.IdDivision == idCondicional && (l.Lnfecha.Date >= fechaInicion.Date &&  l.Lnfecha.Date <= fechafinal.Date)).Select(l => new LibroNove() {Lnfecha = l.Lnfecha}).ToListAsync();
-            }else if(tipo == "linea"){
-                libroNov = await this._cotext.LibroNoves.Where(l => l.IdLineaNavigation.IdLinea == idCondicional && (l.Lnfecha.Date >= fechaInicion.Date &&  l.Lnfecha.Date <= fechafinal.Date)).Select(l => new LibroNove() {Lnfecha = l.Lnfecha}).ToListAsync();
+            if(tipo == "Centro"){
+                libroNov = await this._cotext.LibroNoves.Where(l => l.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCondicional && (l.Lnfecha.Date >= fechaInicion.Date &&  l.Lnfecha.Date <= fechafinal.Date)).Include(t => t.IdLineaNavigation).ToListAsync(); //.Select(l => new LibroNove() {Lnfecha = l.Lnfecha})
+            }else if(tipo == "Division"){
+                libroNov = await this._cotext.LibroNoves.Where(l => l.IdLineaNavigation.IdDivision == idCondicional && (l.Lnfecha.Date >= fechaInicion.Date &&  l.Lnfecha.Date <= fechafinal.Date)).Include(t => t.IdLineaNavigation).ToListAsync(); //.Select(l => new LibroNove() {Lnfecha = l.Lnfecha})
+            }else if(tipo == "Linea"){
+                libroNov = await this._cotext.LibroNoves.Where(l => l.IdLineaNavigation.IdLinea == idCondicional && (l.Lnfecha.Date >= fechaInicion.Date &&  l.Lnfecha.Date <= fechafinal.Date)).Include(t => t.IdLineaNavigation).ToListAsync(); //.Select(l => new LibroNove() {Lnfecha = l.Lnfecha})
             }
-            data = libroNov.GroupBy(l => l.Lnfecha.Day);
+            data = libroNov.GroupBy(l => l.Lnfecha.Date);
             diasReales = data.Count();
             cumplimiento = (double) diasReales / diasToricos;
-
             return (data,diasToricos,diasReales,cumplimiento);
         }
     }

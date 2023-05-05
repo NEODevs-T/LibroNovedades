@@ -18,17 +18,58 @@
 
     <Authorized>
         <RadzenStack Orientation="Orientation.Vertical" Gap="1rem" Class="rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
-            <div class="rz-p-sm-12 rz-text-align-center">
+            <div class="rz-p-sm-0 rz-text-align-justify">
                 <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
-                    <RadzenColumn Size="12" SizeMD="6">
-                        <RadzenFormField style="width: 80%;" Size="12" SizeMD="12" Text="Tipo de parada">
-
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <RadzenFormField Size="12" SizeMD="2" Text="Desde">
+                            <RadzenDatePicker DateFormat="dd/MM/yyyy" TValue="DateTime" @bind-Value=@fechaI/>
                         </RadzenFormField>
+                        <RadzenFormField Size="12" SizeMD="2" Text="Hasta">
+                            <RadzenDatePicker DateFormat="dd/MM/yyyy" TValue="DateTime" @bind-Value=@fechaF/>
+                        </RadzenFormField>
+                        <RadzenFormField Size="12" SizeMD="2" Text="Tipo de Filtro">
+                            <RadzenDropDown @bind-Value=@tipo Data=@listaTipo Change="ActualizarTipoDeFiltro" />
+                        </RadzenFormField>
+                        <RadzenFormField Size="12" SizeMD="2" Text="Centro">
+                            <RadzenDropDown @bind-Value=@idCentro Data=@listaCentro Change="BuscarDivisiones" TextProperty="Cnom" ValueProperty="IdCentro"/>
+                        </RadzenFormField>
+                        @if(bandDivision){
+                            <RadzenFormField Size="12" SizeMD="2" Text="División">
+                                <RadzenDropDown @bind-Value=@idDivision Data=@listaDivision Change="BuscarLinea" TextProperty="Dnombre" ValueProperty="IdDivision"/> 
+                            </RadzenFormField>
+                        }
+
+                        @if(bandLinea){
+                            <RadzenFormField Size="12" SizeMD="4" Text="Línea">
+                                <RadzenDropDown @bind-Value=@idLinea Data=@listaLinea TextProperty="Lnom" ValueProperty="IdLinea"/> 
+                            </RadzenFormField>
+                        }
                     </RadzenColumn>
+                    <RadzenRow Size="12" SizeMD="12" Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+                        <RadzenButton Click=CalcularCumplimiento Text="Filtrar" Icon="refresh" ButtonStyle="ButtonStyle.Success" />
+                    </RadzenRow>
                 </RadzenRow>
             </div>
         </RadzenStack>
-        
+
+        <br>
+        <br>
+        <br>
+
+        @* @if(data != null){
+            @foreach (var item in data)
+            {
+                @item.Key
+
+                <br>
+                <RadzenDataGrid Data="@item" TItem="LibroNove" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="LibroNove" Property="IdLineaNavigation.Lnom" Title="Linea"  />
+                        <RadzenDataGridColumn TItem="LibroNove" Property="Lnfecha" Title="Fecha"  />
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        } *@
     </Authorized>
 
     <NotAuthorized>
@@ -38,32 +79,70 @@
             </BSRow>
         </BSContainer>
     </NotAuthorized>
-
 </AuthorizeView>
 
-
 @code{
+    private IEnumerable<IGrouping<DateTime, LibroNove>> data {get;set;}
     private List<Pai> listaPais {get;set;} 
     private List<Empresa> listaEmpresa {get;set;}
     private List<Centro> listaCentro {get;set;}
     private List<Division> listaDivision {get;set;}
     private List<Linea> listaLinea {get;set;}
-
+    private List<string> listaTipo {get;set;}
     private int idPais { get; set; }
     private int idEmpresa { get; set; }
     private int idCentro  { get; set;}
-    private int idDivision { get; set; }
+    private int idDivision { get; set;}
     private int idLinea { get; set; }
+    private DateTime fechaI {get; set; }
+    private DateTime fechaF {get; set; }
+    private string tipo {get;set;}
+    private bool bandPais {get;set;}
+    private bool bandEmpresa {get;set;}
+    private bool bandCentro {get;set;}
+    private bool bandDivision {get;set;}
+    private bool bandLinea {get;set;}
 
     protected override async Task OnInitializedAsync()
     {
-        DateTime fechaI = new DateTime(2023,4,1);
-        DateTime fechaF = new DateTime(2023,4,30);
-        await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,"division",1);
+        fechaI = DateTime.Now;
+        fechaF = DateTime.Now.AddDays(1);
+        listaTipo = new List<string>();
+        listaTipo.Add("Centro");
+        listaTipo.Add("Division");
+        listaTipo.Add("Linea");
+        listaCentro = await DataCentro.ObtenerTodosLosCentro();
+        //await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,"division",1);
+    }
+    protected async Task ActualizarTipoDeFiltro(){
+        bandDivision = true;
+        bandLinea = true;
+        idDivision = 0;
+        idLinea = 0;
+
+        if(tipo.Contains("Centro")){
+            bandDivision = false;
+            bandLinea = false;
+
+        }else if(tipo.Contains("Division")){
+            bandLinea = false;
+        }
+    }
+    protected async Task CalcularCumplimiento(){
+        if(tipo != null){ 
+            if(tipo.Contains("Centro")){
+                (data,_,_,_) = await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,tipo,idCentro);
+            }else if(tipo.Contains("Division")){
+                (data,_,_,_) = await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,tipo,idDivision);
+            }else if(tipo.Contains("Linea")){
+                (data,_,_,_) = await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,tipo,idLinea);
+            }
+        }else{
+            Notificacion("error","Error. ","Seleccione un tipo de filtro");
+        }
     }
 
-    protected async Task BuscarEmpresas(ChangeEventArgs e){
-        idPais = int.Parse(e.Value.ToString());
+    protected async Task BuscarEmpresas(){
         idEmpresa = 0;
         idCentro = 0;
         idDivision = 0;
@@ -77,11 +156,8 @@
         }
     }
 
-    protected async Task BuscarCentros(ChangeEventArgs e){
-        idEmpresa = int.Parse(e.Value.ToString());
+    protected async Task BuscarCentros(){
         idCentro = 0;
-        idDivision = 0;
-        idLinea = 0;
         try{
             if(idCentro != 0){
                 listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
@@ -91,28 +167,30 @@
         }
     }
 
-    protected async Task BuscarDivisiones(ChangeEventArgs e){
-        idCentro = int.Parse(e.Value.ToString());
-        idDivision = 0;
-        idLinea = 0;
-        try{
-            if(idCentro != 0){
-                listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
+    protected async Task BuscarDivisiones(){
+        if(bandDivision){
+            idDivision = 0;
+            idLinea = 0;
+            try{
+                if(idCentro != 0){
+                    listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                }
+            }catch(Exception ex){
+                Notificacion("error","Error en el programa. ",ex.Message);
             }
-        }catch(Exception ex){
-            Notificacion("error","Error en el programa. ",ex.Message);
         }
     }
 
-    protected async Task BuscarLinea(ChangeEventArgs e){
-        idDivision = int.Parse(e.Value.ToString());
-        idLinea = 0;
-        try{
-            if(idCentro != 0){
-                listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+    protected async Task BuscarLinea(){
+        if(bandLinea){
+            idLinea = 0;
+            try{
+                if(idCentro != 0){
+                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                }
+            }catch(Exception ex){
+                Notificacion("error","Error en el programa. ",ex.Message);
             }
-        }catch(Exception ex){
-            Notificacion("error","Error en el programa. ",ex.Message);
         }
     }
 

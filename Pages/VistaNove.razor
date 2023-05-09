@@ -505,7 +505,7 @@
 
         try{
             await refModal.ShowAsync();
-            band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFechaInicio,filtroLinea,filtroTipoNovedad,nombre + " " + apellido);
+            band1 = await LogicLibroNov.CambiosBDLibro(idCentro,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroTipoNovedad,nombre + " " + apellido);
             if(band1){
                 band2 = await DataLibroNov.UpdateRegistros(listaNovedades);
                 if(band2){

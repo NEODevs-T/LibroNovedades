@@ -23,7 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Radzen.Blazor" Version="4.10.2" />
+    <PackageReference Include="Radzen.Blazor" Version="4.12.1" />
   </ItemGroup>
 
 </Project>

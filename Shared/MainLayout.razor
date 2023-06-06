@@ -120,8 +120,12 @@
             userDto.Proyecto = proyecto;
             userDto.UserName = usuario;
             userDto.Password = contrasena;
-            result = await Http.PostAsJsonAsync("http://neo.paveca.com.ve/Authentication/api/Auth/Login", userDto);
-            validarToken = await result.Content.ReadAsStringAsync();
+            //result = await Http.PostAsJsonAsync("http://neo.paveca.com.ve/Authentication/api/Auth/Login", userDto);
+            //validarToken = await result.Content.ReadAsStringAsync();
+
+            //TODO: Quitar
+            validarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+            
             if (validarToken != null)
             {
                 if (validarToken == "NotFoundUser")
@@ -151,41 +155,4 @@
         }
         isDisabled = false;
     }
-
-    @* protected async Task HandleLogin(EditContext e)
-    {
-        user.Proyecto = "LibroDeNovedades";
-        if (e.Validate())
-        {
-            var result = await Http.PostAsJsonAsync("http://operaciones.papeleslatinos.com/Authentication/api/Auth/Login", user);
-            var ValidarToken = await result.Content.ReadAsStringAsync();
-            
-            //var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-            if (ValidarToken != null)
-            {
-                if (ValidarToken == "NotFoundUser")
-                {
-
-                }
-                else if (ValidarToken == "WrongPassword")
-                {
-
-                }
-                else if (ValidarToken == "null")
-                {
-
-                }
-                else
-                {
-                    //mensaje = "Accediendo...";
-                    //Console.WriteLine(ValidarToken);
-                    await LocalStorage.SetItemAsync("LibroDeNovedadesNew", ValidarToken);
-                    await AuthStateProvider.GetAuthenticationStateAsync();    
-                    await LocalStorage.SetItemAsync("Identificacion", identificacion);
-                    //user = new UserLoginDto();
-                    NavigationManager.NavigateTo("");
-                }
-            }
-        }
-    } *@
 }

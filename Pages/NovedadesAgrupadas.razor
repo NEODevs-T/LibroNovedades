@@ -313,13 +313,13 @@
                                     <BSInput class="TextAreaMediano" placeholder="@nota" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lndiscrepa)"/> 
                             </BSCol>
+
                             <BSCol Position="Position.Relative" Place ColumnMedium="12">
                                     @if(dataNove.LnisResu == 1){
                                         <BSLabel class="labelFormulario">Acción</BSLabel>
                                     }else{
                                         <BSLabel class="labelFormulario">Observación</BSLabel>
                                     }
-                    
                                     <BSInput class="TextAreaMediano" InputType="InputType.TextArea"  rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lnobserv)"/> 
                             </BSCol>

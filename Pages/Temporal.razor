@@ -1,0 +1,278 @@
+@page "/temporal"
+
+<PageTitle>Formato</PageTitle>
+
+<RadzenRow PaddingBottom="Padding.Large">
+        <RadzenColumn>
+            <h1 class="titulo">Libro de Novedades</h1>
+        </RadzenColumn>
+</RadzenRow>
+
+<RadzenRow class="carga" JustifyContent="JustifyContent.Center">
+        <RadzenColumn Size="3">
+            <div class="loader"></div>
+        </RadzenColumn>  
+</RadzenRow>
+
+
+ <RadzenCard  style="width: 90%;" >
+        <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" >
+            @* Dismissed="Dismissed" *@
+            <h5>@mensaje</h5>
+        </BSAlert>
+        <RadzenStack>
+            <RadzenRow>
+                 <RadzenColumn Size="12" SizeMD="6">
+                    <RadzenFormField style="width: 80%;" Size="12" SizeMD="12" Text="Ejemplo">
+                        <RadzenDropDown Change="BuscarEmpresas" AllowClear="true" @bind-Value=idPais AllowVirtualization="true" AllowFiltering="true" Data=@listaPais TextProperty="Pnombre" ValueProperty="IdPais" Style="width: 100%; max-width: 400px;" />
+                    </RadzenFormField>
+                 </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="6">
+                    <RadzenFormField style="width: 80%;" Size="12" SizeMD="12" Text="Numerico">
+                        <RadzenNumeric @bind-Value=@idPais Min="1" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="6">
+                    <RadzenButton Variant="Variant.Outlined" Click=BuscarEmpresas Text="Success" ButtonStyle="ButtonStyle.Success" />
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+
+        <div class="table">
+            <RadzenDataGrid @ref="ordersGrid" AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5" AllowSorting="true" 
+                    Data="@orders" TItem="Pai" >
+                 <Columns>
+                    <RadzenDataGridColumn   Width="40px" TItem="Pai" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+                        <Template Context="data">
+                            <RadzenText class="mb-0 tipografia">@(orders.IndexOf(data) + 1)</RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn Width="180px" TItem="Pai" Property="Pnombre" Title="Pais">
+                        <Template Context="order">
+                            <RadzenText class="mb-0 tipografia">@order.Pnombre</RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn Width="180px" TItem="Pai" Property="Pestado" Title="Estado">
+                        <Template Context="order">
+                            @if(order.Pestado){
+                                <RadzenText class="mb-0 tipografia">Activo</RadzenText>
+                            }else{
+                                <RadzenText class="mb-0 tipografia">Inactivo</RadzenText>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                 </Columns>
+            </RadzenDataGrid>
+        </div>
+        
+</RadzenCard>
+
+@idPais
+
+
+<RadzenTemplateForm TItem="LibroNove" Data=@dataNove Submit=@OK>
+        <RadzenFieldset Text="Novedad">
+              <RadzenStack Gap="2rem" Class="rz-p-1 rz-p-md-2">
+                    <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+                        <RadzenColumn Size="12" SizeMD="3" Class="rz-text-align-start rz-text-align-md-start">
+                            @if(isAccesoCentro){
+                                <RadzenFormField  Variant="Variant.Flat" style="width: 90%;" Size="12" SizeMD="12" Text="Centro">
+                                    <RadzenDropDown Disabled="true"  AllowClear="true" @bind-Value=idCentro AllowVirtualization="true" AllowFiltering="true" Data=@listaCentro TextProperty="Cnom" ValueProperty="IdCentro" Style="width: 100%; max-width: 400px;" />       
+                                </RadzenFormField>
+                            }
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="3" Class="rz-text-align-start rz-text-align-md-start">
+                            <RadzenFormField  Variant="Variant.Flat" style="width: 90%;" Size="12" SizeMD="12" Text="Linea">
+                                <RadzenDropDown Disabled="true" Name="IdLinea" AllowClear="true"  @bind-Value=dataNove.IdLinea AllowVirtualization="true" AllowFiltering="true" Data=@listaLinea TextProperty="Lnom" ValueProperty="IdLinea" Style="width: 100%;" />
+                            </RadzenFormField>
+                            <RadzenCustomValidator Component="IdLinea" Validator="@(() => MayorCero(dataNove.IdLinea))" Text="Requerido" Popup="false" Style="position:absolute" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="3" Class="rz-text-align-start rz-text-align-md-start">
+                            <RadzenFormField  Variant="Variant.Flat" style="width: 90%;" Size="12" SizeMD="12" Text="Grupo">
+                                <RadzenDropDown Disabled="@isDisableManualGT" Name="Lngrupo" AllowClear="true" @bind-Value=dataNove.Lngrupo AllowVirtualization="true" AllowFiltering="true" Data=@listaGrupo Style="width: 100%;" />
+                            </RadzenFormField>
+                            <RadzenRequiredValidator Component="Lngrupo" Text="Requerido" Popup="false" Style="position: relative;"/>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="3" Class="rz-text-align-start rz-text-align-md-start">
+                            <RadzenFormField  Variant="Variant.Flat" style="width: 90%;" Size="12" SizeMD="12" Text="Turno">
+                                <RadzenDropDown Disabled="@isDisableManualGT" Name="Lnturno" AllowClear="true" @bind-Value=dataNove.Lnturno AllowVirtualization="true" AllowFiltering="true" Data=@listaTurno Style="width: 100%;" />
+                            </RadzenFormField>
+                            <RadzenRequiredValidator Component="Lnturno" Text="Requerido" Popup="false" Style="position: relative;"/>
+                        </RadzenColumn>
+                    </RadzenRow>
+                     <RadzenRow AlignItems="AlignItems.End" RowGap="0.25rem">
+                         <RadzenColumn Size="12" SizeMD="6" Class="rz-text-align-start rz-text-align-md-start">
+                            <RadzenFormField Variant="Variant.Flat" style="width: 95%;" Size="12" SizeMD="12" Text="Codigo de Equipo">
+                                @* TODO: Revisar como se realiza la busqueda  *@
+                                 <RadzenDropDown Name="IdEquipo" @bind-Value=dataNove.IdEquipo Data=@listaEquiposEAM TextProperty="EnombreEam" ValueProperty="EcodEquiEam" Style="width: 400px;" AllowVirtualization="true" AllowFiltering="true" AllowClear="true">
+                                    <Template Context="equipo">
+                                        @equipo.EcodEquiEam - @equipo.EnombreEam -  @equipo.EdescriEam
+                                    </Template>
+                                </RadzenDropDown>
+                            </RadzenFormField>
+                            <RadzenRequiredValidator Component="IdEquipo" Text="Requerido" Popup="false" Style="position: relative;"/>
+                         </RadzenColumn>
+                         <RadzenColumn Size="8" SizeMD="3" Class="rz-text-align-start rz-text-align-md-start">
+                            <RadzenFormField Variant="Variant.Flat" style="width: 90%;" Size="12" SizeMD="12" Text="Clasificacion TPM">
+                                <RadzenDropDown Name="IdCtpm" AllowClear="true"  @bind-Value=dataNove.IdCtpm AllowVirtualization="true" AllowFiltering="true" Data=@listaClasificacionTPM TextProperty="Ctpmnom" ValueProperty="IdCtpm" Style="width: 100%;" />
+                            </RadzenFormField>
+                            <RadzenRequiredValidator Component="IdCtpm" Text="Requerido" Popup="false" Style="position: relative;"/>
+                         </RadzenColumn>
+                         <RadzenColumn Size="4" SizeMD="3" Class="rz-text-align-start rz-text-align-md-start">
+                            <RadzenFormField Variant="Variant.Flat" style="width: 90%;" Size="12" SizeMD="12" Text="¿Fue Resuelto?">
+                                <RadzenDropDown Name="LnisResu" AllowClear="true"  @bind-Value=dataNove.LnisResu AllowVirtualization="true" AllowFiltering="true" Data=@listaIsResuelto Style="width: 100%;" >
+                                    <Template Context="sino">
+                                        @if(sino == 0){
+                                            <h6>No</h6>
+                                        }else{
+                                            <h6>Si</h6>
+                                        }
+                                    </Template>
+                                </RadzenDropDown>
+                            </RadzenFormField>
+                            <RadzenRequiredValidator Component="LnisResu" Text="Requerido" Popup="false" Style="position: relative;"/>
+                         </RadzenColumn>
+                     </RadzenRow>
+                     <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+                        <RadzenColumn Size="12" SizeMD="12" Class="rz-text-align-start rz-text-align-md-start">
+                            <RadzenFormField style="width: 100%;" Size="12" SizeMD="12" Text="Discrepancia">
+                                <RadzenTextArea Name="Lndiscrepa" Cols="30" Rows="4" Placeholder="@nota" @bind-Value=dataNove.Lndiscrepa class="w-100"/>
+                            </RadzenFormField>
+                            <RadzenRequiredValidator Component="Lndiscrepa" Text="Requerido" Popup="false" Style="position: relative;"/>
+                        </RadzenColumn>
+                     </RadzenRow>
+                     <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+                        <RadzenColumn Size="12" SizeMD="12" Class="rz-text-align-start rz-text-align-md-start">
+                            <RadzenFormField style="width: 100%;" Size="12" SizeMD="12" Text="Acción - Observación">
+                                <RadzenTextArea Name="Lnobserv" Cols="30" Rows="5" Placeholder="@nota" @bind-Value=dataNove.Lnobserv class="w-100"/>
+                            </RadzenFormField>
+                            <RadzenRequiredValidator Component="Lnobserv" Text="Requerido" Popup="false" Style="position: relative;"/>
+                        </RadzenColumn>
+                     </RadzenRow>
+                     <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+                        <RadzenColumn Size="12" SizeMD="12" Class="rz-text-align-start rz-text-align-md-start">
+                            <RadzenButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Disabled="@isDisabledButton" Text="Registrar" ButtonStyle="ButtonStyle.Success" />
+                            <RadzenButton ButtonType="ButtonType.Reset" Variant="Variant.Outlined" Disabled="@isDisabledButton" Click=atras Text="Atras" ButtonStyle="ButtonStyle.Danger" />
+                        </RadzenColumn>
+                     </RadzenRow>
+              </RadzenStack>
+        </RadzenFieldset>
+</RadzenTemplateForm>
+
+
+@code{
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    public RadzenDataGrid<Pai> ordersGrid {get; set;}
+    public IList<Pai> orders {get; set;}
+
+    private bool _showTooltip;
+    private BSAlert _alertRef;
+    private string? mensaje { get; set;}  
+    private string? nota { get; set;} = "Funciona";
+    private string? rol { get; set;} 
+    private string? ficha { get; set;} 
+    private LibroNove dataNove  { get; set;} = new LibroNove();
+    private TiParTp tipoParada  { get; set;}
+    private List<List<string>> paradas { get; set;}
+    private List<LibroNove> listaNove { get; set;}
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+    private int idPais { get; set; } = 0;
+    private int idEmpresa { get; set; } = 0;
+    private int idCentro  { get; set;} = 0;
+    private int idDivision { get; set; } = 0;
+    private int idLinea { get; set; } = 0;
+    private bool isAccesoPais {get;set;} = true;
+    private bool isAccesoEmpresa {get;set;} = true;
+    private bool isAccesoCentro {get;set;} = true;
+    private bool isAccesoDivision {get;set;} = true;
+    private bool isAccesoLinea {get;set;} = true;
+    private bool isDisableManualCTPM {get;set;} = true;
+    private bool isDisableManualGT { get; set;} = true;
+    private bool isDisabledButton  { get; set;} = false;
+    private bool IsCargado  { get; set;} = true;
+    private bool isTPM  { get; set;} = true;
+    private List<Pai> listaPais {get;set;} = new List<Pai>();  
+    private List<Empresa> listaEmpresa {get;set;} = new  List<Empresa>();
+    private List<Centro> listaCentro {get;set;} = new List<Centro>();
+    private List<Division> listaDivision {get;set;} = new List<Division>();
+    private List<Linea> listaLinea {get;set;} = new List<Linea>();
+    private List<EquipoEam> listaEquiposEAM{ get; set;} = new List<EquipoEam>();
+    private List<ClasifiTpm> listaClasificacionTPM { get; set;} = new List<ClasifiTpm>();
+    private List<TiParTp> listaTiposNovedad { get; set;} = new List<TiParTp>();
+    private List<string> listaTurnoYGrupo { get; set;} = new List<string>();
+    private List<int> indexParadas  { get; set;} = new List<int>();
+    private bool causaCargada { get; set;}
+    private bool paradasBandera {get; set;}
+    private bool IsNuevo  { get; set;}
+
+    private bool bandera  { get; set;}
+    private double tiempoPerdido { get; set;}
+    private int indexCambio  { get; set;}
+
+    private string[] listaGrupo { get; set;} = {"A","B","C","D"};
+    private string[] listaTurno { get; set;} = {"1","2"};
+
+    private int[] listaIsResuelto { get; set;} = {0,1};
+
+    bool MayorCero(int id)
+    {
+        return id > 0;
+    }
+
+    protected override async Task  OnInitializedAsync()
+    {
+        Pai pais;
+        orders = new List<Pai>();
+        for (int i = 0; i < 3; i++){
+            pais = new Pai();
+            pais.IdPais = i;
+            pais.Pestado = true;
+            pais.Pnombre = "Pais " + (i+1);
+
+            orders.Add(pais);
+            listaPais.Add(pais);
+        }
+    }
+
+    protected async Task BuscarEmpresas(){
+        
+    }
+
+
+    protected async Task BuscarCentros(ChangeEventArgs e){
+        
+    }
+
+    protected async Task BuscarDivisiones(ChangeEventArgs e){
+        
+    }
+
+    protected async Task BuscarLinea(ChangeEventArgs e){
+        
+    }
+
+    protected async Task BuscarLineaPorCentro(ChangeEventArgs e){
+        
+    }
+
+    protected async Task OK(){
+
+    }
+    protected async Task BuscarTiempoPerdido(){
+
+    }
+    public async Task eleccion(int item){
+
+    }
+    public async Task eleccionSinGespline(){
+
+    }
+    public async Task SinPerdida(){
+
+    }
+    public async Task atras(){
+
+    }
+}

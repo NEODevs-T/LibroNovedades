@@ -81,7 +81,7 @@
 
     protected override async Task  OnInitializedAsync()
     {
-        proyecto = "LibroDeNovedadesNew";
+        proyecto = "LibroDeNovedades";
         userDto = new UserLoginDto() ;
     }
     protected async Task logout(){
@@ -117,7 +117,7 @@
         if (usuario.Trim() != "" && contrasena.Trim() != "")
         {
             userDto.Proyecto = proyecto;
-            userDto.UserName = usuario;
+            userDto.UserName = usuario.Trim().ToUpper();
             userDto.Password = contrasena;
             result = await Http.PostAsJsonAsync("http://neo.paveca.com.ve/Authentication/api/Auth/Login", userDto);
             validarToken = await result.Content.ReadAsStringAsync();

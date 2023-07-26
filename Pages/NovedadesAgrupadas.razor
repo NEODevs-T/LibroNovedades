@@ -243,6 +243,11 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Grupo</BSLabel>
+                                    <BSInput name="Grupo" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lngrupo"></BSInput>
+                                    <BSFeedback For="@(() => dataNove.Lngrupo)"/> 
+                            </BSCol>
+                            @* <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                    <BSLabel class="labelFormulario">Grupo</BSLabel>
                                     <BSInput IsDisabled="@isDisableManualGT"  InputType="InputType.Select" @bind-Value="dataNove.Lngrupo">
                                         <option value="0">Seleccionar Grupo</option>
                                         <option value="A">Grupo A</option>
@@ -251,8 +256,13 @@
                                         <option value="D">Grupo D</option>
                                     </BSInput>
                                     <BSFeedback For="@(() => dataNove.Lngrupo)"/> 
-                            </BSCol>
+                            </BSCol> *@
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                    <BSLabel class="labelFormulario">Turno</BSLabel>
+                                    <BSInput name="Turno" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lnturno"></BSInput>
+                                    <BSFeedback For="@(() => dataNove.Lnturno)"/> 
+                            </BSCol>
+                            @* <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Turno</BSLabel>
                                     <BSInput  IsDisabled="@isDisableManualGT" InputType="InputType.Select" @bind-Value="dataNove.Lnturno">
                                         <option value="0">Seleccionar Grupo</option>
@@ -260,8 +270,8 @@
                                         <option value="2">2do truno</option>
                                     </BSInput>
                                     <BSFeedback For="@(() => dataNove.Lnturno)"/> 
-                            </BSCol>
-                            <BSCol Position="Position.Relative" Place ColumnMedium="5">
+                            </BSCol> *@
+                            <BSCol Position="Position.Relative" Place ColumnMedium="6">
                                     <BSLabel class="labelFormularioGrande">Codigo de Equipo</BSLabel>
                                     <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdEquipo">
                                         <option value="0">Seleccione</option>
@@ -281,6 +291,13 @@
                                     <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
                             </BSCol> 
                             @if(isTPM){
+                                @if(isFichaManual){
+                                    <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormularioGrande">Ficha</BSLabel>
+                                            <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.LnfichaRes"></BSInput>
+                                            <BSFeedback For="@(() => dataNove.LnfichaRes)"/> 
+                                    </BSCol>
+                                }
                                 <BSCol Position="Position.Relative" Place ColumnMedium="5">
                                     <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
                                     <BSInput IsDisabled="@isDisableManualCTPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
@@ -297,7 +314,7 @@
                                     <BSFeedback For="@(() => dataNove.IdCtpm)"/> 
                                 </BSCol>
                                 
-                                <BSCol Position="Position.Relative" Place ColumnMedium="5">
+                                <BSCol Position="Position.Relative" Place ColumnMedium="3">
                                         <BSLabel class="labelFormulario">Resuelto</BSLabel>
                                         <BSInput InputType="InputType.Select" @bind-Value="dataNove.LnisResu">
                                             <option value="0">No</option>
@@ -305,6 +322,7 @@
                                         </BSInput>
                                         <BSFeedback For="@(() => dataNove.LnisResu)"/> 
                                 </BSCol> 
+                                
                             }
                             
 
@@ -371,6 +389,7 @@
     private bool isDisabledButton  { get; set;}
     private bool IsCargado  { get; set;}
     private bool isTPM  { get; set;}
+    private bool isFichaManual { get; set;}
     private List<Pai> listaPais {get;set;}    
     private List<Empresa> listaEmpresa {get;set;}
     private List<Centro> listaCentro {get;set;}
@@ -384,7 +403,6 @@
     private bool causaCargada { get; set;}
     private bool paradasBandera {get; set;}
     private bool IsNuevo  { get; set;}
-
     private bool bandera  { get; set;}
     private double tiempoPerdido { get; set;}
     private int indexCambio  { get; set;}
@@ -409,11 +427,12 @@
                 tiempoPerdido = 0;
                 mensaje = "Registre una Novedad";
 
-                isDisableManualGT = true;
+                isDisableManualGT = false;
                 isTPM = true;
                 isDisabledButton = false;
                 indexCambio = -1;
                 paradasBandera = false;
+                isFichaManual = false;
 
                 dataNove = new LibroNove();
                 dataNove.Lnobserv = "";
@@ -429,13 +448,20 @@
                 idEmpresa = int.Parse(user.FindFirst(c => c.Type == "IdEmpresa")?.Value ?? "0") ;
                 ficha = user.FindFirst(c => c.Type == "Ficha")?.Value ?? "" ;
 
+                if(ficha == "null"){
+                    isFichaManual = true;
+                }
+
                 isAccesoPais = false;
                 isAccesoEmpresa = false;
                 isAccesoCentro = false;
                 isAccesoDivision = false;
                 isAccesoLinea = false;
 
-                listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
+                if(idPais == 1){
+                    listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
+                    isDisableManualGT = true;
+                }
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
                 listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
 
@@ -626,7 +652,9 @@
     protected async Task OK(EditContext e){
         isDisabledButton = true;
         dataNove.Lnfecha = DateTime.Now;
-        dataNove.LnfichaRes = ficha;
+        if(ficha != "null"){
+            dataNove.LnfichaRes = ficha;
+        }
         if (e.Validate())
         {
             dataNove.Lnobserv = dataNove.Lnobserv.Trim();
@@ -673,8 +701,7 @@
                         dataNove.LnfichaRes = d4;
                         dataNove.IdMaquina = d5;
                         causaCargada = false;
-                        dataNove.Lnturno = listaTurnoYGrupo[0];
-                        dataNove.Lngrupo = listaTurnoYGrupo[1];
+                        GrupoTurno();
                         dataNove.IdCtpm = d6;
                         indexCambio = -1;
                     }else{
@@ -685,9 +712,6 @@
                 {
                     //TODO:cambiar ----> mensaje = "Error: " + a.Message;
                     mensaje = a.Message;
-                    @* dataNove = new LibroNove();
-                    dataNove.Lnturno = listaTurnoYGrupo[0];
-                    dataNove.Lngrupo = listaTurnoYGrupo[1];*@
                 }
                 catch(Exception ex){
                     mensaje = ex.Message;
@@ -770,8 +794,7 @@
                 tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
                 dataNove.IdTipoNove = tipoParada.IdTiParTp;
                 dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
-                dataNove.Lnturno = listaTurnoYGrupo[0];
-                dataNove.Lngrupo = listaTurnoYGrupo[1];
+                GrupoTurno();
                 dataNove.IdEquipo = "";
                 dataNove.Lnobserv = "";
                 nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];;
@@ -807,8 +830,7 @@
 
     public async Task eleccionSinGespline(){
         try{
-            dataNove.Lnturno = listaTurnoYGrupo[0];
-            dataNove.Lngrupo = listaTurnoYGrupo[1];
+            GrupoTurno();
             IsNuevo = true;
             if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
                 dataNove.Lnobserv = "";
@@ -829,8 +851,7 @@
 
     public async Task SinPerdida(){
         IsNuevo = true;
-        dataNove.Lnturno = listaTurnoYGrupo[0];
-        dataNove.Lngrupo = listaTurnoYGrupo[1];
+        GrupoTurno();
         dataNove.IdParada = null;
         causaCargada = true;
         dataNove.Lndiscrepa = "";
@@ -841,6 +862,13 @@
         tiempoPerdido = 0;
         mensaje = "";
         nota = "";
+    }
+
+    public void GrupoTurno(){
+        if(idPais == 1){
+            dataNove.Lnturno = listaTurnoYGrupo[0];
+            dataNove.Lngrupo = listaTurnoYGrupo[1];
+        }
     }
 
     public async Task atras(){

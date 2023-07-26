@@ -117,7 +117,7 @@
         if (usuario.Trim() != "" && contrasena.Trim() != "")
         {
             userDto.Proyecto = proyecto;
-            userDto.UserName = usuario.Trim().ToUpper();
+            userDto.UserName = usuario;
             userDto.Password = contrasena;
             result = await Http.PostAsJsonAsync("http://neo.paveca.com.ve/Authentication/api/Auth/Login", userDto);
             validarToken = await result.Content.ReadAsStringAsync();

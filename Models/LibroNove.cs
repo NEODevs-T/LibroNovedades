@@ -20,9 +20,9 @@ namespace LibroNovedades.Models
         [Required(ErrorMessage ="Coloque su ficha.")]
         public string LnfichaRes { get; set; } = null!;
         public DateTime Lnfecha { get; set; }
-        [ValidDiferenteACero]
+        [ValidDiferenteACero,StringLength(1,ErrorMessage="Se debe poner un único carácter")]
         public string Lngrupo { get; set; } = null!;
-        [ValidDiferenteACero]
+        [ValidDiferenteACero,StringLength(1,ErrorMessage="Se debe poner un único carácter")]
         public string Lnturno { get; set; } = null!;
         [Required(ErrorMessage ="Coloque el id de la maquina.")]
         public string IdMaquina { get; set; } = null!;

@@ -1,4 +1,4 @@
-@page "/FormatoAgrupado"
+@page "/FormatoAgrupado/{id:int?}"
 
 
 @inject IDataPais DataPais;
@@ -362,7 +362,8 @@
 
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
-
+    [Parameter]
+    public int? id { get; set; }
     private bool _showTooltip;
     private BSAlert _alertRef;
     private string? mensaje { get; set;}  
@@ -434,11 +435,15 @@
                 paradasBandera = false;
                 isFichaManual = false;
 
-                dataNove = new LibroNove();
-                dataNove.Lnobserv = "";
-                dataNove.Lndiscrepa = "";
-                dataNove.LnisResu = 0;
-                causaCargada = false;
+                if(id == id){
+                    dataNove = new LibroNove();
+                    dataNove.Lnobserv = "";
+                    dataNove.Lndiscrepa = "";
+                    dataNove.LnisResu = 0;
+                    causaCargada = false;
+                }else{
+                    @* dataNove = await DataLibroNov.ObtenerLibroPorId(id ?? 0) ?? new LibroNove(); *@
+                }
 
                 claims = user.Claims;
                 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";

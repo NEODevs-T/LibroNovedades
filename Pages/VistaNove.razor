@@ -16,6 +16,7 @@
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorage
 
+@inject NotificationService notificationService
 
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IAuthorizationService AuthorizationService
@@ -176,7 +177,7 @@
                                     <BSTD>Estado</BSTD>
                                     
                                     @if(IsAccesoPizarra){
-                                        
+                                        <BSTD>Cambio de estado</BSTD>
                                         <BSTD>Pizarra Unificada</BSTD>
                                     }
                                 </BSTR>
@@ -210,6 +211,21 @@
                                         </BSTD>
                                         
                                         @if(IsAccesoPizarra){
+                                            <BSTD>
+                                                @if(item.LnisResu == 1){
+                                                    <div>
+                                                        <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
+                                                        @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
+                                                    </div>
+                                                }else if(item.LnisResu == 0){
+                                                    <div>
+                                                        <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
+                                                        @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
+                                                    </div>
+                                                }else{
+                                                    <p> - </p>
+                                                }
+                                            </BSTD>
                                             <BSTD>
                                                 <div Class="@BS.Form_Check_Inline">
                                                     <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
@@ -279,6 +295,7 @@
     private List<Linea> listaLinea {get;set;}
     private List<LibroNove> listaNovedades { get; set;}
     private List<TiParTp> listaTiposNovedad { get; set;}
+    private LibroNove dataNove {get; set;}
     private int idPais { get; set; }
     private int idEmpresa { get; set; }
     private int idCentro  { get; set;}
@@ -500,6 +517,28 @@
         }
     }
 
+    public async Task Edicion(int idLibroNov){
+        bool band;
+        int indexLista;
+        //NavigationManager.NavigateTo($"/FormatoAgrupado/{idLibroNov}");
+        //dataNove = await DataLibroNov.ObtenerLibroPorId(idLibroNov) ?? new LibroNove();
+        dataNove = listaNovedades.Where(x => x.IdlibrNov == idLibroNov).First();
+
+        if(dataNove.Lnfecha.AddDays(1) > DateTime.Now){
+            dataNove.LnisResu = dataNove.LnisResu == 1 ?  dataNove.LnisResu = 0 : dataNove.LnisResu = 1;
+            band = await DataLibroNov.ActualizacionCompleta(idLibroNov,dataNove);
+            if(band){
+                indexLista = listaNovedades.IndexOf(dataNove);
+                listaNovedades[indexLista] = dataNove;
+                Notificacion("exito","","El cambio fue exitoso");
+            }else{
+                Notificacion("error","Error: ","Intente de Nuevo. Si el problema persiste enviar un correo a Mejora Continua");
+            }
+        }else{
+            Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad");
+        }
+    }
+
     protected async Task Guardar(){
         isDisabled = true;
 
@@ -520,5 +559,24 @@
             mensaje = e.Message;
         }
         isDisabled = false;
+    }
+
+    public void Notificacion(string tipo,string mensaje,string detalle)
+    {
+
+        NotificationMessage notificacion;
+        if(tipo == "error"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Error, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "info"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Info, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "exito"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Success, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "advertencia"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }
     }
 }

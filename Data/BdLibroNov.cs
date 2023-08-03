@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
         Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(int idCentro,DateTime fecha,int idLinea,int tipoNov);
         Task<bool> UpdateRegistros(List<LibroNove> novedades);
         Task<LibroNove>? ObtenerPorIdParada(string idParada);
+        Task<LibroNove>? ObtenerLibroPorId(int idRegistro);
         Task<bool> ActualizacionCompleta(int IdlibrNov,LibroNove data);
         Task<List<LibroNove>> ObtenerNovedadePorLinea(int IdLiena);
         Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha,int idLinea,int tipoNov,int IdAreaCar);
@@ -224,6 +225,10 @@ using Microsoft.EntityFrameworkCore;
             diasReales = data.Count();
             cumplimiento = (double) diasReales / diasToricos;
             return (data,diasToricos,diasReales,cumplimiento);
+        }
+
+        public async Task<LibroNove>? ObtenerLibroPorId(int idRegistro){
+            return await this._cotext.LibroNoves.Where(l => l.IdlibrNov == idRegistro).FirstOrDefaultAsync();
         }
     }
     public class DataTiParTP : IDataTiParTP

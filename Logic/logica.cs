@@ -92,7 +92,7 @@ namespace LibroNovedades.Logic{
             }
             if(listaPizarra.Count > 0){
                 //TOD: Descomentar
-                // dataChismoso.InsertarRegistros(ListaChismosoCambioFecha,ListaChismosoCambioEstado);
+                dataChismoso.InsertarRegistros(ListaChismosoCambioFecha,ListaChismosoCambioEstado);
                 return Tuple.Create(true,listaNovedadesFiltrada);
             }else{
                 return Tuple.Create(false,listaNovedadesFiltrada);

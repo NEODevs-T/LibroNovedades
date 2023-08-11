@@ -31,7 +31,7 @@
     </BSContainer>
 
     <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-        <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" >
+        <BSAlert IsOpen="_showTooltip"  class="alertaInfo"  @ref="_alertRef" >
             <h5>@mensaje</h5>
         </BSAlert> 
             <BSCard CardType="CardType.Body">
@@ -227,9 +227,9 @@
                                                 }
                                             </BSTD>
                                             <BSTD>
-                                                <div Class="@BS.Form_Check_Inline">
+                                                <div >
                                                     <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
-                                                    <BSLabel IsCheckLabel="true"></BSLabel>
+                                                    @* <BSLabel IsCheckLabel="true"></BSLabel> *@
                                                 </div>
                                             </BSTD>
                                         }
@@ -521,39 +521,44 @@
         bool band;
         int indexLista;
         //NavigationManager.NavigateTo($"/FormatoAgrupado/{idLibroNov}");
-        //dataNove = await DataLibroNov.ObtenerLibroPorId(idLibroNov) ?? new LibroNove();
-        dataNove = listaNovedades.Where(x => x.IdlibrNov == idLibroNov).First();
+        try{
+            dataNove = listaNovedades.Where(x => x.IdlibrNov == idLibroNov).First();
 
-        if(dataNove.Lnfecha.AddDays(1) > DateTime.Now){
-            dataNove.LnisResu = dataNove.LnisResu == 1 ?  dataNove.LnisResu = 0 : dataNove.LnisResu = 1;
-            band = await DataLibroNov.ActualizacionCompleta(idLibroNov,dataNove);
-            if(band){
-                indexLista = listaNovedades.IndexOf(dataNove);
-                listaNovedades[indexLista] = dataNove;
-                Notificacion("exito","","El cambio fue exitoso");
+            if(dataNove.Lnfecha.AddDays(1) > DateTime.Now){
+                dataNove.LnisResu = dataNove.LnisResu == 1 ?  dataNove.LnisResu = 0 : dataNove.LnisResu = 1;
+                band = await DataLibroNov.ActualizacionEstado(idLibroNov,dataNove);
+                if(band){
+                    indexLista = listaNovedades.IndexOf(dataNove);
+                    listaNovedades[indexLista] = dataNove;
+                    Notificacion("exito","","El cambio fue exitoso");
+                }else{
+                    Notificacion("error","Error: ","Intente de Nuevo. Si el problema persiste enviar un correo a Mejora Continua");
+                }
             }else{
-                Notificacion("error","Error: ","Intente de Nuevo. Si el problema persiste enviar un correo a Mejora Continua");
+                Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad");
             }
-        }else{
+        }catch(Exception e){
             Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad");
         }
     }
 
     protected async Task Guardar(){
         isDisabled = true;
+        List<LibroNove> listaFiltrada = new List<LibroNove>();
 
         try{
+            mensaje = "";
             await refModal.ShowAsync();
-            band1 = await LogicLibroNov.CambiosBDLibro(idPais,idCentro,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroTipoNovedad,nombre + " " + apellido);
+            (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idCentro,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroTipoNovedad,nombre + " " + apellido);
             if(band1){
-                band2 = await DataLibroNov.UpdateRegistros(listaNovedades);
+                band2 = await DataLibroNov.UpdateRegistros(listaFiltrada);
                 if(band2){
                     mensaje = "Se realizo de manera exitosa";
                 }else{
                     mensaje = "Falla en la actualizacion de el libro de novedades, la data fue registrada en la pizarra unificada";
                 }
             }else{
-                mensaje = "Falla de inserción en la pizarra unificada";
+                mensaje = "No se encontró ningún dato valido para registrar al libro de novedades. Recuerde que las actividades resueltas no pueden ser enviadas a la Pizarra, además no podrá enviar actividades que ya se cargaron anteriormente.";
             }
         }catch(Exception e){
             mensaje = e.Message;

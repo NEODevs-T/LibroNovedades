@@ -12,13 +12,13 @@ using LibroNovedades.Data.LibroNov;
 namespace LibroNovedades.Logic{
     public interface ILogicLibroNov
     {
-        Task<bool> CambiosBDLibro(int idPais,int idCentro,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroTipoNovedad,string nombre);
+        Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idCentro,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroTipoNovedad,string nombre);
     }
 
     public class LogicLibroNov : ILogicLibroNov
     {
 
-        public async Task<bool> CambiosBDLibro(int idPais,int idCentro,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroTipoNovedad,string nombre){
+        public async Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idCentro,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroTipoNovedad,string nombre){
             DbNeoContext contex = new DbNeoContext();
             IDataLibroNov dataLibroNov = new DataLibroNov(contex);
             IDataPizarra dataPizarra = new DataPizarra(contex);
@@ -31,6 +31,7 @@ namespace LibroNovedades.Logic{
             List<CambFec> ListaChismosoCambioFecha  = new List<CambFec>();
             List<CambStat> ListaChismosoCambioEstado  = new List<CambStat>();
             List<ReuDium> listaPizarra = new List<ReuDium>(listaNovedades.Count);
+            List<LibroNove> listaNovedadesFiltrada = new List<LibroNove>();
 
             List<LibroNove> listaNovedades2;
             if(filtroFechaInicio.Date == filtroFechaFinal.Date) {
@@ -45,7 +46,7 @@ namespace LibroNovedades.Logic{
             {
                 temporal = listaNovedades2.Find(x=> x.IdlibrNov == item.IdlibrNov);
                 if(temporal != null){
-                    if((temporal.LnisPizUni != item.LnisPizUni) && (item.LnisPizUni == true)){
+                    if((temporal.LnisPizUni != item.LnisPizUni) && (item.LnisPizUni == true) && (item.LnisResu == 0)){
                         if(temporal.IdTipoNove == 8 || temporal.IdAreaCar == 2 || temporal.IdCtpm == 4){
                             //* Calidad
                             registroNuevo.Idksf = 3;
@@ -53,14 +54,14 @@ namespace LibroNovedades.Logic{
                             //* Seguridad
                             registroNuevo.Idksf = 5;
                         }else{
-                            registroNuevo.Idksf = 1; 
+                            registroNuevo.Idksf = 1;
                         }
-                        registroNuevo.Rdcentro = temporal.IdLineaNavigation.IdCentroNavigation.Cnom;
+                        registroNuevo.Rdcentro = temporal.IdLineaNavigation.IdDivisionNavigation.IdCentroNavigation.Cnom;
                         registroNuevo.Rddiv = temporal.IdLineaNavigation.IdDivisionNavigation.Dnombre;
                         registroNuevo.Rdarea = temporal.IdLineaNavigation.Lnom;
                         registroNuevo.RdcodEq = temporal.IdEquipo;
                         registroNuevo.Rddisc = temporal.Lndiscrepa;
-                        registroNuevo.RdfecReu = DateTime.Now;   
+                        registroNuevo.RdfecReu = DateTime.Now;
                         registroNuevo.RdfecTra = DateTime.Now;
                         registroNuevo.Rdstatus = "Pendiente";
                         registroNuevo.IdResReu =  11;
@@ -82,17 +83,19 @@ namespace LibroNovedades.Logic{
                         registroNuevo = new ReuDium();
                         ChismosoCambioFecha = new CambFec();
                         ChismosoCambioEstado = new  CambStat();
+                        
+                        listaNovedadesFiltrada.Add(item);
                     }
                 }else{
                     continue;
                 }
             }
             if(listaPizarra.Count > 0){
-                //dataPizarra.InsertarRegistros(listaPizarra);
-                dataChismoso.InsertarRegistros(ListaChismosoCambioFecha,ListaChismosoCambioEstado);
-                return true;
+                //TOD: Descomentar
+                // dataChismoso.InsertarRegistros(ListaChismosoCambioFecha,ListaChismosoCambioEstado);
+                return Tuple.Create(true,listaNovedadesFiltrada);
             }else{
-                return false;
+                return Tuple.Create(false,listaNovedadesFiltrada);
             }
         }
     }

@@ -50,9 +50,9 @@
                     </BSRow>
                     <br>
                     <BSRow>
-                        <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                        @* <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
                             <BSLabel class="labelFormulario">Tipo de Novedad</BSLabel>
-                                <BSInput  InputType="InputType.Select" @bind-Value="filtroTipoNovedad">
+                                <BSInput  InputType="InputType.Select" @onchange="CambioTN" @bind-Value="filtroTipoNovedad">
                                     <option value="0">Todas</option>
                                     @if (listaTiposNovedad != null)
                                     {
@@ -62,7 +62,30 @@
                                         }  
                                     }
                                 </BSInput>
+                        </BSCol> *@
+                        <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                            <BSLabel class="labelFormulario">Estado</BSLabel>
+                                <BSInput  InputType="InputType.Select" @bind-Value="filtroIsResuelto">
+                                    <option value="2">Todos</option>
+                                    <option value="0">Sin resolver</option>
+                                    <option value="1">Resueltos</option>
+                                </BSInput>
                         </BSCol>
+
+                        <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                            <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
+                                <BSInput  InputType="InputType.Select" @bind-Value="filtroClasificacionTPM">
+                                    <option value="0">Todas</option>
+                                    @if (listaClasificacionTPM != null)
+                                    {
+                                        @foreach (var item in listaClasificacionTPM)
+                                        {
+                                            <option value="@item.IdCtpm">@item.Ctpmnom.ToUpper()</option>
+                                        }  
+                                    }
+                                </BSInput>
+                        </BSCol>
+
                         @if(isAccesoPais){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Pais</BSLabel>
@@ -274,7 +297,9 @@
     private Task<AuthenticationState>? authenticationState { get; set; }
     private DateTime filtroFechaInicio { get; set;}
     private DateTime filtroFechaFinal { get; set;}
-    private int filtroTipoNovedad { get; set;}
+    private int filtroTipoNovedad { get; set;} = 0;
+    private int filtroIsResuelto { get; set;}
+    private int filtroClasificacionTPM { get; set;}
     private int filtroLinea { get; set;}
     private bool isAccesoPais {get;set;}
     private bool isAccesoEmpresa {get;set;}
@@ -295,6 +320,7 @@
     private List<Linea> listaLinea {get;set;}
     private List<LibroNove> listaNovedades { get; set;}
     private List<TiParTp> listaTiposNovedad { get; set;}
+    private List<ClasifiTpm> listaClasificacionTPM { get; set;}
     private LibroNove dataNove {get; set;}
     private int idPais { get; set; }
     private int idEmpresa { get; set; }
@@ -338,6 +364,7 @@
                 isAccesoLinea = false;
 
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
+                listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
 
                 if(rol.Contains("SuperAdmin")){
                     isAccesoPais = true;
@@ -482,6 +509,8 @@
         }
     }
 
+    
+
     protected async Task cerrar(){
         await refModal.HideAsync();
     }
@@ -493,23 +522,23 @@
             if(filtroFechaInicio.Date == filtroFechaFinal.Date) {
                 listaNovedades = null;
                 if(idAreCargada == 0){
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroTipoNovedad);
+                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
                 }else{
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCarga(filtroFechaInicio,idCentro,idDivision,filtroLinea,filtroTipoNovedad,idAreCargada);
+                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCarga(filtroFechaInicio,idCentro,idDivision,filtroLinea,filtroClasificacionTPM,idAreCargada,filtroIsResuelto);
                 }
             }else if(filtroFechaInicio.Date < filtroFechaFinal.Date){
                 listaNovedades = null;
                 if(idAreCargada == 0){
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroTipoNovedad);
+                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
                 }else{
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(filtroFechaInicio,filtroFechaFinal,idCentro,idDivision,filtroLinea,filtroTipoNovedad,idAreCargada);
+                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(filtroFechaInicio,filtroFechaFinal,idCentro,idDivision,filtroLinea,filtroClasificacionTPM,idAreCargada,filtroIsResuelto);
                 }
             }else{
                 listaNovedades = null;
                 if(idAreCargada == 0){
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroTipoNovedad);
+                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
                 }else{
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(filtroFechaInicio,filtroFechaFinal,idCentro,idDivision,filtroLinea,filtroTipoNovedad,idAreCargada);
+                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(filtroFechaInicio,filtroFechaFinal,idCentro,idDivision,filtroLinea,filtroClasificacionTPM,idAreCargada,filtroIsResuelto);
                 }
             }
         }catch(Exception e){
@@ -549,7 +578,7 @@
         try{
             mensaje = "";
             await refModal.ShowAsync();
-            (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idCentro,idDivision,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroTipoNovedad,nombre + " " + apellido);
+            (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idCentro,idDivision,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroClasificacionTPM,nombre + " " + apellido);
             if(band1){
                 band2 = await DataLibroNov.UpdateRegistros(listaFiltrada);
                 if(band2){

@@ -300,7 +300,7 @@
                                 }
                                 <BSCol Position="Position.Relative" Place ColumnMedium="5">
                                     <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
-                                    <BSInput IsDisabled="@isDisableManualCTPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
+                                    <BSInput IsDisabled="@isDisableManualCTPM" id="TPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
                                         @if(listaClasificacionTPM != null){
                                             <option value="0">Seleccione</option>
                                             @foreach (var item in listaClasificacionTPM)
@@ -653,6 +653,8 @@
             mensaje = ex.Message;
         }
     }
+
+    
 
     protected async Task OK(EditContext e){
         isDisabledButton = true;

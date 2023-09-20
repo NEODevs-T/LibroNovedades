@@ -9,17 +9,17 @@ using Microsoft.EntityFrameworkCore;
     {
         Task<bool> InsertarRegistro(LibroNove libroNove);
         Task<List<LibroNove>> RegistroDeHoyPorLinea(int idLinea);
-        Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(int idCentro,DateTime fecha,int idDivision,int idLinea,int tipoNov);
+        Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(int idCentro,DateTime fecha,int idDivision,int idLinea,int tipoClasi,int filtroIsResuelto);
         Task<bool> UpdateRegistros(List<LibroNove> novedades);
         Task<LibroNove>? ObtenerPorIdParada(string idParada);
         Task<LibroNove>? ObtenerLibroPorId(int idRegistro);
         Task<bool> ActualizacionCompleta(int IdlibrNov,LibroNove data);
         Task<bool> ActualizacionEstado(int IdlibrNov,LibroNove data);
         Task<List<LibroNove>> ObtenerNovedadePorLinea(int IdLiena);
-        Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha,int idCentro,int idDivision,int idLinea,int tipoNov,int IdAreaCar);
+        Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha,int idCentro,int idDivision,int idLinea,int tipoClasi,int IdAreaCar,int filtroIsResuelto);
         Task<(IEnumerable<IGrouping<DateTime, LibroNove>>,int,int,double)> CalcularCumplimiento(DateTime fechaInicion,DateTime fechafinal,string tipo,int idCondicional);
-        Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltroEntreFechas(int idCentro,DateTime fechaInicion,DateTime fechaFinal,int idDivision,int idLinea,int tipoNov);
-        Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(DateTime fechaInicion,DateTime fechaFinal,int idCentro,int idDivision,int idLinea,int tipoNov,int IdAreaCar);
+        Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltroEntreFechas(int idCentro,DateTime fechaInicion,DateTime fechaFinal,int idDivision,int idLinea,int tipoClasi,int filtroIsResuelto);
+        Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(DateTime fechaInicion,DateTime fechaFinal,int idCentro,int idDivision,int idLinea,int tipoClasi,int IdAreaCar,int filtroIsResuelto);
     }
 
     public interface IDataPizarra
@@ -148,139 +148,167 @@ using Microsoft.EntityFrameworkCore;
             }
             return true;
         }
-        public async Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(int idCentro,DateTime fecha,int idDivision,int idLinea,int tipoNov)
+        public async Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(int idCentro,DateTime fecha,int idDivision,int idLinea,int tipoClasi,int filtroIsResuelto)
         {
-            if (tipoNov == 0){
+            List<LibroNove> libroNov = new List<LibroNove>();
+            if (tipoClasi == 0){
                 if(idCentro != 0 && idDivision != 0 && idLinea != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0 && idDivision != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else{
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }
             }else{
                 if(idCentro != 0 && idDivision != 0 && idLinea != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdTipoNove == tipoNov))
-                    .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
+                        libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdCtpm == tipoClasi))
+                        .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0 && idDivision != 0){
-                        return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdTipoNove == tipoNov))
+                        libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdCtpm == tipoClasi))
                         .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro) && (t.IdTipoNove == tipoNov))
-                    .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
+                        libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro) && (t.IdCtpm == tipoClasi))
+                        .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else{
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdTipoNove == tipoNov))
-                    .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
+                        libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdCtpm == tipoClasi))
+                        .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }
             }
-            return new List<LibroNove>();
+            if(filtroIsResuelto == 0){
+                libroNov = libroNov.Where(l => l.LnisResu == 0).ToList();
+            }else if(filtroIsResuelto == 1){
+                libroNov = libroNov.Where(l => l.LnisResu == 1).ToList();
+            }
+            return libroNov;
         }
 
-        public async Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltroEntreFechas(int idCentro,DateTime fechaInicion,DateTime fechaFinal,int idDivision,int idLinea,int tipoNov)
+        public async Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltroEntreFechas(int idCentro,DateTime fechaInicion,DateTime fechaFinal,int idDivision,int idLinea,int tipoClasi,int filtroIsResuelto)
         {
-            if (tipoNov != 0){
+            List<LibroNove> libroNov = new List<LibroNove>();
+
+            if (tipoClasi != 0){
                 if(idCentro != 0 && idDivision != 0 && idLinea != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdTipoNove == tipoNov))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdCtpm == tipoClasi))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0 && idDivision != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdTipoNove == tipoNov))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdCtpm == tipoClasi))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro)&& (t.IdTipoNove == tipoNov))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro)&& (t.IdCtpm == tipoClasi))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else{
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdTipoNove == tipoNov))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdCtpm == tipoClasi))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }
             }else{
                 if(idCentro != 0 && idDivision != 0 && idLinea != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0 && idDivision != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else{
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }
             }
-            return new List<LibroNove>();
+
+            if(filtroIsResuelto == 0){
+                libroNov = libroNov.Where(l => l.LnisResu == 0).ToList();
+            }else if(filtroIsResuelto == 1){
+                libroNov = libroNov.Where(l => l.LnisResu == 1).ToList();
+            }
+            return libroNov;
         }
-        public async Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha,int idCentro,int idDivision,int idLinea,int tipoNov,int IdAreaCar)
+        public async Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha,int idCentro,int idDivision,int idLinea,int tipoClasi,int IdAreaCar, int filtroIsResuelto)
         {
-            if (tipoNov == 0){
+            List<LibroNove> libroNov = new List<LibroNove>();
+            if (tipoClasi == 0){
                 if(idCentro != 0 && idDivision != 0 && idLinea != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) &&  (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) &&  (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0 && idDivision != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) &&  (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) &&  (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro) &&  (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro) &&  (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else{
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) &&  (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) &&  (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }
             }else{
                 if(idCentro != 0 && idDivision != 0 && idLinea != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdTipoNove == tipoNov) &&  (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdCtpm == tipoClasi) &&  (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0 && idDivision != 0){
-                        return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdTipoNove == tipoNov) &&  (t.IdAreaCar == IdAreaCar))
+                        libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdCtpm == tipoClasi) &&  (t.IdAreaCar == IdAreaCar))
                         .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro) && (t.IdTipoNove == tipoNov) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro) && (t.IdCtpm == tipoClasi) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else{
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdTipoNove == tipoNov) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date == fecha.Date) && (t.IdCtpm == tipoClasi) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }
             }
-            return new List<LibroNove>();
+
+            if(filtroIsResuelto == 0){
+                libroNov = libroNov.Where(l => l.LnisResu == 0).ToList();
+            }else if(filtroIsResuelto == 1){
+                libroNov = libroNov.Where(l => l.LnisResu == 1).ToList();
+            }
+            return libroNov;
         }
 
-        public async Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(DateTime fechaInicion,DateTime fechaFinal,int idCentro,int idDivision,int idLinea,int tipoNov,int IdAreaCar)
+        public async Task<List<LibroNove>> ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(DateTime fechaInicion,DateTime fechaFinal,int idCentro,int idDivision,int idLinea,int tipoClasi,int IdAreaCar, int filtroIsResuelto)
         {
-            if (tipoNov != 0){
+            List<LibroNove> libroNov = new List<LibroNove>();
+            if (tipoClasi != 0){
                 if(idCentro != 0 && idDivision != 0 && idLinea != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdTipoNove == tipoNov) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdCtpm == tipoClasi) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0 && idDivision != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdTipoNove == tipoNov) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdCtpm == tipoClasi) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro)&& (t.IdTipoNove == tipoNov) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro)&& (t.IdCtpm == tipoClasi) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else{
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdTipoNove == tipoNov) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdCtpm == tipoClasi) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }
             }else{
                 if(idCentro != 0 && idDivision != 0 && idLinea != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision && t.IdLinea == idLinea) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0 && idDivision != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro && t.IdLineaNavigation.IdDivision == idDivision) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else if(idCentro != 0){
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdLineaNavigation.IdDivisionNavigation.IdCentro == idCentro) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }else{
-                    return await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdAreaCar == IdAreaCar))
+                    libroNov = await this._cotext.LibroNoves.Where(t => (t.Lnfecha.Date >= fechaInicion.Date && t.Lnfecha.Date <= fechaFinal.Date) && (t.IdAreaCar == IdAreaCar))
                     .Include(t => t.IdLineaNavigation).ThenInclude(L => L.IdDivisionNavigation).ThenInclude(L => L.IdCentroNavigation).Include(t => t.IdTipoNoveNavigation).AsNoTracking().ToListAsync();
                 }
             }
-            return new List<LibroNove>();
+
+            if(filtroIsResuelto == 0){
+                libroNov = libroNov.Where(l => l.LnisResu == 0).ToList();
+            }else if(filtroIsResuelto == 1){
+                libroNov = libroNov.Where(l => l.LnisResu == 1).ToList();
+            }
+            return libroNov;
         }
         public async Task<(IEnumerable<IGrouping<DateTime, LibroNove>>,int,int,double)> CalcularCumplimiento(DateTime fechaInicion,DateTime fechafinal,string tipo,int idCondicional)
         {

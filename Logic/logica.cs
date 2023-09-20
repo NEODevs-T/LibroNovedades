@@ -12,13 +12,13 @@ using LibroNovedades.Data.LibroNov;
 namespace LibroNovedades.Logic{
     public interface ILogicLibroNov
     {
-        Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroTipoNovedad,string nombre);
+        Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroCLTPM,string nombre);
     }
 
     public class LogicLibroNov : ILogicLibroNov
     {
 
-        public async Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroTipoNovedad,string nombre){
+        public async Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroCLTPM,string nombre){
             DbNeoContext contex = new DbNeoContext();
             IDataLibroNov dataLibroNov = new DataLibroNov(contex);
             IDataPizarra dataPizarra = new DataPizarra(contex);
@@ -35,11 +35,11 @@ namespace LibroNovedades.Logic{
 
             List<LibroNove> listaNovedades2;
             if(filtroFechaInicio.Date == filtroFechaFinal.Date) {
-                listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroTipoNovedad);
+                listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroCLTPM,2);
             }else if(filtroFechaInicio.Date < filtroFechaFinal.Date){
-                listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroTipoNovedad);
+                listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroCLTPM,2);
             }else{
-                listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaFinal,filtroFechaInicio,idDivision,filtroLinea,filtroTipoNovedad);
+                listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaFinal,filtroFechaInicio,idDivision,filtroLinea,filtroCLTPM,2);
             }
 
             foreach (var item in listaNovedades)

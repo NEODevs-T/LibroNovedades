@@ -434,7 +434,7 @@
         idDivision = 0;
         idLinea = 0;
         try{
-            if(idCentro != 0){
+            if(idPais != 0){
                 listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
             }
         }catch(Exception ex){
@@ -448,7 +448,7 @@
         idDivision = 0;
         idLinea = 0;
         try{
-            if(idCentro != 0){
+            if(idEmpresa != 0){
                 listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
             }
         }catch(Exception ex){

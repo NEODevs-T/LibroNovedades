@@ -407,8 +407,6 @@
     private bool bandera  { get; set;}
     private double tiempoPerdido { get; set;}
     private int indexCambio  { get; set;}
-
-
     //TODO: Pendiente por mejorar private List<LibroNove> listaNoveSinTiempoPerdido { get; set;}
 
 
@@ -531,6 +529,11 @@
                 }else if(rol.Contains("UserDivision")){
                     isAccesoLinea = true;
 
+                    if(idPais == 1){
+                        isAccesoDivision = true;
+                        listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    }
+                    
                     // todas las lineas de esa division
                     listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
                 }

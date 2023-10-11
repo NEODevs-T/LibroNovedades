@@ -12,13 +12,13 @@ using LibroNovedades.Data.LibroNov;
 namespace LibroNovedades.Logic{
     public interface ILogicLibroNov
     {
-        Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroCLTPM,string nombre);
+        Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idEmpresa,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroCLTPM,string nombre);
     }
 
     public class LogicLibroNov : ILogicLibroNov
     {
 
-        public async Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroCLTPM,string nombre){
+        public async Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idEmpresa,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroCLTPM,string nombre){
             DbNeoContext contex = new DbNeoContext();
             IDataLibroNov dataLibroNov = new DataLibroNov(contex);
             IDataPizarra dataPizarra = new DataPizarra(contex);
@@ -54,6 +54,7 @@ namespace LibroNovedades.Logic{
                             //* Seguridad
                             registroNuevo.Idksf = 5;
                         }else{
+                            //* produccion
                             registroNuevo.Idksf = 1;
                         }
                         registroNuevo.Rdcentro = temporal.IdLineaNavigation.IdDivisionNavigation.IdCentroNavigation.Cnom;
@@ -66,6 +67,7 @@ namespace LibroNovedades.Logic{
                         registroNuevo.Rdstatus = "Pendiente";
                         registroNuevo.IdResReu =  11;
                         registroNuevo.IdPais = idPais;
+                        registroNuevo.IdEmpresa = idEmpresa;
                         listaPizarra.Add(registroNuevo);
 
                         ChismosoCambioFecha.IdReuDiaNavigation = registroNuevo;

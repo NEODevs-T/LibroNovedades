@@ -434,6 +434,11 @@
                 }else if(rol.Contains("UserDivision")){
                     isAccesoLinea = true;
                     // todas las lineas de esa division
+                    if(idPais == 1){
+                        isAccesoDivision = true;
+                        listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    }
+
                     listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
                 }
 
@@ -552,8 +557,7 @@
         //NavigationManager.NavigateTo($"/FormatoAgrupado/{idLibroNov}");
         try{
             dataNove = listaNovedades.Where(x => x.IdlibrNov == idLibroNov).First();
-
-            if(dataNove.Lnfecha.AddDays(1) > DateTime.Now){
+            if((dataNove.Lnfecha.AddDays(1) > DateTime.Now) || ((DateTime.Now.DayOfWeek.ToString() == "Monday") && (dataNove.Lnfecha.AddDays(3) > DateTime.Now))){
                 dataNove.LnisResu = dataNove.LnisResu == 1 ?  dataNove.LnisResu = 0 : dataNove.LnisResu = 1;
                 band = await DataLibroNov.ActualizacionEstado(idLibroNov,dataNove);
                 if(band){
@@ -578,7 +582,7 @@
         try{
             mensaje = "";
             await refModal.ShowAsync();
-            (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idCentro,idDivision,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroClasificacionTPM,nombre + " " + apellido);
+            (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idEmpresa,idCentro,idDivision,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroClasificacionTPM,nombre + " " + apellido);
             if(band1){
                 band2 = await DataLibroNov.UpdateRegistros(listaFiltrada);
                 if(band2){

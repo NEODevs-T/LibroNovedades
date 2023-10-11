@@ -19,6 +19,7 @@ namespace LibroNovedades.Models
         /// Id del pais
         /// </summary>
         public int IdPais { get; set; }
+        public int IdEmpresa { get; set; }
         public int IdResReu { get; set; }
         /// <summary>
         /// Id del afectado
@@ -82,6 +83,7 @@ namespace LibroNovedades.Models
         public string? Rdobs { get; set; }
 
         public virtual Pai IdPaisNavigation { get; set; } = null!;
+        public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
         public virtual RespoReu IdResReuNavigation { get; set; } = null!;
         public virtual Ksf IdksfNavigation { get; set; } = null!;
         public virtual ICollection<CambFec> CambFecs { get; set; }

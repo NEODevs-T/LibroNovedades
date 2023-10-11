@@ -1741,6 +1741,7 @@ namespace LibroNovedades.Models
                 entity.Property(e => e.IdReuDia).HasComment("id tabla");
 
                 entity.Property(e => e.IdPais).HasComment("Id del pais");
+                entity.Property(e => e.IdEmpresa);
 
                 entity.Property(e => e.Idksf).HasComment("Id del afectado");
 
@@ -1843,6 +1844,12 @@ namespace LibroNovedades.Models
                     .HasForeignKey(d => d.Idksf)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ReuDia_KSF");
+
+                entity.HasOne(d => d.IdEmpresaNavigation)
+                    .WithMany(p => p.ReuDia)
+                    .HasForeignKey(d => d.IdEmpresa)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ReuDia_Empresa");
             });
 
             modelBuilder.Entity<ReuParM>(entity =>

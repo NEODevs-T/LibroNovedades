@@ -184,7 +184,7 @@
                                         @foreach (var item in indexParadas)
                                         {
                                             <BSTR>
-                                                <BSTD>@item</BSTD>
+                                                <BSTD>@(item + 1)</BSTD>
                                                 <BSTD>@paradas[4][item]</BSTD>
                                                 <BSTD>@paradas[3][item]</BSTD>
                                                 <BSTD>@Math.Round(double.Parse(paradas[5][item]),2)</BSTD>

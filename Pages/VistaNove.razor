@@ -193,10 +193,13 @@
                                     <BSTD>Turno</BSTD>
                                     <BSTD>Tiempo Perdido (min)</BSTD>
                                     <BSTD>Discrepancia</BSTD>
+                                    <BSTD>Area cargador</BSTD>
                                     <BSTD>Estado</BSTD>
+                                    @if(IsAccesoCambioEstado){
+                                        <BSTD>Cambio de estado</BSTD>
+                                    }
                                     
                                     @if(IsAccesoPizarra){
-                                        <BSTD>Cambio de estado</BSTD>
                                         <BSTD>Pizarra Unificada</BSTD>
                                     }
                                 </BSTR>
@@ -217,8 +220,8 @@
                                         }else{
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                         }
-                                        @* <BSTD>@item.LntiePerMi.ToString()</BSTD> *@
                                         <BSTD>@item.Lndiscrepa</BSTD>
+                                        <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD>
                                         
                                         <BSTD>
                                             @if(item.LnisResu == 1){
@@ -230,7 +233,7 @@
                                             }
                                         </BSTD>
                                         
-                                        @if(IsAccesoPizarra){
+                                        @if(IsAccesoCambioEstado){
                                             <BSTD>
                                                 @if(item.LnisResu == 1){
                                                     <div>
@@ -246,10 +249,11 @@
                                                     <p> - </p>
                                                 }
                                             </BSTD>
+                                        }
+                                        @if(IsAccesoPizarra){
                                             <BSTD>
                                                 <div >
                                                     <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
-                                                    @* <BSLabel IsCheckLabel="true"></BSLabel> *@
                                                 </div>
                                             </BSTD>
                                         }
@@ -263,7 +267,6 @@
                                 @if(IsAccesoPizarra){
                                     <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
                                 }
-                                @* <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=buscar IsReset="true" >Borrar</BSButton>  *@
                             </BSCol>
                         </BSRow>
                     }
@@ -304,6 +307,7 @@
     private bool isAccesoDivision {get;set;}
     private bool isAccesoLinea {get;set;}
     private bool IsAccesoPizarra  { get; set;}
+    private bool IsAccesoCambioEstado  { get; set;}
     private bool IsCargado  { get; set;}
     private bool isDisabled  { get; set;}
     private bool band1  { get; set;}
@@ -345,6 +349,7 @@
                 refModal = new BSModal();
                 idAreCargada = 0;
                 IsAccesoPizarra = false;
+                IsAccesoCambioEstado = false;
                 IsDisableFTPM = true;
                 filtroFechaInicio = DateTime.Now.Date;
                 filtroFechaFinal = DateTime.Now.Date;
@@ -372,6 +377,7 @@
                     isAccesoDivision = true;
                     isAccesoLinea = true;
                     IsAccesoPizarra = true;
+                    IsAccesoCambioEstado = true;
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
                     listaPais = await DataPais.ObtenerTodosLosPaises();
@@ -387,6 +393,7 @@
                     isAccesoDivision = true;
                     isAccesoLinea = true;
                     IsAccesoPizarra = true;
+                    IsAccesoCambioEstado = true;
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
                     listaPais = await DataPais.ObtenerTodosLosPaises();
@@ -400,6 +407,7 @@
                     isAccesoCentro = true;
                     isAccesoDivision = true;
                     isAccesoLinea = true;
+                    IsAccesoCambioEstado = true;
                     if(rol.Contains("Operaciones")){
                         IsAccesoPizarra = true;
                     }
@@ -413,6 +421,7 @@
                     isAccesoCentro = true;
                     isAccesoDivision = true;
                     isAccesoLinea = true;
+                    IsAccesoCambioEstado = true;
                     if(rol.Contains("Operaciones")){
                         IsAccesoPizarra = true;
                     }
@@ -424,6 +433,7 @@
                 }else if(rol.Contains("UserCentro")){ 
                     isAccesoDivision = true;
                     isAccesoLinea = true;
+                    IsAccesoCambioEstado = true;
                     if(rol.Contains("Operaciones")){
                         IsAccesoPizarra = true;
                     }

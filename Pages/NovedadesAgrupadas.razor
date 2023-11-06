@@ -140,10 +140,14 @@
                         </BSRow>  
                         <br>
                         <br>
-                        @if(paradasBandera){
+                        @if((paradasBandera) || (rol.Contains("Mantenimiento"))){
                                         <BSRow>
                                             <BSCol Position="Position.Relative" Place ColumnMedium="5">
-                                                <BSLabel class="labelFormularioGrande">Tiempo Perdido (min)</BSLabel>
+                                                @if(rol.Contains("Mantenimiento")){
+                                                    <BSLabel class="labelFormularioGrande">Tiempo empleado (min)</BSLabel>
+                                                }else{
+                                                    <BSLabel class="labelFormularioGrande">Tiempo Perdido (min)</BSLabel>
+                                                }
                                                 <BSInput InputType="InputType.Number" @bind-Value="tiempoPerdido" rows="1"></BSInput>
                                             </BSCol>
                                             <BSCol Position="Position.Relative" Place ColumnMedium="4">

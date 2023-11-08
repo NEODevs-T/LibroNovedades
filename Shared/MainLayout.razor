@@ -39,24 +39,21 @@
         <NotAuthorized>
             <main>
                 <div class="text-center fondo">
-                    <div class="form-signin w-25 m-auto loginform ">
-                        <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo">
-                            <h5>@mensaje</h5>
-                        </BSAlert> 
+                    <RadzenTemplateForm Context="radzen" Data="@userDto" class="form-signin w-25 m-auto loginform ">
 
                         <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
-                                <BSLabel IsHidden="true">User</BSLabel>
 
-                                <BSInput InputType="InputType.Text" Required placeholder="Ficha/Usurio"
-                                    @bind-Value="usuario" />
+                        <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">Usuario</RadzenText>
+                        <RadzenTextBox Placeholder="Usuario" Name="usuario" id="usuario"  @bind-Value="usuario" class="w-100" />
                         
-                                <BSInput InputType="InputType.Password" Required placeholder="Contraseña"
-                                    @bind-Value="contrasena"/>
-                            <br>
-                            <BSButton IsDisabled="@isDisabled" @onclick=login Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge">login</BSButton>
-                    </div>
-                </div>              
+                        <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">Contraseña</RadzenText>
+                        <RadzenPassword @bind-Value=@contrasena Name="contraseña" id="contraseña" Placeholder="Contraseña..."  class="w-100"/>
+
+                        <RadzenButton class="mt-4" ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Disabled="@isDisabled" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=login/>
+                    </RadzenTemplateForm>
+                </div>
+            
             </main>
         </NotAuthorized>
     </AuthorizeView> 
@@ -110,6 +107,7 @@
         }
     } *@
 
+    //TODO: Colocar notificaciones
 
     protected async Task login(){
         isDisabled = true;

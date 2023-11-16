@@ -12,10 +12,11 @@
 @inject IDataTiParTP DataTiParTP;
 @inject IDataClasifiTPM DataClasifiTPM;
 
-
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorage
+
+@inject NotificationService notificationService
 
 
 @inject AuthenticationStateProvider AuthStateProvider
@@ -23,10 +24,6 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Formato</PageTitle>
-@* //TODO:
-    •   cargado mejor de la busqueda
-    •  FALTA ACTUALIZACION DEL ESTADO DEL DE LAS LISTAS DEL GEPLINE
-*@
 
 @if(IsCargado){
     <BSContainer PaddingBottom="Padding.Large">
@@ -35,10 +32,7 @@
         </BSRow>
     </BSContainer>
     <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-        <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" >
-            @* Dismissed="Dismissed" *@
-            <h5>@mensaje</h5>
-        </BSAlert>
+    
         <BSCard CardType="CardType.Body">
                 <BSCard CardType="CardType.Text">
                     @if(!causaCargada){
@@ -429,6 +423,7 @@
                 IsCargado = false;
                 tiempoPerdido = 0;
                 mensaje = "Registre una Novedad";
+                Notificacion("info","",mensaje);
 
                 isDisableManualGT = false;
                 isTPM = true;
@@ -559,38 +554,15 @@
                     dataNove.IdAreaCar = 1;
                     isDisableManualCTPM = false;
                     dataNove.IdCtpm = 2; 
-                }else if(rol.Contains("UserSinTPM")){
-                    @* dataNove.IdAreaCar = 1;
-                    dataNove.IdCtpm = 5;
-                    dataNove.LnisResu = 2;
-                    isTPM = false; *@
                 }else if(rol.Contains("Super") || rol.Contains("Admin")){
                     
                 }else{
                     mensaje = "Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua";
+                    Notificacion("error","",mensaje);
                 }
             }
         }
         IsCargado = true;
-
-        //TODO: Queda Pendiente Chempro
-        @* if( 
-            departamento.Contains("CONTROL DE PROCESOS")
-            departamento.Contains("MANTENIMIENTO") ||
-            departamento.Contains("GCIA SERVICIOS INDUSTRIALES") ||
-            departamento.Contains("INGENIERO DE PROY. Y MEJ. CONT") 
-            || departamento.Contains("LABORATORIO") 
-            || departamento.Contains("SEGURIDAD INDUSTRIAL")
-            ){
-            dataNove.IdAreaCar = 1;
-            idCentro = 9;
-            listaLinea = await DataLinea.ObtenerLasLineasPorCentro(9);
-            isDisableManualGT = false;
-            dataNove.IdCtpm = 5;
-            dataNove.LnisResu = 2;
-            isTPM = false;
-        } *@
-        
     }
 
     protected async Task BuscarEmpresas(ChangeEventArgs e){
@@ -604,7 +576,8 @@
                 listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -618,7 +591,8 @@
                 listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -631,7 +605,8 @@
                 listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -644,7 +619,8 @@
                 listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -657,7 +633,8 @@
                 dataNove.IdLinea = 0;
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -691,6 +668,7 @@
 
                     if(bandera){
                         mensaje = "Guardado Exitosamente";
+                        Notificacion("exito","",mensaje);
                         nota = "";
                         int d1 = dataNove.IdAreaCar;
                         int d2 =  dataNove.IdLinea;
@@ -720,18 +698,21 @@
                         indexCambio = -1;
                     }else{
                         mensaje = "Error. Intente de nuevo";
+                        Notificacion("error","",mensaje);
                     }
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
                 {
-                    //TODO:cambiar ----> mensaje = "Error: " + a.Message;
-                    mensaje = a.Message;
+                    mensaje = "Error: " + a.Message;
+                    Notificacion("error","",mensaje);
                 }
                 catch(Exception ex){
-                    mensaje = ex.Message;
+                    mensaje = "Error: " + ex.Message;
+                    Notificacion("error","",mensaje);
                 }
             }else{
                 mensaje = "La descripción de la acción tomada es obligatoria";
+                Notificacion("error","",mensaje);
             }
         }
         isDisabledButton = false;
@@ -789,9 +770,11 @@
         }catch(Exception ex){
             if(ex.Message.Contains("Response status code does not indicate success: 500 (Internal Server Error).")){
                 mensaje = "Error al consultar al gespline.";
+                Notificacion("error","",mensaje);
                 paradasBandera = true;
             }else{
-                mensaje = ex.Message;
+                mensaje = "Error: " + ex.Message;
+                Notificacion("error","",mensaje);
             }
         }
     }
@@ -838,7 +821,8 @@
             }
             causaCargada = true;
         }catch(Exception e){
-            mensaje = e.Message;
+            mensaje = "Error: " + e.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -856,10 +840,12 @@
                 tiempoPerdido = 0;
                 mensaje = "";
             }else{
-                mensaje = "Coloque un tiempo mayor a 0 y una cauda especifica";
+                mensaje = "Coloque un tiempo mayor a 0 y una causa especifica";
+                Notificacion("error","",mensaje);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -887,6 +873,25 @@
 
     public async Task atras(){
         causaCargada = false;
+    }
+
+    public void Notificacion(string tipo,string mensaje,string detalle)
+    {
+
+        NotificationMessage notificacion;
+        if(tipo == "error"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Error, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "info"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Info, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "exito"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Success, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "advertencia"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }
     }
     
 }

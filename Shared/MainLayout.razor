@@ -11,6 +11,8 @@
 @inject IDataNivel DataNivel
 @inject IDataProyectoUsr DataProyectoUsr
 
+@inject NotificationService NotificationService
+
 
 <PageTitle>LibroNovedades</PageTitle>
 
@@ -33,7 +35,6 @@
                     @Body
                 </article>
             </main>
-            <RadzenNotification />
         </Authorized>
 
         <NotAuthorized>
@@ -57,7 +58,7 @@
             </main>
         </NotAuthorized>
     </AuthorizeView> 
-
+    <RadzenNotification />
 </div>
 
 @code {
@@ -71,11 +72,6 @@
     private HttpResponseMessage result {get; set;}
     private string validarToken  {get; set;}
 
-    @* private Usuario? ObjUsuario {get; set;}
-    private ProyectoUsr? proyecto {get; set;} 
-    private List<Nivel>? nivelUsuario {get; set;}  *@
-    
-
     protected override async Task  OnInitializedAsync()
     {
         proyecto = "LibroDeNovedades";
@@ -88,30 +84,10 @@
         await AuthStateProvider.GetAuthenticationStateAsync();
     }
 
-    @* protected async Task Login(){
-        
-        if (username != "" && password != ""){
-            ObjUsuario = await DataUser.ObtenerUsuario(username, password);
-            if (ObjUsuario != null) {
-                proyecto = await DataProyectoUsr.ObtenerProyectoSegunNombre("LibroNovedades");
-                if(proyecto != null) {
-                    nivelUsuario = await DataNivel.ObtenerNivelesDelUsuarioSegunProyecto(ObjUsuario,proyecto);
-                }else{
-                    mensaje = "Esta aplicacion se encuenta desactivada. Por favor espere o comuniquece con mejora continua";
-                }
-            }else{
-                mensaje = "El usurio o contraseña no coinciden. Por favor verificar los datos o comuniquece con mejora continua";
-            }
-        }else{
-            mensaje = "Coloque un Usuario y contraseña valida";
-        }
-    } *@
-
-    //TODO: Colocar notificaciones
-
     protected async Task login(){
         isDisabled = true;
         mensaje = "Cargando...";
+        Notificacion("info","",mensaje);
         if (usuario.Trim() != "" && contrasena.Trim() != "")
         {
             userDto.Proyecto = proyecto;
@@ -124,14 +100,17 @@
                 if (validarToken == "NotFoundUser")
                 {
                     mensaje = "Verifique el usuario";
+                    Notificacion("error","",mensaje);
                 }
                 else if (validarToken == "WrongPassword")
                 {
                     mensaje = "Verifique la contraseña";
+                    Notificacion("error","",mensaje);
                 }
                 else if (validarToken == "null")
                 {
                     mensaje = "Verifique el usuario";
+                    Notificacion("error","",mensaje);
                 }
                 else
                 {
@@ -139,50 +118,32 @@
                     await AuthStateProvider.GetAuthenticationStateAsync();    
                     NavigationManager.NavigateTo("");
                     mensaje = "Bienvenido";
+                    Notificacion("exito","",mensaje);
                 }
             }else{
                 mensaje = "Hubo un error. Por favor intende de nuevo";
+                Notificacion("error","",mensaje);
             }
         }else{
             mensaje = "Ingrese un usuario, contraseña valida y ficha valida";
+            Notificacion("error","",mensaje);
         }
         isDisabled = false;
     }
 
-    @* protected async Task HandleLogin(EditContext e)
+    public void Notificacion(string tipo,string mensaje,string detalle)
     {
-        user.Proyecto = "LibroDeNovedades";
-        if (e.Validate())
-        {
-            var result = await Http.PostAsJsonAsync("http://operaciones.papeleslatinos.com/Authentication/api/Auth/Login", user);
-            var ValidarToken = await result.Content.ReadAsStringAsync();
-            
-            //var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-            if (ValidarToken != null)
-            {
-                if (ValidarToken == "NotFoundUser")
-                {
 
-                }
-                else if (ValidarToken == "WrongPassword")
-                {
-
-                }
-                else if (ValidarToken == "null")
-                {
-
-                }
-                else
-                {
-                    //mensaje = "Accediendo...";
-                    //Console.WriteLine(ValidarToken);
-                    await LocalStorage.SetItemAsync("LibroDeNovedadesNew", ValidarToken);
-                    await AuthStateProvider.GetAuthenticationStateAsync();    
-                    await LocalStorage.SetItemAsync("Identificacion", identificacion);
-                    //user = new UserLoginDto();
-                    NavigationManager.NavigateTo("");
-                }
-            }
+        NotificationMessage notificacion = new NotificationMessage{};
+        if(tipo == "error"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Error, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }else if(tipo == "info"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Info, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }else if(tipo == "exito"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Success, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }else if(tipo == "advertencia"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
         }
-    } *@
+        NotificationService.Notify(notificacion);
+    } 
 }

@@ -15,5 +15,7 @@ namespace LibroNovedades.Models
         public string? Division { get; set; }
         public string Centro { get; set; } = null!;
         public string Rol { get; set; } = null!;
+        public string Empresa { get; set; } = null!;
+        public string Pais { get; set; } = null!;
     }
 }

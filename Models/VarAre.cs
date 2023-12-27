@@ -19,9 +19,9 @@ namespace LibroNovedades.Models
         /// <summary>
         /// identifiacador del area
         /// </summary>
-        public int IdArea { get; set; }
+        public int IdParProdu { get; set; }
 
-        public virtual Area IdAreaNavigation { get; set; } = null!;
+        public virtual ParProdu IdParProduNavigation { get; set; } = null!;
         public virtual VarCa IdVarCaNavigation { get; set; } = null!;
     }
 }

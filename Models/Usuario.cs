@@ -28,7 +28,7 @@ namespace LibroNovedades.Models
         public string UsClave { get; set; } = null!;
         public string? UsCorreo { get; set; }
         public string UsApellido { get; set; } = null!;
-        public string? UsUsuario { get; set; }
+        public string UsUsuario { get; set; } = null!;
         public string UsFicha { get; set; } = null!;
         public string UsPass { get; set; } = null!;
 

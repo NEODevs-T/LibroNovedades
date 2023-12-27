@@ -145,7 +145,7 @@ namespace LibroNovedades.Data.Global
         }
 
         public async Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea){
-            return await _cotext.EquipoEams.Where(t => t.IdLinea == idLinea).OrderBy(t => t.EnombreEam).ToListAsync();
+            return await _cotext.EquipoEams.Where(t => t.IdLinea == idLinea && t.EestaEam == true).OrderBy(t => t.EnombreEam).ToListAsync();
         }
     }
     

@@ -10,8 +10,8 @@ namespace LibroNovedades.Models
     {
         public RspnsblP()
         {
+            Encuesta = new HashSet<Encuestum>();
             ProResps = new HashSet<ProResp>();
-            Proyectos = new HashSet<Proyecto>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace LibroNovedades.Models
         public bool Rpestatus { get; set; }
         public string Rpusuario { get; set; } = null!;
 
+        public virtual ICollection<Encuestum> Encuesta { get; set; }
         public virtual ICollection<ProResp> ProResps { get; set; }
-        public virtual ICollection<Proyecto> Proyectos { get; set; }
     }
 }

@@ -8,11 +8,6 @@ namespace LibroNovedades.Models
     /// </summary>
     public partial class ClienteP
     {
-        public ClienteP()
-        {
-            Proyectos = new HashSet<Proyecto>();
-        }
-
         /// <summary>
         /// Identificador del cliente del proyecto
         /// </summary>
@@ -29,7 +24,5 @@ namespace LibroNovedades.Models
         /// estatus(0:inactivo,1:activo)
         /// </summary>
         public bool Cpestatus { get; set; }
-
-        public virtual ICollection<Proyecto> Proyectos { get; set; }
     }
 }

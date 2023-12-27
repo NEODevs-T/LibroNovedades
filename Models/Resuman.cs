@@ -8,14 +8,19 @@ namespace LibroNovedades.Models
         public int IdResumen { get; set; }
         public int? IdTipSuple { get; set; }
         public DateTime? Rfecha { get; set; }
-        public string? Rturno { get; set; }
+        public int? Rturno { get; set; }
         public string? Rgrupo { get; set; }
-        public int IdPuesto { get; set; }
         public int IdPersonal { get; set; }
         public string? Rsuplido { get; set; }
+        public int? IdMontos { get; set; }
+        public string? RuserVali { get; set; }
+        public string? RuserPago { get; set; }
+        public int? IdTipIncen { get; set; }
+        public DateTime? RfecPago { get; set; }
 
+        public virtual Monto? IdMontosNavigation { get; set; }
         public virtual Personal IdPersonalNavigation { get; set; } = null!;
-        public virtual Puesto IdPuestoNavigation { get; set; } = null!;
+        public virtual TipIncen? IdTipIncenNavigation { get; set; }
         public virtual TipSuple? IdTipSupleNavigation { get; set; }
     }
 }

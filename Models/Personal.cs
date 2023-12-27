@@ -7,6 +7,7 @@ namespace LibroNovedades.Models
     {
         public Personal()
         {
+            Plantillas = new HashSet<Plantilla>();
             Resumen = new HashSet<Resuman>();
         }
 
@@ -17,6 +18,7 @@ namespace LibroNovedades.Models
         public bool? PeEstado { get; set; }
         public string? PeGrupo { get; set; }
 
+        public virtual ICollection<Plantilla> Plantillas { get; set; }
         public virtual ICollection<Resuman> Resumen { get; set; }
     }
 }

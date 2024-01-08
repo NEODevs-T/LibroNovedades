@@ -23,6 +23,9 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
+@using Microsoft.EntityFrameworkCore
+
+
 <PageTitle>Formato</PageTitle>
 
 @if(IsCargado){
@@ -271,23 +274,13 @@
                             </BSCol> *@
                             <BSCol Position="Position.Relative" Place ColumnMedium="6">
                                     <BSLabel class="labelFormularioGrande">Codigo de Equipo</BSLabel>
-                                    <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdEquipo">
-                                        <option value="0">Seleccione</option>
-                                        @if(listaEquiposEAM != null){
-                                            @foreach (var item in listaEquiposEAM)
-                                            {
-                                                <option value="@item.EcodEquiEam">@item.EcodEquiEam - @item.EnombreEam -  @item.EdescriEam</option>
-                                            }
-                                        }else{
-                                            <option value="0">Cargando...</option>
-                                        }
-                                    </BSInput>
-                                    <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
+                                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
+                                        TValue="string" Data=listaEquiposEAM LoadData=@LoadData ValueProperty="EcodEquiEam" AllowClear="true" @bind-Value=@dataNove.IdEquipo Style="width: 100%">
+                                        <Template Context="item">
+                                            @item.EcodEquiEam - @item.EnombreEam -  @item.EdescriEam
+                                        </Template>
+                                    </RadzenDropDown>
                             </BSCol>
-                            <BSCol Position="Position.Relative" style="display: flex;justify-content: center;align-items: end;" Place ColumnMedium="3">
-                                    <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdEquipo"></BSInput>
-                                    <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
-                            </BSCol> 
                             @if(isTPM){
                                 @if(isFichaManual){
                                     <BSCol Position="Position.Relative" Place ColumnMedium="4">
@@ -395,10 +388,12 @@
     private List<Division> listaDivision {get;set;}
     private List<Linea> listaLinea {get;set;}
     private List<EquipoEam> listaEquiposEAM{ get; set;}
+    private List<EquipoEam> listaAllEquiposEAM { get; set;}
     private List<ClasifiTpm> listaClasificacionTPM { get; set;}
     private List<TiParTp> listaTiposNovedad { get; set;}
     private List<string> listaTurnoYGrupo { get; set;}
     private List<int> indexParadas  { get; set;}
+    RadzenDropDown<string> radzenDropDown { get; set;}
     private bool causaCargada { get; set;}
     private bool paradasBandera {get; set;}
     private bool IsNuevo  { get; set;}
@@ -681,6 +676,8 @@
                         }
                             
                         dataNove = new LibroNove();
+                        listaEquiposEAM = listaAllEquiposEAM.ToList();
+                        InvokeAsync(StateHasChanged);
 
                         if(!isTPM){ 
                             dataNove.IdCtpm = 5;
@@ -729,6 +726,7 @@
 
             dataNove.IdLinea = int.Parse(e.Value.ToString());
             listaEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
+            listaAllEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
             linea =  listaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
             dataNove.IdMaquina = linea.Lofic;
             listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
@@ -893,7 +891,22 @@
             notificationService.Notify(notificacion);
         }
     }
-    
+
+    string value;
+
+    void LoadData(LoadDataArgs args)
+    {
+
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            listaEquiposEAM = listaAllEquiposEAM.Where(c => c.EcodEquiEam.ToLower().Contains(args.Filter.ToLower()) || c.EnombreEam.ToLower().Contains(args.Filter.ToLower())).ToList();
+            InvokeAsync(StateHasChanged);
+        }
+        if(args.Filter == ""){
+            listaEquiposEAM = listaAllEquiposEAM.ToList();
+            InvokeAsync(StateHasChanged);
+        }
+    }
 }
 
 

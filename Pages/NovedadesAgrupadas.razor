@@ -247,31 +247,11 @@
                                     <BSInput name="Grupo" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lngrupo"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lngrupo)"/> 
                             </BSCol>
-                            @* <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                    <BSLabel class="labelFormulario">Grupo</BSLabel>
-                                    <BSInput IsDisabled="@isDisableManualGT"  InputType="InputType.Select" @bind-Value="dataNove.Lngrupo">
-                                        <option value="0">Seleccionar Grupo</option>
-                                        <option value="A">Grupo A</option>
-                                        <option value="B">Grupo B</option>
-                                        <option value="C">Grupo C</option>
-                                        <option value="D">Grupo D</option>
-                                    </BSInput>
-                                    <BSFeedback For="@(() => dataNove.Lngrupo)"/> 
-                            </BSCol> *@
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Turno</BSLabel>
                                     <BSInput name="Turno" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lnturno"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lnturno)"/> 
                             </BSCol>
-                            @* <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                    <BSLabel class="labelFormulario">Turno</BSLabel>
-                                    <BSInput  IsDisabled="@isDisableManualGT" InputType="InputType.Select" @bind-Value="dataNove.Lnturno">
-                                        <option value="0">Seleccionar Grupo</option>
-                                        <option value="1">1er turno</option>
-                                        <option value="2">2do truno</option>
-                                    </BSInput>
-                                    <BSFeedback For="@(() => dataNove.Lnturno)"/> 
-                            </BSCol> *@
                             <BSCol Position="Position.Relative" Place ColumnMedium="6">
                                     <BSLabel class="labelFormularioGrande">Codigo de Equipo</BSLabel>
                                     <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"

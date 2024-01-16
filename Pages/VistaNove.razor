@@ -87,6 +87,7 @@
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Pais</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
+                                            <option value="0">Seleccione</option>
                                             @if(listaPais != null){
                                                 @foreach (var item in listaPais)
                                                 {
@@ -103,6 +104,7 @@
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Empresas</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
+                                            <option value="0">Seleccione</option>
                                             @if(listaEmpresa != null){
                                                 @foreach (var item in listaEmpresa)
                                                 {
@@ -119,6 +121,7 @@
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Centro</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
+                                            <option value="0">Seleccione</option>
                                             @if(listaCentro != null){
                                                 @foreach (var item in listaCentro)
                                                 {

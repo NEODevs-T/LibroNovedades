@@ -260,6 +260,7 @@
                                             @item.EcodEquiEam - @item.EnombreEam -  @item.EdescriEam
                                         </Template>
                                     </RadzenDropDown>
+                                    
                             </BSCol>
                             @if(isTPM){
                                 @if(isFichaManual){
@@ -691,6 +692,9 @@
                 mensaje = "La descripción de la acción tomada es obligatoria";
                 Notificacion("error","",mensaje);
             }
+        }else{
+            mensaje = "Campo vacío, por favor revisa todo el formulario";
+            Notificacion("error","",mensaje);
         }
         isDisabledButton = false;
         _showTooltip = true;

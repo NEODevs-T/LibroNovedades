@@ -17,14 +17,14 @@ namespace LibroNovedades.Models
         public string IdEquipo { get; set; } = null!;
         [Required(ErrorMessage ="Coloque la novedad."),StringLength(150,ErrorMessage="Alcanzo el limite de caracteres. Favor poner los detalles en las observacion")] 
         public string Lndiscrepa { get; set; } = null!;
-        [ValidDiferenteACero]
+        [ValidMayorACero]
         public double LntiePerMi { get; set; }
         [Required(ErrorMessage ="Coloque su ficha.")]
         public string LnfichaRes { get; set; } = null!;
         public DateTime Lnfecha { get; set; }
         [ValidDiferenteACero,StringLength(1,ErrorMessage="Se debe poner un único carácter")]
         public string Lngrupo { get; set; } = null!;
-        [ValidDiferenteACero,StringLength(1,ErrorMessage="Se debe poner un único carácter")]
+        [ValidTurno,StringLength(1,ErrorMessage="Se debe poner un único carácter")]
         public string Lnturno { get; set; } = null!;
         [Required(ErrorMessage ="Coloque el id de la maquina.")]
         public string IdMaquina { get; set; } = null!;

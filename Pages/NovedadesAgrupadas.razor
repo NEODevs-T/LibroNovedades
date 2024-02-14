@@ -244,7 +244,10 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Grupo</BSLabel>
-                                    <BSInput name="Grupo" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lngrupo"></BSInput>
+                                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                            TValue="string" Data=@(grupos.Select(c => c.Value))  @bind-Value=dataNove.Lngrupo Style="width: 100%"
+                                            Disabled="@isDisableManualGT">
+                                    </RadzenDropDown>
                                     <BSFeedback For="@(() => dataNove.Lngrupo)"/> 
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
@@ -381,10 +384,12 @@
     private bool bandera  { get; set;}
     private double tiempoPerdido { get; set;}
     private int indexCambio  { get; set;}
+    public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA) empresas = (PAVECA: 1,CHEMPRO: 2, PANASA: 3,PAINSA: 4);
+    public readonly Dictionary<string,string> grupoPAVECA = new Dictionary<string, string>{{"GrupoA", "A"}, {"GrupoB", "B"},{"GrupoC", "C"},{"GrupoD", "D"}};
+    public readonly Dictionary<string,string> grupoPAINSA = new Dictionary<string, string>{{"Grupo1", "1"}, {"Grupo2", "2"},{"Grupo3", "3"},{"Grupo4", "4"}};
+    public readonly Dictionary<string,string> grupoPANASA = new Dictionary<string, string>{{"Grupo1", "-"}};
+    public Dictionary<string,string>? grupos = new Dictionary<string, string>();
     //TODO: Pendiente por mejorar private List<LibroNove> listaNoveSinTiempoPerdido { get; set;}
-
-
-
     protected override async Task  OnInitializedAsync()
     {
 
@@ -436,10 +441,7 @@
                 isAccesoDivision = false;
                 isAccesoLinea = false;
 
-                if(idPais == 1){
-                    listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
-                    isDisableManualGT = true;
-                }
+                await GrupoTurnoPorEmpresa();
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
                 listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
 
@@ -562,6 +564,7 @@
         idCentro = 0;
         idDivision = 0;
         idLinea = 0;
+        await GrupoTurnoPorEmpresa();
         try{
             if(idEmpresa != 0){
                 listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
@@ -812,7 +815,7 @@
         try{
             GrupoTurno();
             IsNuevo = true;
-            if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
+            if(tiempoPerdido > 0 && dataNove.IdTipoNove != 0){
                 dataNove.Lnobserv = "";
                 dataNove.IdParada = null;
                 causaCargada = true;
@@ -874,10 +877,23 @@
             notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
             notificationService.Notify(notificacion);
         }
+    } 
+
+    public async Task GrupoTurnoPorEmpresa(){
+        if(idEmpresa == empresas.PAVECA){
+            listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
+            if(!rol.Contains("Admin")){
+                isDisableManualGT = true;
+            }
+            grupos = new Dictionary<string,string>(grupoPAVECA);
+        }else if(idEmpresa == empresas.PANASA){
+            grupos = new Dictionary<string,string>(grupoPANASA);
+        }else if(idEmpresa == empresas.PAINSA){
+            grupos = new Dictionary<string,string>(grupoPAINSA);
+        }else if(idEmpresa == empresas.CHEMPRO){
+            grupos = new Dictionary<string,string>(grupoPAVECA);
+        }
     }
-
-    string value;
-
     void LoadData(LoadDataArgs args)
     {
 

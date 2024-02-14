@@ -455,8 +455,11 @@
                     idAreCargada = 4;
                     filtroClasificacionTPM = 3;
                 }else if(rol.Contains("Operaciones")){
-                    idAreCargada = 0;
+                    idAreCargada = 1;
                     IsDisableFTPM = false;
+                }else if(rol.Contains("Admin") || rol.Contains("Super")){
+                    IsDisableFTPM = false;
+                    idAreCargada = 10;
                 }
             }else{
                 mensaje = "Sin Acceso";

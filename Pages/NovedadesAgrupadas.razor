@@ -850,7 +850,7 @@
     }
 
     public void GrupoTurno(){
-        if(idPais == 1){
+        if(idEmpresa == empresas.PAVECA){
             dataNove.Lnturno = listaTurnoYGrupo[0];
             dataNove.Lngrupo = listaTurnoYGrupo[1];
         }
@@ -888,6 +888,7 @@
             grupos = new Dictionary<string,string>(grupoPAVECA);
         }else if(idEmpresa == empresas.PANASA){
             grupos = new Dictionary<string,string>(grupoPANASA);
+            dataNove.Lngrupo = "-";
         }else if(idEmpresa == empresas.PAINSA){
             grupos = new Dictionary<string,string>(grupoPAINSA);
         }else if(idEmpresa == empresas.CHEMPRO){

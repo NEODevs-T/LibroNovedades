@@ -1,4 +1,4 @@
-## Libro de Novedades 
+# <img src="/wwwroot/img/Neo.png" Width="40" Height="40"> Libro de Novedades 
 
 ### La aplicación web de asentamientos está enmarcado dentro de las herramientas de NEO, que consiste en el registro de las novedades y discrepancias que surgen durante las operaciones diarias. 
 

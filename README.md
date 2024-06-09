@@ -8,7 +8,8 @@
 - Se define las causas de las novedades o discrepancias. 
 - Se enmarca según la clasificación TPM (Mantenimiento autónomo, mantenimiento especializado, seguridad y calidad) o como Novedad (Información general). 
 - Se describe la discrepancia y si fue resuelto o no. 
-- Esta disponible un histórico de novedades o discrepancias con diferentes filtros. 
+- Esta disponible un histórico de novedades o discrepancias con diferentes filtros.
+- Pasar novedades de interés hacia la aplicación de Reunión diaria para ser discutidas.
 
 ## Tecnología 
 Esta aplicación está hecha en c# con .net, blazor, base de datos SQL Server y VSC con dotnet. 

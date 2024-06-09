@@ -12,21 +12,21 @@
 @inject IDataTiParTP DataTiParTP;
 @inject IDataClasifiTPM DataClasifiTPM;
 
-
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorage
+
+@inject NotificationService notificationService
 
 
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
+@using Microsoft.EntityFrameworkCore
+
+
 <PageTitle>Formato</PageTitle>
-@* //TODO:
-    •   cargado mejor de la busqueda
-    •  FALTA ACTUALIZACION DEL ESTADO DEL DE LAS LISTAS DEL GEPLINE
-*@
 
 @if(IsCargado){
     <BSContainer PaddingBottom="Padding.Large">
@@ -35,10 +35,7 @@
         </BSRow>
     </BSContainer>
     <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-        <BSAlert IsOpen="_showTooltip" style="height:55px;" class="alertaInfo"  @ref="_alertRef" >
-            @* Dismissed="Dismissed" *@
-            <h5>@mensaje</h5>
-        </BSAlert>
+    
         <BSCard CardType="CardType.Body">
                 <BSCard CardType="CardType.Text">
                     @if(!causaCargada){
@@ -140,10 +137,14 @@
                         </BSRow>  
                         <br>
                         <br>
-                        @if(paradasBandera){
+                        @if((paradasBandera) || (rol.Contains("Mantenimiento"))){
                                         <BSRow>
                                             <BSCol Position="Position.Relative" Place ColumnMedium="5">
-                                                <BSLabel class="labelFormularioGrande">Tiempo Perdido (min)</BSLabel>
+                                                @if(rol.Contains("Mantenimiento")){
+                                                    <BSLabel class="labelFormularioGrande">Tiempo empleado (min)</BSLabel>
+                                                }else{
+                                                    <BSLabel class="labelFormularioGrande">Tiempo Perdido (min)</BSLabel>
+                                                }
                                                 <BSInput InputType="InputType.Number" @bind-Value="tiempoPerdido" rows="1"></BSInput>
                                             </BSCol>
                                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
@@ -184,7 +185,7 @@
                                         @foreach (var item in indexParadas)
                                         {
                                             <BSTR>
-                                                <BSTD>@item</BSTD>
+                                                <BSTD>@(item + 1)</BSTD>
                                                 <BSTD>@paradas[4][item]</BSTD>
                                                 <BSTD>@paradas[3][item]</BSTD>
                                                 <BSTD>@Math.Round(double.Parse(paradas[5][item]),2)</BSTD>
@@ -243,53 +244,27 @@
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Grupo</BSLabel>
-                                    <BSInput name="Grupo" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lngrupo"></BSInput>
+                                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                            TValue="string" Data=@(grupos.Select(c => c.Value))  @bind-Value=dataNove.Lngrupo Style="width: 100%"
+                                            Disabled="@isDisableManualGT">
+                                    </RadzenDropDown>
                                     <BSFeedback For="@(() => dataNove.Lngrupo)"/> 
                             </BSCol>
-                            @* <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                    <BSLabel class="labelFormulario">Grupo</BSLabel>
-                                    <BSInput IsDisabled="@isDisableManualGT"  InputType="InputType.Select" @bind-Value="dataNove.Lngrupo">
-                                        <option value="0">Seleccionar Grupo</option>
-                                        <option value="A">Grupo A</option>
-                                        <option value="B">Grupo B</option>
-                                        <option value="C">Grupo C</option>
-                                        <option value="D">Grupo D</option>
-                                    </BSInput>
-                                    <BSFeedback For="@(() => dataNove.Lngrupo)"/> 
-                            </BSCol> *@
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                     <BSLabel class="labelFormulario">Turno</BSLabel>
                                     <BSInput name="Turno" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lnturno"></BSInput>
                                     <BSFeedback For="@(() => dataNove.Lnturno)"/> 
                             </BSCol>
-                            @* <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                    <BSLabel class="labelFormulario">Turno</BSLabel>
-                                    <BSInput  IsDisabled="@isDisableManualGT" InputType="InputType.Select" @bind-Value="dataNove.Lnturno">
-                                        <option value="0">Seleccionar Grupo</option>
-                                        <option value="1">1er turno</option>
-                                        <option value="2">2do truno</option>
-                                    </BSInput>
-                                    <BSFeedback For="@(() => dataNove.Lnturno)"/> 
-                            </BSCol> *@
                             <BSCol Position="Position.Relative" Place ColumnMedium="6">
                                     <BSLabel class="labelFormularioGrande">Codigo de Equipo</BSLabel>
-                                    <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdEquipo">
-                                        <option value="0">Seleccione</option>
-                                        @if(listaEquiposEAM != null){
-                                            @foreach (var item in listaEquiposEAM)
-                                            {
-                                                <option value="@item.EcodEquiEam">@item.EcodEquiEam - @item.EnombreEam -  @item.EdescriEam</option>
-                                            }
-                                        }else{
-                                            <option value="0">Cargando...</option>
-                                        }
-                                    </BSInput>
-                                    <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
+                                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
+                                        TValue="string" Data=listaEquiposEAM LoadData=@LoadData ValueProperty="EcodEquiEam" AllowClear="true" @bind-Value=@dataNove.IdEquipo Style="width: 100%">
+                                        <Template Context="item">
+                                            @item.EcodEquiEam - @item.EnombreEam -  @item.EdescriEam
+                                        </Template>
+                                    </RadzenDropDown>
+                                    
                             </BSCol>
-                            <BSCol Position="Position.Relative" style="display: flex;justify-content: center;align-items: end;" Place ColumnMedium="3">
-                                    <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.IdEquipo"></BSInput>
-                                    <BSFeedback For="@(() => dataNove.IdEquipo)"/> 
-                            </BSCol> 
                             @if(isTPM){
                                 @if(isFichaManual){
                                     <BSCol Position="Position.Relative" Place ColumnMedium="4">
@@ -300,7 +275,7 @@
                                 }
                                 <BSCol Position="Position.Relative" Place ColumnMedium="5">
                                     <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
-                                    <BSInput IsDisabled="@isDisableManualCTPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
+                                    <BSInput IsDisabled="@isDisableManualCTPM" id="TPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
                                         @if(listaClasificacionTPM != null){
                                             <option value="0">Seleccione</option>
                                             @foreach (var item in listaClasificacionTPM)
@@ -397,22 +372,24 @@
     private List<Division> listaDivision {get;set;}
     private List<Linea> listaLinea {get;set;}
     private List<EquipoEam> listaEquiposEAM{ get; set;}
+    private List<EquipoEam> listaAllEquiposEAM { get; set;}
     private List<ClasifiTpm> listaClasificacionTPM { get; set;}
     private List<TiParTp> listaTiposNovedad { get; set;}
     private List<string> listaTurnoYGrupo { get; set;}
     private List<int> indexParadas  { get; set;}
+    RadzenDropDown<string> radzenDropDown { get; set;}
     private bool causaCargada { get; set;}
     private bool paradasBandera {get; set;}
     private bool IsNuevo  { get; set;}
     private bool bandera  { get; set;}
     private double tiempoPerdido { get; set;}
     private int indexCambio  { get; set;}
-
-
+    public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA) empresas = (PAVECA: 1,CHEMPRO: 2, PANASA: 3,PAINSA: 4);
+    public readonly Dictionary<string,string> grupoPAVECA = new Dictionary<string, string>{{"GrupoA", "A"}, {"GrupoB", "B"},{"GrupoC", "C"},{"GrupoD", "D"}};
+    public readonly Dictionary<string,string> grupoPAINSA = new Dictionary<string, string>{{"Grupo1", "1"}, {"Grupo2", "2"},{"Grupo3", "3"},{"Grupo4", "4"}};
+    public readonly Dictionary<string,string> grupoPANASA = new Dictionary<string, string>{{"Grupo1", "-"}};
+    public Dictionary<string,string>? grupos = new Dictionary<string, string>();
     //TODO: Pendiente por mejorar private List<LibroNove> listaNoveSinTiempoPerdido { get; set;}
-
-
-
     protected override async Task  OnInitializedAsync()
     {
 
@@ -427,6 +404,7 @@
                 IsCargado = false;
                 tiempoPerdido = 0;
                 mensaje = "Registre una Novedad";
+                Notificacion("info","",mensaje);
 
                 isDisableManualGT = false;
                 isTPM = true;
@@ -463,10 +441,7 @@
                 isAccesoDivision = false;
                 isAccesoLinea = false;
 
-                if(idPais == 1){
-                    listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
-                    isDisableManualGT = true;
-                }
+                await GrupoTurnoPorEmpresa();
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
                 listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
 
@@ -531,6 +506,11 @@
                 }else if(rol.Contains("UserDivision")){
                     isAccesoLinea = true;
 
+                    if(idPais == 1){
+                        isAccesoDivision = true;
+                        listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    }
+                    
                     // todas las lineas de esa division
                     listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
                 }
@@ -552,38 +532,15 @@
                     dataNove.IdAreaCar = 1;
                     isDisableManualCTPM = false;
                     dataNove.IdCtpm = 2; 
-                }else if(rol.Contains("UserSinTPM")){
-                    @* dataNove.IdAreaCar = 1;
-                    dataNove.IdCtpm = 5;
-                    dataNove.LnisResu = 2;
-                    isTPM = false; *@
                 }else if(rol.Contains("Super") || rol.Contains("Admin")){
                     
                 }else{
                     mensaje = "Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua";
+                    Notificacion("error","",mensaje);
                 }
             }
         }
         IsCargado = true;
-
-        //TODO: Queda Pendiente Chempro
-        @* if( 
-            departamento.Contains("CONTROL DE PROCESOS")
-            departamento.Contains("MANTENIMIENTO") ||
-            departamento.Contains("GCIA SERVICIOS INDUSTRIALES") ||
-            departamento.Contains("INGENIERO DE PROY. Y MEJ. CONT") 
-            || departamento.Contains("LABORATORIO") 
-            || departamento.Contains("SEGURIDAD INDUSTRIAL")
-            ){
-            dataNove.IdAreaCar = 1;
-            idCentro = 9;
-            listaLinea = await DataLinea.ObtenerLasLineasPorCentro(9);
-            isDisableManualGT = false;
-            dataNove.IdCtpm = 5;
-            dataNove.LnisResu = 2;
-            isTPM = false;
-        } *@
-        
     }
 
     protected async Task BuscarEmpresas(ChangeEventArgs e){
@@ -593,11 +550,12 @@
         idDivision = 0;
         idLinea = 0;
         try{
-            if(idCentro != 0){
+            if(idPais != 0){
                 listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -606,12 +564,14 @@
         idCentro = 0;
         idDivision = 0;
         idLinea = 0;
+        await GrupoTurnoPorEmpresa();
         try{
-            if(idCentro != 0){
+            if(idEmpresa != 0){
                 listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -624,7 +584,8 @@
                 listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -637,7 +598,8 @@
                 listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -650,9 +612,12 @@
                 dataNove.IdLinea = 0;
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
+
+    
 
     protected async Task OK(EditContext e){
         isDisabledButton = true;
@@ -682,6 +647,7 @@
 
                     if(bandera){
                         mensaje = "Guardado Exitosamente";
+                        Notificacion("exito","",mensaje);
                         nota = "";
                         int d1 = dataNove.IdAreaCar;
                         int d2 =  dataNove.IdLinea;
@@ -694,6 +660,8 @@
                         }
                             
                         dataNove = new LibroNove();
+                        listaEquiposEAM = listaAllEquiposEAM.ToList();
+                        InvokeAsync(StateHasChanged);
 
                         if(!isTPM){ 
                             dataNove.IdCtpm = 5;
@@ -711,19 +679,25 @@
                         indexCambio = -1;
                     }else{
                         mensaje = "Error. Intente de nuevo";
+                        Notificacion("error","",mensaje);
                     }
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
                 {
-                    //TODO:cambiar ----> mensaje = "Error: " + a.Message;
-                    mensaje = a.Message;
+                    mensaje = "Error: " + a.Message;
+                    Notificacion("error","",mensaje);
                 }
                 catch(Exception ex){
-                    mensaje = ex.Message;
+                    mensaje = "Error: " + ex.Message;
+                    Notificacion("error","",mensaje);
                 }
             }else{
                 mensaje = "La descripción de la acción tomada es obligatoria";
+                Notificacion("error","",mensaje);
             }
+        }else{
+            mensaje = "Campo vacío, por favor revisa todo el formulario";
+            Notificacion("error","",mensaje);
         }
         isDisabledButton = false;
         _showTooltip = true;
@@ -739,6 +713,7 @@
 
             dataNove.IdLinea = int.Parse(e.Value.ToString());
             listaEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
+            listaAllEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
             linea =  listaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
             dataNove.IdMaquina = linea.Lofic;
             listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
@@ -780,9 +755,11 @@
         }catch(Exception ex){
             if(ex.Message.Contains("Response status code does not indicate success: 500 (Internal Server Error).")){
                 mensaje = "Error al consultar al gespline.";
+                Notificacion("error","",mensaje);
                 paradasBandera = true;
             }else{
-                mensaje = ex.Message;
+                mensaje = "Error: " + ex.Message;
+                Notificacion("error","",mensaje);
             }
         }
     }
@@ -829,7 +806,8 @@
             }
             causaCargada = true;
         }catch(Exception e){
-            mensaje = e.Message;
+            mensaje = "Error: " + e.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -837,7 +815,7 @@
         try{
             GrupoTurno();
             IsNuevo = true;
-            if(tiempoPerdido != 0 && dataNove.IdTipoNove != 0){
+            if(tiempoPerdido > 0 && dataNove.IdTipoNove != 0){
                 dataNove.Lnobserv = "";
                 dataNove.IdParada = null;
                 causaCargada = true;
@@ -847,10 +825,12 @@
                 tiempoPerdido = 0;
                 mensaje = "";
             }else{
-                mensaje = "Coloque un tiempo mayor a 0 y una cauda especifica";
+                mensaje = "Coloque un tiempo mayor a 0 y una causa especifica";
+                Notificacion("error","",mensaje);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -870,7 +850,7 @@
     }
 
     public void GrupoTurno(){
-        if(idPais == 1){
+        if(idEmpresa == empresas.PAVECA){
             dataNove.Lnturno = listaTurnoYGrupo[0];
             dataNove.Lngrupo = listaTurnoYGrupo[1];
         }
@@ -879,7 +859,55 @@
     public async Task atras(){
         causaCargada = false;
     }
-    
+
+    public void Notificacion(string tipo,string mensaje,string detalle)
+    {
+
+        NotificationMessage notificacion;
+        if(tipo == "error"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Error, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "info"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Info, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "exito"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Success, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }else if(tipo == "advertencia"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
+            notificationService.Notify(notificacion);
+        }
+    } 
+
+    public async Task GrupoTurnoPorEmpresa(){
+        if(idEmpresa == empresas.PAVECA){
+            listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
+            if(!rol.Contains("Admin")){
+                isDisableManualGT = true;
+            }
+            grupos = new Dictionary<string,string>(grupoPAVECA);
+        }else if(idEmpresa == empresas.PANASA){
+            grupos = new Dictionary<string,string>(grupoPANASA);
+            dataNove.Lngrupo = "-";
+        }else if(idEmpresa == empresas.PAINSA){
+            grupos = new Dictionary<string,string>(grupoPAINSA);
+        }else if(idEmpresa == empresas.CHEMPRO){
+            grupos = new Dictionary<string,string>(grupoPAVECA);
+        }
+    }
+    void LoadData(LoadDataArgs args)
+    {
+
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            listaEquiposEAM = listaAllEquiposEAM.Where(c => c.EcodEquiEam.ToLower().Contains(args.Filter.ToLower()) || c.EnombreEam.ToLower().Contains(args.Filter.ToLower())).ToList();
+            InvokeAsync(StateHasChanged);
+        }
+        if(args.Filter == ""){
+            listaEquiposEAM = listaAllEquiposEAM.ToList();
+            InvokeAsync(StateHasChanged);
+        }
+    }
 }
 
 

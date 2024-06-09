@@ -6,6 +6,7 @@ namespace LibroNovedades.Models
     public partial class LibroNovedadesMolino
     {
         public string Linea { get; set; } = null!;
+        public string Estado { get; set; } = null!;
         public string CodigoEquipo { get; set; } = null!;
         public string Centro { get; set; } = null!;
         public string? TipoDeNovedad { get; set; }
@@ -15,6 +16,8 @@ namespace LibroNovedades.Models
         public string Grupo { get; set; } = null!;
         public string Turno { get; set; } = null!;
         public string? Observacion { get; set; }
+        public string AreaCargador { get; set; } = null!;
+        public string ClasificacionTpm { get; set; } = null!;
         public DateTime Lnfecha { get; set; }
     }
 }

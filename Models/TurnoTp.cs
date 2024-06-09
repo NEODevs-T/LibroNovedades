@@ -11,7 +11,6 @@ namespace LibroNovedades.Models
         public TurnoTp()
         {
             ParsiOees = new HashSet<ParsiOee>();
-            TurPros = new HashSet<TurPro>();
         }
 
         /// <summary>
@@ -19,13 +18,9 @@ namespace LibroNovedades.Models
         /// </summary>
         public int IdTurnoTp { get; set; }
         /// <summary>
-        /// identificador de la linea
-        /// </summary>
-        public int IdLinea { get; set; }
-        /// <summary>
         /// identificador del operador
         /// </summary>
-        public int IdOperador { get; set; }
+        public string ToperaFich { get; set; } = null!;
         /// <summary>
         /// turno en curso
         /// </summary>
@@ -34,6 +29,7 @@ namespace LibroNovedades.Models
         /// fecha del turno
         /// </summary>
         public DateTime? Tfecha { get; set; }
+        public string? TcodiProdu { get; set; }
         /// <summary>
         /// tiempo trabajo del turno
         /// </summary>
@@ -71,9 +67,6 @@ namespace LibroNovedades.Models
         /// </summary>
         public double? Toee { get; set; }
 
-        public virtual Linea IdLineaNavigation { get; set; } = null!;
-        public virtual Operador IdOperadorNavigation { get; set; } = null!;
         public virtual ICollection<ParsiOee> ParsiOees { get; set; }
-        public virtual ICollection<TurPro> TurPros { get; set; }
     }
 }

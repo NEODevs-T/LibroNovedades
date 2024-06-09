@@ -17,10 +17,6 @@ namespace LibroNovedades.Models
         /// </summary>
         public int IdPregP { get; set; }
         /// <summary>
-        /// identificador del proyecto
-        /// </summary>
-        public int IdProyecto { get; set; }
-        /// <summary>
         /// nota de la pregunta
         /// </summary>
         public double Rpcumpli { get; set; }
@@ -28,8 +24,9 @@ namespace LibroNovedades.Models
         /// observacion de la pregunta
         /// </summary>
         public string? Rpobserv { get; set; }
+        public int IdEncuesta { get; set; }
 
+        public virtual Encuestum IdEncuestaNavigation { get; set; } = null!;
         public virtual PregP IdPregPNavigation { get; set; } = null!;
-        public virtual Proyecto IdProyectoNavigation { get; set; } = null!;
     }
 }

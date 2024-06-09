@@ -31,9 +31,6 @@
     </BSContainer>
 
     <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-        <BSAlert IsOpen="_showTooltip"  class="alertaInfo"  @ref="_alertRef" >
-            <h5>@mensaje</h5>
-        </BSAlert> 
             <BSCard CardType="CardType.Body">
 
                 <BSCard CardType="CardType.Text">
@@ -50,26 +47,48 @@
                     </BSRow>
                     <br>
                     <BSRow>
-                        <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                        @* <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
                             <BSLabel class="labelFormulario">Tipo de Novedad</BSLabel>
-                                <BSInput  InputType="InputType.Select" @bind-Value="filtroTipoNovedad">
-                                    <option value="0">Seleccionar el Tipo de Novedad</option>
+                                <BSInput  InputType="InputType.Select" @onchange="CambioTN" @bind-Value="filtroTipoNovedad">
+                                    <option value="0">Todas</option>
                                     @if (listaTiposNovedad != null)
                                     {
-                                        <option value="0">Todos</option>
                                         @foreach (var item in listaTiposNovedad)
                                         {
                                             <option value="@item.IdTiParTp">@item.Tpnombre.ToUpper()</option>
                                         }  
                                     }
                                 </BSInput>
+                        </BSCol> *@
+                        <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                            <BSLabel class="labelFormulario">Estado</BSLabel>
+                                <BSInput  InputType="InputType.Select" @bind-Value="filtroIsResuelto">
+                                    <option value="2">Todos</option>
+                                    <option value="0">Sin resolver</option>
+                                    <option value="1">Resueltos</option>
+                                </BSInput>
                         </BSCol>
+
+                        <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                            <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
+                                <BSInput  InputType="InputType.Select" IsDisabled="@IsDisableFTPM" @bind-Value="filtroClasificacionTPM">
+                                    <option value="0">Todas</option>
+                                    @if (listaClasificacionTPM != null)
+                                    {
+                                        @foreach (var item in listaClasificacionTPM)
+                                        {
+                                            <option value="@item.IdCtpm">@item.Ctpmnom.ToUpper()</option>
+                                        }  
+                                    }
+                                </BSInput>
+                        </BSCol>
+
                         @if(isAccesoPais){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Pais</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
+                                            <option value="0">Seleccione</option>
                                             @if(listaPais != null){
-                                                <option value="0">Seleccione un pais</option>
                                                 @foreach (var item in listaPais)
                                                 {
                                                     <option value="@item.IdPais">@item.Pnombre</option>
@@ -85,8 +104,8 @@
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Empresas</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
+                                            <option value="0">Seleccione</option>
                                             @if(listaEmpresa != null){
-                                                <option value="0">Seleccione un Centro</option>
                                                 @foreach (var item in listaEmpresa)
                                                 {
                                                     <option value="@item.IdEmpresa">@item.Enombre</option>
@@ -102,8 +121,8 @@
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">Centro</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
+                                            <option value="0">Seleccione</option>
                                             @if(listaCentro != null){
-                                                <option value="0">Seleccione un Centro</option>
                                                 @foreach (var item in listaCentro)
                                                 {
                                                     <option value="@item.IdCentro">@item.Cnom</option>
@@ -120,7 +139,7 @@
                                         <BSLabel class="labelFormulario">Divisiones</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
                                             @if(listaDivision != null){
-                                                <option value="0">Seleccione una division</option>
+                                                <option value="0">Todas</option>
                                                 @foreach (var item in listaDivision)
                                                 {
                                                     <option value="@item.IdDivision">@item.Dnombre</option>
@@ -138,8 +157,7 @@
                                             @if (idDivision != 0)
                                             {   
                                                 @if(listaLinea != null){
-                                                    <option value="0">Seleccione un Linea</option>
-                                                    <option value="0">Todos</option>
+                                                    <option value="0">Todas</option>
                                                     @foreach (var item in listaLinea)
                                                     {
                                                         <option value="@item.IdLinea">@item.Lnom</option>
@@ -167,6 +185,7 @@
                         <BSTable IsResponsive="true" IsStriped="true">
                             <BSTHead>
                                 <BSTR class="cabeceraTabla">
+                                    <BSTD>#</BSTD>
                                     <BSTD>Linea</BSTD>
                                     <BSTD>Fecha</BSTD>
                                     <BSTD>Codigo de Equipo</BSTD>
@@ -174,10 +193,13 @@
                                     <BSTD>Turno</BSTD>
                                     <BSTD>Tiempo Perdido (min)</BSTD>
                                     <BSTD>Discrepancia</BSTD>
+                                    <BSTD>Area cargador</BSTD>
                                     <BSTD>Estado</BSTD>
+                                    @if(IsAccesoCambioEstado){
+                                        <BSTD>Cambio de estado</BSTD>
+                                    }
                                     
                                     @if(IsAccesoPizarra){
-                                        <BSTD>Cambio de estado</BSTD>
                                         <BSTD>Pizarra Unificada</BSTD>
                                     }
                                 </BSTR>
@@ -185,6 +207,7 @@
                             <BSTBody class="cuerpoTabla">
                                 @foreach (var item in listaNovedades){
                                     <BSTR>
+                                        <BSTD>@(listaNovedades.IndexOf(item) + 1)</BSTD>
                                         <BSTD>@item.IdLineaNavigation.Lnom</BSTD>
                                         <BSTD>@item.Lnfecha.ToString("dd/MM/yyyy")</BSTD>
                                         <BSTD>@item.IdEquipo</BSTD>
@@ -197,8 +220,8 @@
                                         }else{
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                         }
-                                        @* <BSTD>@item.LntiePerMi.ToString()</BSTD> *@
                                         <BSTD>@item.Lndiscrepa</BSTD>
+                                        <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD>
                                         
                                         <BSTD>
                                             @if(item.LnisResu == 1){
@@ -210,7 +233,7 @@
                                             }
                                         </BSTD>
                                         
-                                        @if(IsAccesoPizarra){
+                                        @if(IsAccesoCambioEstado){
                                             <BSTD>
                                                 @if(item.LnisResu == 1){
                                                     <div>
@@ -226,10 +249,11 @@
                                                     <p> - </p>
                                                 }
                                             </BSTD>
+                                        }
+                                        @if(IsAccesoPizarra){
                                             <BSTD>
                                                 <div >
                                                     <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
-                                                    @* <BSLabel IsCheckLabel="true"></BSLabel> *@
                                                 </div>
                                             </BSTD>
                                         }
@@ -243,7 +267,6 @@
                                 @if(IsAccesoPizarra){
                                     <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
                                 }
-                                @* <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabled" @onclick=buscar IsReset="true" >Borrar</BSButton>  *@
                             </BSCol>
                         </BSRow>
                     }
@@ -259,13 +282,6 @@
     </BSRow>
 }
 
-<BSModal DataId="model9"  @ref="refModal">
-    <Header>Estado</Header>
-    <Content>@mensaje</Content>
-    <Footer Context="modal">
-        <BSButton MarginStart="Margins.Auto" class="buttonFormularioDLT" @onclick="cerrar">Close</BSButton>
-    </Footer>
-</BSModal>
 
 
 @code{
@@ -274,7 +290,9 @@
     private Task<AuthenticationState>? authenticationState { get; set; }
     private DateTime filtroFechaInicio { get; set;}
     private DateTime filtroFechaFinal { get; set;}
-    private int filtroTipoNovedad { get; set;}
+    private int filtroTipoNovedad { get; set;} = 0;
+    private int filtroIsResuelto { get; set;} = 2;
+    private int filtroClasificacionTPM { get; set;}
     private int filtroLinea { get; set;}
     private bool isAccesoPais {get;set;}
     private bool isAccesoEmpresa {get;set;}
@@ -282,10 +300,12 @@
     private bool isAccesoDivision {get;set;}
     private bool isAccesoLinea {get;set;}
     private bool IsAccesoPizarra  { get; set;}
+    private bool IsAccesoCambioEstado  { get; set;}
     private bool IsCargado  { get; set;}
     private bool isDisabled  { get; set;}
     private bool band1  { get; set;}
     private bool band2  { get; set;}
+    private bool IsDisableFTPM { get; set;}
     private string? rol { get; set;}
     private string mensaje { get; set;}
     private List<Pai> listaPais {get;set;} 
@@ -295,6 +315,7 @@
     private List<Linea> listaLinea {get;set;}
     private List<LibroNove> listaNovedades { get; set;}
     private List<TiParTp> listaTiposNovedad { get; set;}
+    private List<ClasifiTpm> listaClasificacionTPM { get; set;}
     private LibroNove dataNove {get; set;}
     private int idPais { get; set; }
     private int idEmpresa { get; set; }
@@ -304,7 +325,6 @@
     private int idAreCargada { get; set;}
 
     private BSAlert _alertRef { get; set;}
-    private BSModal refModal { get; set;}
     private string nombre  { get; set;}
     private string apellido  { get; set;}
     protected override async Task  OnInitializedAsync()
@@ -317,10 +337,13 @@
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
                 mensaje = "Historico de registro de las novedades";
+                Notificacion("info","",mensaje);
+
                 isDisabled = false;
-                refModal = new BSModal();
                 idAreCargada = 0;
                 IsAccesoPizarra = false;
+                IsAccesoCambioEstado = false;
+                IsDisableFTPM = true;
                 filtroFechaInicio = DateTime.Now.Date;
                 filtroFechaFinal = DateTime.Now.Date;
 
@@ -338,6 +361,7 @@
                 isAccesoLinea = false;
 
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
+                listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
 
                 if(rol.Contains("SuperAdmin")){
                     isAccesoPais = true;
@@ -346,6 +370,7 @@
                     isAccesoDivision = true;
                     isAccesoLinea = true;
                     IsAccesoPizarra = true;
+                    IsAccesoCambioEstado = true;
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
                     listaPais = await DataPais.ObtenerTodosLosPaises();
@@ -361,6 +386,7 @@
                     isAccesoDivision = true;
                     isAccesoLinea = true;
                     IsAccesoPizarra = true;
+                    IsAccesoCambioEstado = true;
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
                     listaPais = await DataPais.ObtenerTodosLosPaises();
@@ -374,6 +400,7 @@
                     isAccesoCentro = true;
                     isAccesoDivision = true;
                     isAccesoLinea = true;
+                    IsAccesoCambioEstado = true;
                     if(rol.Contains("Operaciones")){
                         IsAccesoPizarra = true;
                     }
@@ -387,6 +414,7 @@
                     isAccesoCentro = true;
                     isAccesoDivision = true;
                     isAccesoLinea = true;
+                    IsAccesoCambioEstado = true;
                     if(rol.Contains("Operaciones")){
                         IsAccesoPizarra = true;
                     }
@@ -398,6 +426,7 @@
                 }else if(rol.Contains("UserCentro")){ 
                     isAccesoDivision = true;
                     isAccesoLinea = true;
+                    IsAccesoCambioEstado = true;
                     if(rol.Contains("Operaciones")){
                         IsAccesoPizarra = true;
                     }
@@ -407,23 +436,34 @@
                 }else if(rol.Contains("UserDivision")){
                     isAccesoLinea = true;
                     // todas las lineas de esa division
+                    if(idPais == 1){
+                        isAccesoDivision = true;
+                        listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    }
+
                     listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
                 }
 
 
                 if(rol.Contains("Calidad")){
                     idAreCargada = 2;
+                    filtroClasificacionTPM = 4;
                 }else if(rol.Contains("Seguridad")){
                     idAreCargada = 3;
+                    filtroClasificacionTPM = 1;
                 }else if(rol.Contains("Mantenimiento")){
                     idAreCargada = 4;
+                    filtroClasificacionTPM = 3;
                 }else if(rol.Contains("Operaciones")){
-                    idAreCargada = 0;
-                }else{
-                    mensaje = "Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua";
+                    idAreCargada = 1;
+                    IsDisableFTPM = false;
+                }else if(rol.Contains("Admin") || rol.Contains("Super")){
+                    IsDisableFTPM = false;
+                    idAreCargada = 10;
                 }
             }else{
                 mensaje = "Sin Acceso";
+                Notificacion("info","",mensaje);
             }
         }
         IsCargado = true;
@@ -436,11 +476,12 @@
         idDivision = 0;
         idLinea = 0;
         try{
-            if(idCentro != 0){
+            if(idPais != 0){
                 listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -450,11 +491,12 @@
         idDivision = 0;
         idLinea = 0;
         try{
-            if(idCentro != 0){
+            if(idEmpresa != 0){
                 listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -467,7 +509,8 @@
                 listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -480,40 +523,28 @@
                 listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
             }
         }catch(Exception ex){
-            mensaje = ex.Message;
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
-    protected async Task cerrar(){
-        await refModal.HideAsync();
-    }
+
 
     protected async Task buscar(){
         try{
             if(filtroFechaInicio.Date == filtroFechaFinal.Date) {
                 listaNovedades = null;
-                if(idAreCargada == 0){
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,filtroLinea,filtroTipoNovedad);
-                }else{
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCarga(filtroFechaInicio,filtroLinea,filtroTipoNovedad,idAreCargada);
-                }
+                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
             }else if(filtroFechaInicio.Date < filtroFechaFinal.Date){
                 listaNovedades = null;
-                if(idAreCargada == 0){
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroTipoNovedad);
-                }else{
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroTipoNovedad,idAreCargada);
-                }
+                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
             }else{
                 listaNovedades = null;
-                if(idAreCargada == 0){
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaFinal,filtroFechaInicio,filtroLinea,filtroTipoNovedad);
-                }else{
-                    listaNovedades = await DataLibroNov.ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(filtroFechaFinal,filtroFechaInicio,filtroLinea,filtroTipoNovedad,idAreCargada);
-                }
+                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
             }
-        }catch(Exception e){
-            mensaje = e.Message;
+        }catch(Exception ex){
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
     }
 
@@ -523,8 +554,7 @@
         //NavigationManager.NavigateTo($"/FormatoAgrupado/{idLibroNov}");
         try{
             dataNove = listaNovedades.Where(x => x.IdlibrNov == idLibroNov).First();
-
-            if(dataNove.Lnfecha.AddDays(1) > DateTime.Now){
+            if((dataNove.Lnfecha.AddDays(1) > DateTime.Now) || ((DateTime.Now.DayOfWeek.ToString() == "Monday") && (dataNove.Lnfecha.AddDays(3) > DateTime.Now))){
                 dataNove.LnisResu = dataNove.LnisResu == 1 ?  dataNove.LnisResu = 0 : dataNove.LnisResu = 1;
                 band = await DataLibroNov.ActualizacionEstado(idLibroNov,dataNove);
                 if(band){
@@ -548,20 +578,23 @@
 
         try{
             mensaje = "";
-            await refModal.ShowAsync();
-            (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idCentro,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroTipoNovedad,nombre + " " + apellido);
+            (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idEmpresa,idCentro,idDivision,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroClasificacionTPM,nombre + " " + apellido);
             if(band1){
                 band2 = await DataLibroNov.UpdateRegistros(listaFiltrada);
                 if(band2){
                     mensaje = "Se realizo de manera exitosa";
+                    Notificacion("exito","",mensaje);
                 }else{
-                    mensaje = "Falla en la actualizacion de el libro de novedades, la data fue registrada en la pizarra unificada";
+                    mensaje = "Falla en la actualizacion en el libro de novedades, la data fue registrada en la pizarra unificada";
+                    Notificacion("info","",mensaje);
                 }
             }else{
                 mensaje = "No se encontró ningún dato valido para registrar al libro de novedades. Recuerde que las actividades resueltas no pueden ser enviadas a la Pizarra, además no podrá enviar actividades que ya se cargaron anteriormente.";
+                Notificacion("info","",mensaje);
             }
-        }catch(Exception e){
-            mensaje = e.Message;
+        }catch(Exception ex){
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error","",mensaje);
         }
         isDisabled = false;
     }

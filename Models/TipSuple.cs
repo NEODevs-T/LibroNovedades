@@ -11,7 +11,7 @@ namespace LibroNovedades.Models
         }
 
         public int IdTipSuple { get; set; }
-        public string? Tscodigo { get; set; }
+        public string? Tscausa { get; set; }
         public string? Tsdescri { get; set; }
         public bool? Tsestado { get; set; }
 

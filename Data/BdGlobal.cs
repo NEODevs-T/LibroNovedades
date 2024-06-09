@@ -1,3 +1,4 @@
+using BlazorStrap.Service;
 using LibroNovedades.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -108,7 +109,7 @@ namespace LibroNovedades.Data.Global
         }
 
         public async Task<List<Linea>> ObtenerLasLineasPorDivision(int idDivision){
-            return await _cotext.Lineas.Where(l => l.IdDivision == idDivision).ToListAsync();
+            return await _cotext.Lineas.Where(l => l.IdDivision == idDivision && l.Lestado == true).ToListAsync();
         }
     }
 
@@ -122,7 +123,7 @@ namespace LibroNovedades.Data.Global
 
         public DataArea(DbNeoContext context)
         {
-            this._cotext = context;
+            this._cotext = context; 
         }
         public async Task<List<LinAre>> ObtenerLasAreasPorLinea(int idLinea)
         {
@@ -145,7 +146,7 @@ namespace LibroNovedades.Data.Global
         }
 
         public async Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea){
-            return await _cotext.EquipoEams.Where(t => t.IdLinea == idLinea).ToListAsync();
+            return await _cotext.EquipoEams.Where(t => t.IdLinea == idLinea && t.EestaEam == true).OrderBy(t => t.EnombreEam).ToListAsync();
         }
     }
     

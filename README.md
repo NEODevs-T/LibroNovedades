@@ -13,3 +13,12 @@
 
 ## Tecnología 
 Esta aplicación está hecha en c# con .net, blazor, base de datos SQL Server y VSC con dotnet. 
+
+## Diagramas
+
+### Casos de Uso 
+![Img](/wwwroot/svg/CasosDeUso.svg)
+
+### Diagrama de Flujo
+
+![Img](/wwwroot/svg/DiagramaDeFlujo.svg)

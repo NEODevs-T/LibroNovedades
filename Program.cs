@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components.Authorization;
+using Radzen;
 
 using BlazorStrap;
 using Blazored.SessionStorage;
-// using Blazored.LocalStorage;
+using Blazored.LocalStorage;
 
 using LibroNovedades.Data;
 using LibroNovedades.Models;
@@ -22,11 +23,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorStrap();
 
-// builder.Services.AddHttpClient();
-// builder.Services.AddBlazoredLocalStorage();
-// builder.Services.AddControllersWithViews();
-// builder.Services.AddAuthorizationCore();
+builder.Services.AddHttpClient();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddControllersWithViews();
+builder.Services.AddOptions();  
+builder.Services.AddAuthorizationCore();
 
+builder.Services.AddScoped<NotificationService>();
 
 builder.Services.AddBlazoredSessionStorage(config =>
 {
@@ -52,19 +55,34 @@ builder.Services.AddDbContext<DOC_IngIContext>( options =>
 // builder.Services.AddDbContext<DOC_IngIContext>(options =>
 //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
-// builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider,global:: LibroNovedades.Service.Autenticacion.CustomAuthStateProvider>();
+builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider,global:: LibroNovedades.Service.Autenticacion.CustomAuthStateProvider>();
 
 
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
+
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataPais, global::LibroNovedades.Data.Global.DataPais>();
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataEmpresa, global::LibroNovedades.Data.Global.DataEmpresa>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataCentro, global::LibroNovedades.Data.Global.DataCentro>();
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataDivision, global::LibroNovedades.Data.Global.DataDivision>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataLinea, global::LibroNovedades.Data.Global.DataLinea>();
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
+builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataEquipoEAM, global::LibroNovedades.Data.Global.DataEquipoEAM>();
+
+
 builder.Services.AddScoped<global::LibroNovedades.Data.API.IDataAPI, global::LibroNovedades.Data.API.DataAPI>();
+
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataLibroNov, global::LibroNovedades.Data.LibroNov.DataLibroNov>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataTiParTP, global::LibroNovedades.Data.LibroNov.DataTiParTP>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataPizarra, global::LibroNovedades.Data.LibroNov.DataPizarra>();
-builder.Services.AddScoped<global::LibroNovedades.Logic.ILogicLibroNov, global::LibroNovedades.Logic.LogicLibroNov>();
 builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataClasifiTPM, global::LibroNovedades.Data.LibroNov.DataClasifiTPM>();
-builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataEquipoEAM, global::LibroNovedades.Data.LibroNov.DataEquipoEAM>();
+builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataChismoso, global::LibroNovedades.Data.LibroNov.DataChismoso>();
+
+
+builder.Services.AddScoped<global::LibroNovedades.Data.User.IDataNivel, global::LibroNovedades.Data.User.DataNivel>();
+builder.Services.AddScoped<global::LibroNovedades.Data.User.IDataProyectoUsr, global::LibroNovedades.Data.User.DataProyectoUsr>();
+builder.Services.AddScoped<global::LibroNovedades.Data.User.IDataUser, global::LibroNovedades.Data.User.DataUser>();
+
+builder.Services.AddScoped<global::LibroNovedades.Logic.ILogicLibroNov, global::LibroNovedades.Logic.LogicLibroNov>();
+
 
 var app = builder.Build();
 

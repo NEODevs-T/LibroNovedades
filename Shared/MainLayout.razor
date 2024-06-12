@@ -1,25 +1,33 @@
 ﻿@inherits LayoutComponentBase
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
-@* @inject ILocalStorageService LocalStorage *@
+@inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
-@* @inject HttpClient Http *@
-@* @inject AuthenticationStateProvider AuthStateProvider *@
+
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IDataAPI DataAPI
+
+@inject IDataUser DataUser
+@inject IDataNivel DataNivel
+@inject IDataProyectoUsr DataProyectoUsr
+
+@inject NotificationService NotificationService
+
 
 <PageTitle>LibroNovedades</PageTitle>
 
 <div class="page">
-
-    @* <AuthorizeView>
-        <Authorized> *@
+    <AuthorizeView>
+        <Authorized>
 
             <div class="sidebar">
                 <NavMenu />
             </div>
 
             <main>
-            
-
-                <div class="top-row px-4">
+                <div class="top-row px-4 cabeza">
+                    <h5 style="text-align: start;">
+                    </h5>
                     <BSButton Color="BSColor.Success" IsOutlined="true" @onclick="logout">Logout</BSButton>
                 </div>
 
@@ -27,84 +35,115 @@
                     @Body
                 </article>
             </main>
-        @* </Authorized> *@
+        </Authorized>
 
-        @* <NotAuthorized>
+        <NotAuthorized>
             <main>
                 <div class="text-center fondo">
-                    <div class="form-signin w-25 m-auto loginform ">
+                    <RadzenTemplateForm Context="radzen" Data="@userDto" class="form-signin w-25 m-auto loginform ">
+
                         <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
-                        <BSForm Model="user" OnSubmit="HandleLogin">
-                            @* <DataAnnotationsValidator /> //@ 
-                            <div class="form-floating">
-                                <BSLabel IsHidden="true">User</BSLabel>
-                                <BSInput InputType="InputType.Text" placeholder="Ficha/Usuario"
-                                    @bind-Value="user.UserName" />
-                                @* <BSFeedback For="@(() => user.UserName)" ValidMessage="Correcto." /> //@ 
-                            </div>
-                            <div class="form-floating">
-                                <BSLabel IsHidden="true">Password</BSLabel>
-                                <BSInput InputType="InputType.Password" @bind-Value="user.Password" />
-                                @* <BSFeedback For="@(() => user.Password)" ValidMessage="Correcto." /> //@ 
-                            </div>
-                            <BSButton Class="w-100 btn btn-lg" Color="BSColor.Success" Size="Size.ExtraExtraLarge"
-                                IsSubmit> Iniciar</BSButton>
-                            <p class="mt-5 mb-3 text-muted">Neo 2022</p>
-                        </BSForm>
-                    </div>
+
+                        <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">Usuario</RadzenText>
+                        <RadzenTextBox Placeholder="Usuario" Name="usuario" id="usuario"  @bind-Value="usuario" class="w-100" />
+                        
+                        <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">Contraseña</RadzenText>
+                        <RadzenPassword @bind-Value=@contrasena Name="contraseña" id="contraseña" Placeholder="Contraseña..."  class="w-100"/>
+
+                        <RadzenButton class="mt-4" ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Disabled="@isDisabled" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=login/>
+                    </RadzenTemplateForm>
                 </div>
+            
             </main>
-        </NotAuthorized> *@
-
-    @* </AuthorizeView> *@
-
+        </NotAuthorized>
+    </AuthorizeView> 
+    <RadzenNotification />
 </div>
 
 @code {
 
-    @* UserLoginDto user = new UserLoginDto(); *@
+    private string? mensaje { get; set;} = "Bienvenido";
+    private bool isDisabled  { get; set;} = false;
+    private string proyecto { get; set;} = "";
+    private string usuario {get; set;} = "";
+    private string contrasena {get; set;} = "";
+    private UserLoginDto userDto {get; set;}
+    private HttpResponseMessage result {get; set;}
+    private string validarToken  {get; set;}
 
-    protected async Task logout(){
-        await sessionStorage.SetItemAsync("usuarioD", "");
-        await sessionStorage.SetItemAsync("usuarioA", "");
-        await sessionStorage.SetItemAsync("usuarioN", "");
-        await sessionStorage.SetItemAsync("usuarioC", "");
-        await sessionStorage.SetItemAsync("usuarioF", "");
-        NavigationManager.NavigateTo("Login");
-        }
-
-    @* protected async Task HandleLogin(EditContext e)
+    protected override async Task  OnInitializedAsync()
     {
-        user.Proyecto = "LibroDeNovedades";
-        if (e.Validate())
+        proyecto = "LibroDeNovedades";
+        userDto = new UserLoginDto() ;
+    }
+    protected async Task logout(){
+        usuario = "";
+        contrasena = "";
+        await LocalStorage.RemoveItemAsync("LibroDeNovedadesNew");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+    }
+
+    protected async Task login(){
+        isDisabled = true;
+        mensaje = "Cargando...";
+        Notificacion("info","",mensaje);
+        if (usuario.Trim() != "" && contrasena.Trim() != "")
         {
-            var result = await Http.PostAsJsonAsync("http://operaciones.papeleslatinos.com/Authentication/api/Auth/Login", user);
-            var ValidarToken = await result.Content.ReadAsStringAsync(); 
-            //var ValidarToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
-            if (ValidarToken != null)
+            userDto.Proyecto = proyecto;
+            userDto.UserName = usuario;
+            userDto.Password = contrasena;
+            result = await Http.PostAsJsonAsync("http://neo.paveca.com.ve/Authentication/api/Auth/Login", userDto);
+            validarToken = await result.Content.ReadAsStringAsync();
+            if (validarToken != null)
             {
-                if (ValidarToken == "NotFoundUser")
+                if (validarToken == "NotFoundUser")
                 {
-
+                    mensaje = "Verifique el usuario";
+                    Notificacion("error","",mensaje);
                 }
-                else if (ValidarToken == "WrongPassword")
+                else if (validarToken == "WrongPassword")
                 {
-
+                    mensaje = "Verifique la contraseña";
+                    Notificacion("error","",mensaje);
                 }
-                else if (ValidarToken == "null")
+                else if (validarToken == "null")
                 {
-
+                    mensaje = "Verifique el usuario";
+                    Notificacion("error","",mensaje);
                 }
                 else
                 {
-                    Console.WriteLine(ValidarToken);
-                    await LocalStorage.SetItemAsync("LibroDeNovedades", ValidarToken);
-                    await AuthStateProvider.GetAuthenticationStateAsync();
-                    user = new UserLoginDto();
+                    await LocalStorage.SetItemAsync("LibroDeNovedadesNew", validarToken);
+                    await AuthStateProvider.GetAuthenticationStateAsync();    
                     NavigationManager.NavigateTo("");
+                    mensaje = "Bienvenido";
+                    Notificacion("exito","",mensaje);
                 }
+            }else{
+                mensaje = "Hubo un error. Por favor intende de nuevo";
+                Notificacion("error","",mensaje);
             }
+        }else{
+            mensaje = "Ingrese un usuario, contraseña valida y ficha valida";
+            Notificacion("error","",mensaje);
         }
-    } *@
+        isDisabled = false;
+    }
+
+    public void Notificacion(string tipo,string mensaje,string detalle)
+    {
+
+        NotificationMessage notificacion = new NotificationMessage{};
+        if(tipo == "error"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Error, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }else if(tipo == "info"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Info, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }else if(tipo == "exito"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Success, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }else if(tipo == "advertencia"){
+            notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }
+        NotificationService.Notify(notificacion);
+    } 
 }

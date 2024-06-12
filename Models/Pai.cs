@@ -8,7 +8,6 @@ namespace LibroNovedades.Models
         public Pai()
         {
             Empresas = new HashSet<Empresa>();
-            ReuDia = new HashSet<ReuDium>();
         }
 
         public int IdPais { get; set; }
@@ -16,6 +15,5 @@ namespace LibroNovedades.Models
         public bool Pestado { get; set; }
 
         public virtual ICollection<Empresa> Empresas { get; set; }
-        public virtual ICollection<ReuDium> ReuDia { get; set; }
     }
 }

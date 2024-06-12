@@ -5,11 +5,6 @@ namespace LibroNovedades.Models
 {
     public partial class Operador
     {
-        public Operador()
-        {
-            TurnoTps = new HashSet<TurnoTp>();
-        }
-
         /// <summary>
         /// identificador
         /// </summary>
@@ -38,7 +33,5 @@ namespace LibroNovedades.Models
         /// 0: Inactivo, 1:Activo		
         /// </summary>
         public bool Opestado { get; set; }
-
-        public virtual ICollection<TurnoTp> TurnoTps { get; set; }
     }
 }

@@ -1,0 +1,156 @@
+@page "/indicadores"
+@inject IDataCentro DataCentro;
+@inject IDataDivision DataDivision;
+@inject IDataLinea DataLinea;
+
+<PageTitle>Indicadoresa</PageTitle>
+
+
+<AuthorizeView Roles="SuperAdmin,SuperUser">
+        <Authorized>
+            <BSContainer PaddingBottom="Padding.Large">
+                <BSRow>
+                    <h1 class="titulo">Indicadores</h1>
+                </BSRow>
+            </BSContainer>
+
+            <BSRow>                 
+
+                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                    <BSLabel class="labelFormulario">Centro</BSLabel>
+                    <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro"  @onchange="BuscarDivisiones">
+                        @if(listaCentro != null){
+                            <option value="0">Seleccione un centro</option>
+                            @foreach (var item in listaCentro)
+                            {
+                                <option value="@item.IdCentro">@item.Cnom</option>
+                            }
+                        }else{
+                            <option value="0">Cargando...</option>
+                        }
+                    </BSInput>
+                </BSCol>
+
+                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                    <BSLabel class="labelFormulario">Divisiones</BSLabel>
+                    <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision"  @onchange="BuscarLinea">
+                        @if(listaDivision != null){
+                            <option value="0">Seleccione una división</option>
+                            @foreach (var item in listaDivision)
+                            {
+                                <option value="@item.IdDivision">@item.Dnombre</option>
+                            }
+                        }else{
+                            <option value="0">Cargando...</option>
+                        }
+                    </BSInput>
+                </BSCol>
+
+                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                    <BSLabel class="labelFormulario">Divisiones</BSLabel>
+                    <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idLinea" >
+                        @if(listaLinea != null){
+                            <option value="0">Seleccione una linea</option>
+                            @foreach (var item in listaLinea)
+                            {
+                                <option value="@item.IdLinea">@item.Lnom</option>
+                            }
+                        }else{
+                            <option value="0">Cargando...</option>
+                        }
+                    </BSInput>
+                </BSCol>
+                
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                    <BSLabel class="labelFormulario">Fecha Incio</BSLabel>
+                    <BSInput   InputType="InputType.Date" rows="5" @bind-Value="fechaInicio"></BSInput>
+                </BSCol>
+
+                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                    <BSLabel class="labelFormulario">Fecha Final</BSLabel>
+                    <BSInput   InputType="InputType.Date" rows="5" @bind-Value="fechaFinal"></BSInput>
+                </BSCol>
+
+                <BSCol Position="Position.Relative" Class="AbajoBoton" Place ColumnMedium="3">
+                    <BSButton IsDisabled="@isDesactivadoBoton" class="buttonFormularioOK" @onclick="Buscar">Buscar</BSButton>
+                </BSCol>
+            </BSRow> 
+        </Authorized>
+
+        <NotAuthorized>
+            <BSContainer PaddingBottom="Padding.Large">
+                <BSRow>
+                    <h1 class="titulo">Sin Acceso</h1>
+                </BSRow>
+            </BSContainer>
+        </NotAuthorized>
+</AuthorizeView>
+
+
+@code{
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set;}
+    private DateTime fechaInicio {get; set;}
+    private DateTime fechaFinal {get; set;}
+    private TimeSpan difFechas { get; set;}
+    private string? rol { get; set;} 
+    private string? mensaje { get; set;}
+    private string? idCentro { get; set;}
+    private string? idDivision { get; set;}
+    private string? idLinea { get; set;}
+    private List<Centro> listaCentro { get; set;}
+    private List<Division> listaDivision { get; set;}
+    private List<Linea> listaLinea { get; set;}
+    private bool isDesactivadoBoton { get; set;}
+    private int numDias { get; set;}
+
+
+    protected override async Task  OnInitializedAsync()
+    {
+        @* if (authenticationState is not null)
+        {
+            AuthenticationState? authState = await authenticationState;
+            ClaimsPrincipal? user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
+            }
+        } *@
+        fechaInicio = DateTime.Now;
+        fechaFinal = DateTime.Now;
+        isDesactivadoBoton = false;
+        listaCentro = await DataCentro.ObtenerTodosLosCentro();
+        
+    }
+
+    protected async Task BuscarDivisiones(ChangeEventArgs e){
+        int idCentro = int.Parse(e.Value.ToString());
+        try{
+            if(idCentro != 0){
+                listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
+            }
+        }catch(Exception ex){
+            mensaje = ex.Message;
+        }
+    }
+
+    protected async Task BuscarLinea(ChangeEventArgs e){
+        int idDivision = int.Parse(e.Value.ToString());
+        try{
+            listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+        }catch(Exception ex){
+            mensaje = ex.Message;
+        }
+    }
+    public async Task Buscar(){
+        isDesactivadoBoton = true;
+        
+        if(idLinea != "0" && idLinea != null){
+            difFechas = fechaFinal - fechaInicio;
+            numDias = difFechas.Days;
+        }
+
+        isDesactivadoBoton = false;
+    }
+}

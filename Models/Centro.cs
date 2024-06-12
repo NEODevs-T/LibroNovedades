@@ -11,7 +11,6 @@ namespace LibroNovedades.Models
         public Centro()
         {
             Divisions = new HashSet<Division>();
-            LibroNoves = new HashSet<LibroNove>();
             Lineas = new HashSet<Linea>();
         }
 
@@ -35,7 +34,6 @@ namespace LibroNovedades.Models
 
         public virtual Empresa? IdEmpresaNavigation { get; set; }
         public virtual ICollection<Division> Divisions { get; set; }
-        public virtual ICollection<LibroNove> LibroNoves { get; set; }
         public virtual ICollection<Linea> Lineas { get; set; }
     }
 }

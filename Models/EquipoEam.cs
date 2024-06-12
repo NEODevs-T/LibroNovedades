@@ -9,6 +9,8 @@ namespace LibroNovedades.Models
         public int IdLinea { get; set; }
         public string EcodEquiEam { get; set; } = null!;
         public string EnombreEam { get; set; } = null!;
+        public string? EdescriEam { get; set; }
+        public bool? EestaEam { get; set; }
 
         public virtual Linea IdLineaNavigation { get; set; } = null!;
     }

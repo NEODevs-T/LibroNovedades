@@ -26,6 +26,9 @@ namespace LibroNovedades.Models
         /// Detalle de la variable
         /// </summary>
         public string? Vcdetalle { get; set; }
+        public double Vcmax { get; set; }
+        public double Vcmin { get; set; }
+        public double Vcobj { get; set; }
         /// <summary>
         /// 0: no de tipo observable 1:es de tipo numerico
         /// </summary>

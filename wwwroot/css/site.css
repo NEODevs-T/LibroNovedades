@@ -4,6 +4,10 @@ html, body {
     font-family: 'century gothic' !important;
 }
 
+main{
+    background-color: white;
+}
+
 .itemlink{
     color: black !important;
 
@@ -52,11 +56,6 @@ a, .btn-link {
     color: red;
 }
 
-
-
-
-
-
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -78,6 +77,12 @@ a, .btn-link {
 
 textarea {
     resize: none;
+}
+
+.cabeza{
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
 }
 
 .blazor-error-boundary {

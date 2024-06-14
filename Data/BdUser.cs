@@ -1,4 +1,4 @@
-using LibroNovedades.Models;
+using LibroNovedades.Models.Neo;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibroNovedades.Data.User

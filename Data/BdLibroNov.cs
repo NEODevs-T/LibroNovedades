@@ -1,5 +1,5 @@
 using System.Linq;
-using LibroNovedades.Models;
+using LibroNovedades.Models.Neo;
 using LibroNovedades.ModelsDocIng;
 using Microsoft.EntityFrameworkCore;
 

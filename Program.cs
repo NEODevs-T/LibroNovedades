@@ -10,9 +10,13 @@ using BlazorStrap;
 using Blazored.SessionStorage;
 using Blazored.LocalStorage;
 
-using LibroNovedades.Data;
-using LibroNovedades.Models;
+using LibroNovedades.Data.API;
+using LibroNovedades.Data.Global;
+using LibroNovedades.Data.LibroNov;
+using LibroNovedades.Data.User;
+using LibroNovedades.Models.Neo;
 using LibroNovedades.ModelsDocIng;
+using LibroNovedades.Logic;
 
 
 
@@ -59,29 +63,29 @@ builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization
 
 
 
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataPais, global::LibroNovedades.Data.Global.DataPais>();
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataEmpresa, global::LibroNovedades.Data.Global.DataEmpresa>();
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataCentro, global::LibroNovedades.Data.Global.DataCentro>();
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataDivision, global::LibroNovedades.Data.Global.DataDivision>();
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataLinea, global::LibroNovedades.Data.Global.DataLinea>();
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataEquipoEAM, global::LibroNovedades.Data.Global.DataEquipoEAM>();
+builder.Services.AddScoped<IDataPais, DataPais>();
+builder.Services.AddScoped<IDataEmpresa, DataEmpresa>();
+builder.Services.AddScoped<IDataCentro, DataCentro>();
+builder.Services.AddScoped<IDataDivision, DataDivision>();
+builder.Services.AddScoped<IDataLinea, DataLinea>();
+builder.Services.AddScoped<IDataArea, DataArea>();
+builder.Services.AddScoped<IDataEquipoEAM, DataEquipoEAM>();
 
 
-builder.Services.AddScoped<global::LibroNovedades.Data.API.IDataAPI, global::LibroNovedades.Data.API.DataAPI>();
+builder.Services.AddScoped<IDataAPI, DataAPI>();
 
-builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataLibroNov, global::LibroNovedades.Data.LibroNov.DataLibroNov>();
-builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataTiParTP, global::LibroNovedades.Data.LibroNov.DataTiParTP>();
-builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataPizarra, global::LibroNovedades.Data.LibroNov.DataPizarra>();
-builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataClasifiTPM, global::LibroNovedades.Data.LibroNov.DataClasifiTPM>();
-builder.Services.AddScoped<global::LibroNovedades.Data.LibroNov.IDataChismoso, global::LibroNovedades.Data.LibroNov.DataChismoso>();
+builder.Services.AddScoped<IDataLibroNov, DataLibroNov>();
+builder.Services.AddScoped<IDataTiParTP, DataTiParTP>();
+builder.Services.AddScoped<IDataPizarra, DataPizarra>();
+builder.Services.AddScoped<IDataClasifiTPM, DataClasifiTPM>();
+builder.Services.AddScoped<IDataChismoso, DataChismoso>();
 
 
-builder.Services.AddScoped<global::LibroNovedades.Data.User.IDataNivel, global::LibroNovedades.Data.User.DataNivel>();
-builder.Services.AddScoped<global::LibroNovedades.Data.User.IDataProyectoUsr, global::LibroNovedades.Data.User.DataProyectoUsr>();
-builder.Services.AddScoped<global::LibroNovedades.Data.User.IDataUser, global::LibroNovedades.Data.User.DataUser>();
+builder.Services.AddScoped<IDataNivel, DataNivel>();
+builder.Services.AddScoped<IDataProyectoUsr, DataProyectoUsr>();
+builder.Services.AddScoped<IDataUser, DataUser>();
 
-builder.Services.AddScoped<global::LibroNovedades.Logic.ILogicLibroNov, global::LibroNovedades.Logic.LogicLibroNov>();
+builder.Services.AddScoped<ILogicLibroNov, LogicLibroNov>();
 
 
 var app = builder.Build();

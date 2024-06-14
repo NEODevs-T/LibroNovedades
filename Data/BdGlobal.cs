@@ -1,5 +1,5 @@
 using BlazorStrap.Service;
-using LibroNovedades.Models;
+using LibroNovedades.Models.Neo;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibroNovedades.Data.Global
@@ -115,7 +115,7 @@ namespace LibroNovedades.Data.Global
 
     public interface IDataArea
     {
-        Task<List<LinAre>> ObtenerLasAreasPorLinea(int idLinea);
+        
     }
     public class DataArea : IDataArea
     {
@@ -125,10 +125,8 @@ namespace LibroNovedades.Data.Global
         {
             this._cotext = context; 
         }
-        public async Task<List<LinAre>> ObtenerLasAreasPorLinea(int idLinea)
-        {
-            return await _cotext.LinAres.Where(x => x.IdLinea == idLinea && x.IdAreaNavigation.Aestado == true).Include(x => x.IdAreaNavigation).ToListAsync();//.Include(x => x.IdArea).ToListAsync();
-        }   
+        
+
     }
 
     public interface IDataEquipoEAM

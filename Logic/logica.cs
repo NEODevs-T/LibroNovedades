@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 using System.Data.OleDb;
 using System.Data;
 using Newtonsoft.Json;
-using LibroNovedades.Models;
+using LibroNovedades.Models.Neo;
 using LibroNovedades.ModelsDocIng;
 using LibroNovedades.Data.LibroNov;
 
@@ -24,7 +24,6 @@ namespace LibroNovedades.Logic{
             IDataPizarra dataPizarra = new DataPizarra(contex);
             IDataChismoso dataChismoso = new DataChismoso(contex);
             LibroNove? temporal;
-            ReunionDium registro = new ReunionDium();
             ReuDium registroNuevo = new ReuDium();
             CambFec ChismosoCambioFecha =  new CambFec();
             CambStat ChismosoCambioEstado = new  CambStat();
@@ -57,7 +56,8 @@ namespace LibroNovedades.Logic{
                             //* produccion
                             registroNuevo.Idksf = 1;
                         }
-                        registroNuevo.Rdcentro = temporal.IdLineaNavigation.IdDivisionNavigation.IdCentroNavigation.Cnom;
+                        //TODO: Revisar cambio para poder ubicar al nombre del centro 
+                        //registroNuevo.Rdcentro = temporal.IdLineaNavigation.IdDivisionNavigation.IdCentroNavigation.Cnom;
                         registroNuevo.Rddiv = temporal.IdLineaNavigation.IdDivisionNavigation.Dnombre;
                         registroNuevo.Rdarea = temporal.IdLineaNavigation.Lnom;
                         registroNuevo.RdcodEq = temporal.IdEquipo;

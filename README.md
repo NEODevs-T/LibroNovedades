@@ -2,6 +2,16 @@
 
 ### La aplicación web de asentamientos está enmarcado dentro de las herramientas de NEO, que consiste en el registro de las novedades y discrepancias que surgen durante las operaciones diarias. 
 
+## Contenido
+
+1. [Funcionamiento](#funcionamiento)
+
+2. [Tecnología](#tecnolog%C3%ADa)
+
+3. [Diagramas](#diagramas)
+
+4. [Imagenes](#imagenes)
+
 ## Funcionamiento 
 - Registro de novedades o discrepancias con pérdida o sin pérdida de tiempo de máquina. 
 - Se asigna un equipo asociado a la discrepancia, así como el grupo y el turno que registro dicha novedad. 
@@ -16,9 +26,30 @@ Esta aplicación está hecha en c# con .net, blazor, base de datos SQL Server y 
 
 ## Diagramas
 
-### Casos de Uso 
+### Entidad Relación
+
+![Img](/wwwroot/svg/EntidadRelacion.svg)
+
+### Casos de Uso
+
 ![Img](/wwwroot/svg/CasosDeUso.svg)
 
 ### Diagrama de Flujo
 
 ![Img](/wwwroot/svg/DiagramaDeFlujo.svg)
+
+## Imagenes
+
+### Login
+
+![Img](/wwwroot/img/1.png)
+
+### Registro de Novedades
+
+![Img](/wwwroot/img/2.png)
+
+![Img](/wwwroot/img/3.png)
+
+### Historico de Novedades
+
+![Img](/wwwroot/img/4.png)

@@ -13,7 +13,6 @@ using Blazored.LocalStorage;
 using LibroNovedades.Data.API;
 using LibroNovedades.Data.Maestra;
 using LibroNovedades.Data.LibroNov;
-using LibroNovedades.Data.User;
 using LibroNovedades.Models.Neo;
 using LibroNovedades.ModelsDocIng;
 using LibroNovedades.Logic;
@@ -80,10 +79,6 @@ builder.Services.AddScoped<IDataPizarra, DataPizarra>();
 builder.Services.AddScoped<IDataClasifiTPM, DataClasifiTPM>();
 builder.Services.AddScoped<IDataChismoso, DataChismoso>();
 
-
-builder.Services.AddScoped<IDataNivel, DataNivel>();
-builder.Services.AddScoped<IDataProyectoUsr, DataProyectoUsr>();
-builder.Services.AddScoped<IDataUser, DataUser>();
 
 builder.Services.AddScoped<ILogicLibroNov, LogicLibroNov>();
 

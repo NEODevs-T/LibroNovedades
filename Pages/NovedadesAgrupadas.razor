@@ -602,23 +602,6 @@
             Notificacion("error","",mensaje);
         }
     }
-
-    protected async Task BuscarLineaPorCentro(ChangeEventArgs e){
-        idCentro = int.Parse(e.Value.ToString());
-        try{
-            if(idCentro != 0){
-                listaLinea = await DataLinea.ObtenerLasLineasPorCentro(idCentro);
-            }else{
-                dataNove.IdLinea = 0;
-            }
-        }catch(Exception ex){
-            mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
-        }
-    }
-
-    
-
     protected async Task OK(EditContext e){
         isDisabledButton = true;
         dataNove.Lnfecha = DateTime.Now;

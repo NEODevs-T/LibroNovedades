@@ -11,13 +11,14 @@ using Blazored.SessionStorage;
 using Blazored.LocalStorage;
 
 using LibroNovedades.Data.API;
-using LibroNovedades.Data.Global;
+using LibroNovedades.Data.Maestra;
 using LibroNovedades.Data.LibroNov;
 using LibroNovedades.Data.User;
 using LibroNovedades.Models.Neo;
 using LibroNovedades.ModelsDocIng;
 using LibroNovedades.Logic;
 
+using LibroNovedades.Interface.Maestra;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,13 +64,12 @@ builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization
 
 
 
-builder.Services.AddScoped<IDataPais, DataPais>();
-builder.Services.AddScoped<IDataEmpresa, DataEmpresa>();
-builder.Services.AddScoped<IDataCentro, DataCentro>();
-builder.Services.AddScoped<IDataDivision, DataDivision>();
-builder.Services.AddScoped<IDataLinea, DataLinea>();
-builder.Services.AddScoped<IDataArea, DataArea>();
-builder.Services.AddScoped<IDataEquipoEAM, DataEquipoEAM>();
+builder.Services.AddScoped<IPaisData, PaisData>();
+builder.Services.AddScoped<IEmpresaData, EmpresaData>();
+builder.Services.AddScoped<ICentroData, CentroData>();
+builder.Services.AddScoped<IDivisionData, DivisionData>();
+builder.Services.AddScoped<ILineaData, LineaData>();
+builder.Services.AddScoped<IEquipoEAMData, EquipoEAMData>();
 
 
 builder.Services.AddScoped<IDataAPI, DataAPI>();

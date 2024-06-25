@@ -1,7 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using BlazorStrap.Service;
 using LibroNovedades.Models.Neo;
 using LibroNovedades.Models.Neo.Views;
-using Microsoft.EntityFrameworkCore;
 using LibroNovedades.Interface.Maestra;
 
 namespace LibroNovedades.Data.Maestra

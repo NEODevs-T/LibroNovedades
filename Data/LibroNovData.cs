@@ -45,7 +45,8 @@ using LibroNovedades.DTO;
             public async Task<bool> InsertarRegistro(LibroNoveDTO libroNove)
             {
                 bool band = false;
-            
+
+                url = $"{BaseUrl}/AddLibroNovedadesNormal";
                 cliente =  _clientFactory.CreateClient();
                 mensaje = await cliente.PostAsJsonAsync(url,libroNove);
 
@@ -57,83 +58,50 @@ using LibroNovedades.DTO;
 
             public async Task<LibroNoveDTO>? ObtenerPorIdParada(string idParada)
             {
-                url = $"{BaseUrl}/ObtenerNoveadadPorIdParada/{idParada}";
+                url = $"{BaseUrl}/GetNoveadadPorIdParada/{idParada}";
                 cliente = _clientFactory.CreateClient();
                 return await cliente.GetFromJsonAsync<LibroNoveDTO>(url) ?? new LibroNoveDTO();
             }
 
-            public async Task<bool> ActualizacionCompleta(int IdlibrNov,LibroNove data){
-                LibroNove dataNove = await this._cotext.LibroNoves.Where(x=> x.IdlibrNov == IdlibrNov).FirstOrDefaultAsync();
-                if(data != null){
-                    dataNove.IdLinea = data.IdLinea;
-                    dataNove.IdAreaCar = data.IdAreaCar;
-                    dataNove.IdEquipo = data.IdEquipo;
-                    dataNove.IdlibrNov =  data.IdlibrNov;
-                    dataNove.IdParada = data.IdParada;
-                    dataNove.IdTipoNove = data.IdTipoNove;
-                    dataNove.Lndiscrepa = data.Lndiscrepa;
-                    dataNove.Lnfecha = data.Lnfecha;
-                    dataNove.LnfichaRes = data.LnfichaRes;
-                    dataNove.Lngrupo = data.Lngrupo;
-                    dataNove.LnisPizUni = data.LnisPizUni;
-                    dataNove.Lnobserv = data.Lnobserv;
-                    dataNove.LntiePerMi = data.LntiePerMi;
-                    dataNove.Lnturno = data.Lnturno;
-                    dataNove.IdCtpm = data.IdCtpm;
-                    dataNove.LnisResu = data.LnisResu;
-                    return 0 < await _cotext.SaveChangesAsync();
-                }
-                return false;         
-            }
+            public async Task<bool> ActualizacionNovedad(int idlibrNov,LibroNoveDTO data){
+                bool band = false;
 
-            public async Task<bool> ActualizacionEstado(int IdlibrNov,LibroNove data){
-                LibroNove dataNove1 = new LibroNove();
-                dataNove1 = await this.ObtenerLibroPorId(IdlibrNov) ?? new LibroNove();
-                if(dataNove1 != null){
-                    dataNove1.LnisResu = data.LnisResu;
-                    return 0 < await _cotext.SaveChangesAsync();
+                url = $"{BaseUrl}/UpdatenNovedad/{idlibrNov}";
+                cliente = _clientFactory.CreateClient();
+                mensaje = await cliente.PutAsJsonAsync(url,data);
+
+                if(mensaje.IsSuccessStatusCode){
+                    band = await mensaje.Content.ReadFromJsonAsync<bool>();
                 }
-                return false;         
+                return band;
             }
-            public async Task<List<LibroNove>> RegistroDeHoyPorLinea(int idLinea)
+            public async Task<List<LibroNoveDTO>> RegistroDeHoyPorLinea(int idLinea)
             {
-                return await this._cotext.LibroNoves.Where(t => t.IdLinea == idLinea && (t.Lnfecha >= DateTime.Today && t.Lnfecha <  DateTime.Today.AddDays(1))).ToListAsync();
+                url = $"{BaseUrl}/GetRegistroDeHoyPorLinea/{idLinea}";
+                cliente = _clientFactory.CreateClient();
+                return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
             }
 
-            public async Task<List<LibroNove>> ObtenerNovedadePorLinea(int IdLiena){
-                return await this._cotext.LibroNoves.Where(l => l.IdLinea == IdLiena).ToListAsync();
+            public async Task<List<LibroNoveDTO>> ObtenerNovedadePorLinea(int idLinea){
+                url = $"{BaseUrl}/GetObtenerNovedadePorLinea/{idLinea}";
+                cliente = _clientFactory.CreateClient();
+                return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
             }
-
-
-            public async Task<bool> UpdateRegistros(List<LibroNove> novedades)
+            
+            public async Task<bool> UpdateRegistros(List<LibroNoveDTO> novedades)
             {
-                LibroNove registro;
-                foreach (var item in novedades)
-                {
-                    try{
-                        
-                            registro = await this._cotext.LibroNoves.FirstOrDefaultAsync(x => x.IdlibrNov == item.IdlibrNov);
-                            if(registro != null){
-                                registro.LnisPizUni =  item.LnisPizUni;
-                            }
-                            await _cotext.SaveChangesAsync();
-                        
-                    }catch{
-                        try{
-                            
-                                registro = await this._cotext.LibroNoves.FirstOrDefaultAsync(x => x.IdlibrNov == item.IdlibrNov);
-                                if(registro != null){
-                                    registro.LnisPizUni =  item.LnisPizUni;
-                                }
-                                await _cotext.SaveChangesAsync();
-                            
-                        }catch{
-                            return false;
-                        }
-                    }
+                bool band = false;
+
+                url = $"{BaseUrl}/UpdateGrupoRegistros";
+                cliente = _clientFactory.CreateClient();
+                mensaje = await cliente.PutAsJsonAsync(url,novedades);
+
+                if(mensaje.IsSuccessStatusCode){
+                    band = await mensaje.Content.ReadFromJsonAsync<bool>();
                 }
-                return true;
+                return band;
             }
+
             public async Task<List<LibroNove>> ObtenerLibroNovedadesPorFiltro(int idCentro,DateTime fecha,int idDivision,int idLinea,int tipoClasi,int filtroIsResuelto)
             {
                 List<LibroNove> libroNov = new List<LibroNove>();

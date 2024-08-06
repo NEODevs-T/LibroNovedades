@@ -554,7 +554,7 @@
         //NavigationManager.NavigateTo($"/FormatoAgrupado/{idLibroNov}");
         try{
             dataNove = listaNovedades.Where(x => x.IdlibrNov == idLibroNov).First();
-            if((dataNove.Lnfecha.AddDays(1) > DateTime.Now) || ((DateTime.Now.DayOfWeek.ToString() == "Monday") && (dataNove.Lnfecha.AddDays(3) > DateTime.Now))){
+            if(DateTime.Now.AddDays(-4) <= dataNove.Lnfecha){
                 dataNove.LnisResu = dataNove.LnisResu == 1 ?  dataNove.LnisResu = 0 : dataNove.LnisResu = 1;
                 band = await DataLibroNov.ActualizacionEstado(idLibroNov,dataNove);
                 if(band){
@@ -565,10 +565,10 @@
                     Notificacion("error","Error: ","Intente de Nuevo. Si el problema persiste enviar un correo a Mejora Continua");
                 }
             }else{
-                Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad");
+                Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 72 horas, no se puede cambiar el estado de esta novedad");
             }
         }catch(Exception e){
-            Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad");
+            Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 72 horas, no se puede cambiar el estado de esta novedad");
         }
     }
 

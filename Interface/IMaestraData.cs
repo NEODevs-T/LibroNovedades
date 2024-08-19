@@ -2,38 +2,41 @@ using BlazorStrap.Service;
 using LibroNovedades.Models.Neo;
 using LibroNovedades.Models.Neo.Views;
 using Microsoft.EntityFrameworkCore;
+using NeoAPI.DTOs.Maestra;
 
 namespace LibroNovedades.Interface.Maestra
 {
     public interface IPaisData
     {
-        Task<List<Pai>> ObtenerTodosLosPaises();
+        Task<List<PaiDTO>> ObtenerTodosLosPaises();
+
     }
 
     public interface IEmpresaData
     {
-        Task<List<EmpresasV>> ObtenerEmpresasPorPaies(int idPais);
+        Task<List<EmpresasVDTO>> ObtenerEmpresasPorPaies(int idPais);
     }
     public interface ICentroData
     {
-        Task<List<CentrosV>> ObtenerTodosLosCentro();
+        Task<List<CentrosVDTO>> ObtenerTodosLosCentro();
 
-        Task<List<CentrosV>> ObtenerCentrosPorEmpresa(int idEmpresa);
+        Task<List<CentrosVDTO>> ObtenerCentrosPorEmpresa(int idEmpresa);
     }
 
     public interface IDivisionData
     {
-        Task<List<DivisionesV>> ObtenerDivisionDelCentro(int idCentro);
+        Task<List<DivisionesVDTO>> ObtenerDivisionDelCentro(int idCentro);
+
     }
 
     public interface ILineaData
     {
-        Task<List<LineaV>> ObtenerTodasLasLineas();
-        Task<List<LineaV>> ObtenerLasLineasPorDivision(int idDivision);
+        Task<List<LineaVDTO>> ObtenerTodasLasLineas();
+        Task<List<LineaVDTO>> ObtenerLasLineasPorDivision(int idDivision);
     }
 
     public interface IEquipoEAMData
     {
-        Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea);
+        Task<List<EquipoEamDTO>> BuscarEquiposSegunLinea(int idLinea);
     }
 }

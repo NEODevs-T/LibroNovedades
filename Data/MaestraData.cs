@@ -3,6 +3,7 @@ using BlazorStrap.Service;
 using LibroNovedades.Models.Neo;
 using LibroNovedades.Models.Neo.Views;
 using LibroNovedades.Interface.Maestra;
+using NeoAPI.DTOs.Maestra;
 
 namespace LibroNovedades.Data.Maestra
 {
@@ -14,17 +15,18 @@ namespace LibroNovedades.Data.Maestra
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra";
         private HttpClient cliente { get; set; } = new HttpClient();
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
-        private string url {get; set;} = "";
+        private string url { get; set; } = "";
 
         public PaisData(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<Pai>> ObtenerTodosLosPaises(){
+        public async Task<List<PaiDTO>> ObtenerTodosLosPaises()
+        {
             url = $"{BaseUrl}/GetPaises/";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<Pai>>(url) ?? new List<Pai>();
+            return await cliente.GetFromJsonAsync<List<PaiDTO>>(url) ?? new List<PaiDTO>();
         }
     }
 
@@ -34,17 +36,18 @@ namespace LibroNovedades.Data.Maestra
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra";
         private HttpClient cliente { get; set; } = new HttpClient();
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
-        private string url {get; set;} = "";
+        private string url { get; set; } = "";
 
         public EmpresaData(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<EmpresasV>> ObtenerEmpresasPorPaies(int idPais){
+        public async Task<List<EmpresasVDTO>> ObtenerEmpresasPorPaies(int idPais)
+        {
             url = $"{BaseUrl}/GetEmpresas/{idPais}";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<EmpresasV>>(url) ?? new List<EmpresasV>();
+            return await cliente.GetFromJsonAsync<List<EmpresasVDTO>>(url) ?? new List<EmpresasVDTO>();
         }
     }
 
@@ -54,23 +57,25 @@ namespace LibroNovedades.Data.Maestra
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra";
         private HttpClient cliente { get; set; } = new HttpClient();
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
-        private string url {get; set;} = "";
+        private string url { get; set; } = "";
 
         public CentroData(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<CentrosV>> ObtenerTodosLosCentro(){
+        public async Task<List<CentrosVDTO>> ObtenerTodosLosCentro()
+        {
             url = $"{BaseUrl}/GetAllCentros/";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<CentrosV>>(url) ?? new List<CentrosV>();
+            return await cliente.GetFromJsonAsync<List<CentrosVDTO>>(url) ?? new List<CentrosVDTO>();
         }
 
-        public async Task<List<CentrosV>> ObtenerCentrosPorEmpresa(int idEmpresa){
+        public async Task<List<CentrosVDTO>> ObtenerCentrosPorEmpresa(int idEmpresa)
+        {
             url = $"{BaseUrl}/GetCentros/{idEmpresa}";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<CentrosV>>(url) ?? new List<CentrosV>();
+            return await cliente.GetFromJsonAsync<List<CentrosVDTO>>(url) ?? new List<CentrosVDTO>();
         }
     }
     public class DivisionData : IDivisionData
@@ -79,16 +84,17 @@ namespace LibroNovedades.Data.Maestra
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra";
         private HttpClient cliente { get; set; } = new HttpClient();
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
-        private string url {get; set;} = "";
+        private string url { get; set; } = "";
 
         public DivisionData(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
         }
-        public async Task<List<DivisionesV>> ObtenerDivisionDelCentro(int idCentro){
+        public async Task<List<DivisionesVDTO>> ObtenerDivisionDelCentro(int idCentro)
+        {
             url = $"{BaseUrl}/GetDivisiones/{idCentro}";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<DivisionesV>>(url) ?? new List<DivisionesV>();
+            return await cliente.GetFromJsonAsync<List<DivisionesVDTO>>(url) ?? new List<DivisionesVDTO>();
         }
     }
     public class LineaData : ILineaData
@@ -97,23 +103,25 @@ namespace LibroNovedades.Data.Maestra
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra";
         private HttpClient cliente { get; set; } = new HttpClient();
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
-        private string url {get; set;} = "";
+        private string url { get; set; } = "";
 
         public LineaData(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<LineaV>> ObtenerTodasLasLineas(){
+        public async Task<List<LineaVDTO>> ObtenerTodasLasLineas()
+        {
             url = $"{BaseUrl}/GetAllLineas/";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<LineaV>>(url) ?? new List<LineaV>();
+            return await cliente.GetFromJsonAsync<List<LineaVDTO>>(url) ?? new List<LineaVDTO>();
         }
 
-        public async Task<List<LineaV>> ObtenerLasLineasPorDivision(int idDivision){
+        public async Task<List<LineaVDTO>> ObtenerLasLineasPorDivision(int idDivision)
+        {
             url = $"{BaseUrl}/GetLineas/{idDivision}";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<LineaV>>(url) ?? new List<LineaV>();
+            return await cliente.GetFromJsonAsync<List<LineaVDTO>>(url) ?? new List<LineaVDTO>();
         }
     }
 
@@ -123,18 +131,19 @@ namespace LibroNovedades.Data.Maestra
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra";
         private HttpClient cliente { get; set; } = new HttpClient();
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
-        private string url {get; set;} = "";
+        private string url { get; set; } = "";
 
         public EquipoEAMData(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<EquipoEam>> BuscarEquiposSegunLinea(int idLinea){
+        public async Task<List<EquipoEamDTO>> BuscarEquiposSegunLinea(int idLinea)
+        {
             url = $"{BaseUrl}/GetEquiposEAMPorLinea/{idLinea}";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<EquipoEam>>(url) ?? new List<EquipoEam>();
+            return await cliente.GetFromJsonAsync<List<EquipoEamDTO>>(url) ?? new List<EquipoEamDTO>();
         }
     }
-    
+
 }

@@ -1,16 +1,16 @@
 @page "/FormatoAgrupado/{id:int?}"
 
 
-@inject IDataPais DataPais;
-@inject IDataEmpresa DataEmpresa;
-@inject IDataCentro DataCentro;
-@inject IDataDivision DataDivision;
-@inject IDataLinea DataLinea;
-@inject IDataEquipoEAM DataEquipoEAM;
+@inject IPaisData PaisDat;
+@inject EmpresaData DataEmpresa;
+@inject IEmpresaData EmpresaData;
+@inject IDivisionData DivisionData;
+@inject ILineaData LineaData;
+@inject IEquipoEAMData EquipoEAMData;
 @inject IDataAPI DataAPI;
-@inject IDataLibroNov DataLibroNov;
+@inject ILibroNovData LibroNovData;
 @inject IDataTiParTP DataTiParTP;
-@inject IDataClasifiTPM DataClasifiTPM;
+@inject IClasifiTPMData ClasifiTPMData;
 
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
@@ -23,6 +23,10 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
+@using LibroNovedades.Interface.Maestra
+@using LibroNovedades.Interface
+@using LibroNovedades.Data.LibroNov
+@using LibroNovedades.Data.Maestra
 @using Microsoft.EntityFrameworkCore
 
 
@@ -133,7 +137,10 @@
                                 @if(dataNove.IdLinea != 0){
                                     <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>Sin Perdida De tiempo</BSButton>
                                 }
+    using NeoAPI.DTOs.LibroNovedades;
+    using NeoAPI.DTOs.LibroNovedades;
                             </BSCol>
+    using NeoAPI.DTOs.LibroNovedades;
                         </BSRow>  
                         <br>
                         <br>
@@ -443,7 +450,7 @@
 
                 await GrupoTurnoPorEmpresa();
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
-                listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
+                listaClasificacionTPM = await ClasifiTPMData.ObtenerClasificacion();
 
                 if(rol.Contains("SuperAdmin")){
                     isAccesoPais = true;
@@ -455,7 +462,7 @@
                     dataNove.IdAreaCar = 10;
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
-                    listaPais = await DataPais.ObtenerTodosLosPaises();
+                    listaPais = await PaisData.ObtenerTodosLosPaises();
                     listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
                     listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);

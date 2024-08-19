@@ -3,13 +3,13 @@
 @inject IDataPais DataPais;
 @inject IDataEmpresa DataEmpresa;
 @inject IDataCentro DataCentro;
-@inject IDataDivision DataDivision;
-@inject IDataLinea DataLinea;
-@inject IDataEquipoEAM DataEquipoEAM;
+@inject IDivisionData DivisionData;
+@inject ILineaData LineaData;
+@inject IEquipoEAMData EquipoEAMData;
 @inject IDataAPI DataAPI;
 @inject IDataLibroNov DataLibroNov;
 @inject IDataTiParTP DataTiParTP;
-@inject IDataClasifiTPM DataClasifiTPM;
+@inject IClasifiTPMData ClasifiTPMData;
 @inject ILogicLibroNov LogicLibroNov;
 
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
@@ -361,7 +361,7 @@
                 isAccesoLinea = false;
 
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
-                listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
+                listaClasificacionTPM = await ClasifiTPMData.ObtenerClasificacion();
 
                 if(rol.Contains("SuperAdmin")){
                     isAccesoPais = true;

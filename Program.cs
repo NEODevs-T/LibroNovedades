@@ -30,7 +30,7 @@ builder.Services.AddBlazorStrap();
 builder.Services.AddHttpClient();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddControllersWithViews();
-builder.Services.AddOptions();  
+builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped<NotificationService>();
@@ -49,17 +49,17 @@ builder.Services.AddBlazoredSessionStorage(config =>
 builder.Services.AddBlazoredSessionStorage();
 
 builder.Services.AddDbContext<DbNeoContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionDbNeo")),ServiceLifetime.Transient
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionDbNeo")), ServiceLifetime.Transient
 );
 
-builder.Services.AddDbContext<DOC_IngIContext>( options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionDbIng")),ServiceLifetime.Transient
+builder.Services.AddDbContext<DOC_IngIContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionDbIng")), ServiceLifetime.Transient
 );
 
 // builder.Services.AddDbContext<DOC_IngIContext>(options =>
 //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
-builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider,global:: LibroNovedades.Service.Autenticacion.CustomAuthStateProvider>();
+builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, global::LibroNovedades.Service.Autenticacion.CustomAuthStateProvider>();
 
 
 
@@ -76,7 +76,7 @@ builder.Services.AddScoped<IDataAPI, DataAPI>();
 builder.Services.AddScoped<IDataLibroNov, DataLibroNov>();
 builder.Services.AddScoped<IDataTiParTP, DataTiParTP>();
 builder.Services.AddScoped<IDataPizarra, DataPizarra>();
-builder.Services.AddScoped<IDataClasifiTPM, DataClasifiTPM>();
+builder.Services.AddScoped<IClasifiTPMData, ClasifiTPMData>();
 builder.Services.AddScoped<IDataChismoso, DataChismoso>();
 
 

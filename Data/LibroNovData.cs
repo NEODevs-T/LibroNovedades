@@ -111,6 +111,7 @@ namespace LibroNovedades.Data.LibroNov
 
         public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltro(int idCentro, DateTime fecha, int idDivision, int idLinea, int tipoClasi, int filtroIsResuelto)
         {
+            //TODO: Revisar los URL
             url = $"{BaseUrl}/GetObtenerLibroNovedadesPorFiltro/{idCentro}/{idDivision}/{idLinea}/{tipoClasi}/{filtroIsResuelto}/{fecha}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
@@ -118,18 +119,21 @@ namespace LibroNovedades.Data.LibroNov
 
         public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltroEntreFechas(int idCentro, DateTime fechaInicion, DateTime fechaFinal, int idDivision, int idLinea, int tipoClasi, int filtroIsResuelto)
         {
+            //TODO: Revisar los URL
             url = $"{BaseUrl}/GetObtenerLibroNovedadesPorFiltroEntreFechas/{idCentro}/{fechaInicion}/{fechaFinal}/{idDivision}/{idLinea}/{tipoClasi}/{filtroIsResuelto}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
         }
         public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha, int idCentro, int idDivision, int idLinea, int tipoClasi, int IdAreaCar, int filtroIsResuelto)
         {
+            //TODO: Revisar los URL
             url = $"{BaseUrl}/GetObtenerLibroNovedadesDelAreaQueCarga/{idCentro}/{fecha}/{idCentro}/{idDivision}/{idLinea}/{tipoClasi}/{IdAreaCar}/{filtroIsResuelto}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
         }
         public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(DateTime fechaInicion, DateTime fechaFinal, int idCentro, int idDivision, int idLinea, int tipoClasi, int IdAreaCar, int filtroIsResuelto)
         {
+            //TODO: Revisar los URL
             url = $"{BaseUrl}/GetObtenerLibroNovedadesDelAreaQueCarga/{idCentro}/{fechaInicion}/{fechaFinal}/{idCentro}/{idDivision}/{idLinea}/{tipoClasi}/{IdAreaCar}/{filtroIsResuelto}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
@@ -143,6 +147,7 @@ namespace LibroNovedades.Data.LibroNov
         }
         public async Task<LibroNoveDTO>? ObtenerLibroPorId(int idRegistro)
         {
+            //TODO: Revisar los URL
             url = $"{BaseUrl}/GetCalcularCumplimiento/{idRegistro}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<LibroNoveDTO>(url) ?? new LibroNoveDTO();
@@ -152,6 +157,7 @@ namespace LibroNovedades.Data.LibroNov
     public class DataTiParTP : IDataTiParTP
     {
         private readonly IHttpClientFactory _clientFactory;
+        //TODO: Revisar los URL TipoParada
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/LibroNove";
         private HttpClient cliente { get; set; } = new HttpClient();    //direccion va todo
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
@@ -163,6 +169,7 @@ namespace LibroNovedades.Data.LibroNov
         }
         public async Task<TiParTpDTO> ObtenerTipoParadaId(string IdGespline)
         {
+            //TODO: Cambiar prefijo a GET
             url = $"{BaseUrl}/ObtenerTipoParadaId/{IdGespline}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<TiParTpDTO>(url) ?? new TiParTpDTO();
@@ -170,16 +177,17 @@ namespace LibroNovedades.Data.LibroNov
 
         public async Task<List<TiParTpDTO>> ObtenerTodosTiposNovedad()
         {
-            url = $"{BaseUrl}/ObtenerTodosTiposNovedad/{ObtenerTodosTiposNovedad}";
+            //TODO: Cambiar prefijo a GET
+            url = $"{BaseUrl}/ObtenerTodosTiposNovedad";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<TiParTpDTO>>(url) ?? new List<TiParTpDTO>();
-
         }
     }
     public class DataPizarra : IDataPizarra
     {
 
         private readonly IHttpClientFactory _clientFactory;
+        //TODO: Revisar los URL
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/LibroNove";
         private HttpClient cliente { get; set; } = new HttpClient();    //direccion va todo
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
@@ -193,7 +201,7 @@ namespace LibroNovedades.Data.LibroNov
         public async Task<bool> InsertarRegistros(List<ReuDiumDTO> reunionDia)
         {
             bool band = false;
-
+            //TODO: Revisar los URL
             url = $"{BaseUrl}/AddInsertarRegistros";
             cliente = _clientFactory.CreateClient();
             mensaje = await cliente.PostAsJsonAsync(url, reunionDia);
@@ -208,8 +216,8 @@ namespace LibroNovedades.Data.LibroNov
     }
     public class DataAvisador : IDataAvisador
     {
-
         private readonly IHttpClientFactory _clientFactory;
+        //TODO: Revisar los URL
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/LibroNove";
         private HttpClient cliente { get; set; } = new HttpClient();    //direccion va todo
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
@@ -222,6 +230,7 @@ namespace LibroNovedades.Data.LibroNov
 
         public async Task<bool> InsertarRegistros(List<CambFecDTO> data, List<CambStatDTO> data2)
         {
+            //TODO: Revisar los URL
             url = $"{BaseUrl}/AddInsertarRegistros";
             cliente = _clientFactory.CreateClient();
             mensaje = await cliente.PostAsJsonAsync(url, (data, data2));

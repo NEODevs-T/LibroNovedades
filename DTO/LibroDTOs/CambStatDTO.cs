@@ -4,6 +4,8 @@ using System.Collections.Generic;
 namespace NeoAPI.DTOs.ReunionDiaria;
 
 
+//TODO: cambiar atributos y cambiar namespace
+
 public class CambStatDTO
 {
     public int IdCambStat { get; set; }

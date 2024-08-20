@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace NeoAPI.DTOs.Maestra;
 
+//TODO: cambiar atributos y cambiar namespace
 public class DivisionesVDTO
 {
     public int idPais { get; set; } = 0;

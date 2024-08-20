@@ -1,16 +1,16 @@
 @page "/FormatoAgrupado/{id:int?}"
 
 
-@inject IPaisData PaisDat;
-@inject EmpresaData DataEmpresa;
-@inject IEmpresaData EmpresaData;
-@inject IDivisionData DivisionData;
+@inject IPaisData PaisData;
+@inject IEmpresaData DataEmpresa;
+@inject IDivisionData DataDivision;
 @inject ILineaData LineaData;
 @inject IEquipoEAMData EquipoEAMData;
 @inject IDataAPI DataAPI;
 @inject ILibroNovData LibroNovData;
 @inject IDataTiParTP DataTiParTP;
 @inject IClasifiTPMData ClasifiTPMData;
+@inject ICentroData DataCentro;
 
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager

@@ -17,7 +17,9 @@ using LibroNovedades.Models.Neo;
 using LibroNovedades.ModelsDocIng;
 using LibroNovedades.Logic;
 
+
 using LibroNovedades.Interface.Maestra;
+using LibroNovedades.Interface;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,7 +75,9 @@ builder.Services.AddScoped<IEquipoEAMData, EquipoEAMData>();
 
 builder.Services.AddScoped<IDataAPI, DataAPI>();
 
-builder.Services.AddScoped<IDataLibroNov, DataLibroNov>();
+builder.Services.AddScoped<ILibroNovData, LibroNovData>();
+
+
 builder.Services.AddScoped<IDataTiParTP, DataTiParTP>();
 builder.Services.AddScoped<IDataPizarra, DataPizarra>();
 builder.Services.AddScoped<IClasifiTPMData, ClasifiTPMData>();

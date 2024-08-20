@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace NeoAPI.DTOs.Maestra;
-
+//TODO: cambiar atributos y cambiar namespace
 public class EmpresasVDTO
 {
     public int idPais { get; set; } = 0;

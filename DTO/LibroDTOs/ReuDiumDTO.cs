@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace NeoAPI.DTOs.ReunionDiaria;
 
+//TODO: cambiar namespace
 public partial class ReuDiumDTO
 {
     public int IdReuDia { get; set; }

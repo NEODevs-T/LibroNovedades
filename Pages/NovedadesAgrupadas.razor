@@ -144,10 +144,10 @@
     using NeoAPI.DTOs.LibroNovedades;
     using NeoAPI.DTOs.LibroNovedades;
     using NeoAPI.DTOs.Maestra;
-                            </BSCol>
     using NeoAPI.DTOs.LibroNovedades;
-                        </BSRow>  
     using DTOs.Maestra;
+                            </BSCol>
+                        </BSRow>  
                         <br>
                         <br>
                         @if((paradasBandera) || (rol.Contains("Mantenimiento"))){
@@ -433,7 +433,7 @@
                     dataNove.LnisResu = 0;
                     causaCargada = false;
                 }else{
-                    @* dataNove = await DataLibroNov.ObtenerLibroPorId(id ?? 0) ?? new LibroNove(); *@
+                    @* dataNove = await LibroNovData.ObtenerLibroPorId(id ?? 0) ?? new LibroNove(); *@
                 }
 
                 claims = user.Claims;
@@ -472,7 +472,7 @@
                     listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
                     listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
 
                 }else if(rol.Contains("SuperUser")){
                     isAccesoPais = true;
@@ -487,7 +487,7 @@
                     listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
                     listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
 
                 }else if(rol.Contains("UserPais")){
                     isAccesoEmpresa = true;
@@ -499,7 +499,7 @@
                     listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
                     listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }else if(rol.Contains("UserEmpresa")){
                     isAccesoCentro = true;
                     isAccesoDivision = true;
@@ -508,14 +508,14 @@
                     // todos los centros,divisiones y lineas de esa empresa
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
                     listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }else if(rol.Contains("UserCentro")){ 
                     isAccesoDivision = true;
                     isAccesoLinea = true;
 
                     // todas las divisiones y lineas de ese centro
                     listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }else if(rol.Contains("UserDivision")){
                     isAccesoLinea = true;
 
@@ -525,7 +525,7 @@
                     }
                     
                     // todas las lineas de esa division
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }
                 
 
@@ -608,7 +608,7 @@
         dataNove.IdLinea = 0;
         try{
             if(idCentro != 0){
-                listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
             }
         }catch(Exception ex){
             mensaje = "Error: " + ex.Message;
@@ -636,9 +636,9 @@
                 try
                 {
                     if(IsNuevo){
-                        bandera = await DataLibroNov.InsertarRegistro(dataNove);
+                        bandera = await LibroNovData.InsertarRegistro(dataNove);
                     }else{
-                        bandera = await  DataLibroNov.ActualizacionCompleta(dataNove.IdlibrNov,dataNove);
+                        bandera = await  LibroNovData.ActualizacionCompleta(dataNove.IdlibrNov,dataNove);
                     }
 
                     if(bandera){
@@ -712,7 +712,7 @@
             listaAllEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
             linea =  listaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
             dataNove.IdMaquina = linea.Lofic;
-            listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
+            listaNove = await LibroNovData.RegistroDeHoyPorLinea(dataNove.IdLinea);
             // TODO: pendinete para mejorar listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
             paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
             listaDeEstado = new List<string>();
@@ -766,7 +766,7 @@
 
             indexCambio = item;
             temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
-            data = await DataLibroNov.ObtenerPorIdParada(temporal);
+            data = await LibroNovData.ObtenerPorIdParada(temporal);
 
             if(data == null){
                 tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);

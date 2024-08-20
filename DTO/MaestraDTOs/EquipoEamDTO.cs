@@ -2,11 +2,21 @@ using System;
 using System.Collections.Generic;
 
 namespace NeoAPI.DTOs.Maestra;
-//TODO: cambiar atributos y cambiar namespace
+
 public class EquipoEamDTO
 {
-    public int idPais { get; set; } = 0;
-    public int idEmpresa { get; set; } = 0;
-    public int idCentro { get; set; } = 0;
-    public int idDivision { get; set; }
+    public int IdEquipo { get; set; }
+
+    public int IdLinea { get; set; }
+
+    public string EcodEquiEam { get; set; } = null!;
+
+    public string EnombreEam { get; set; } = null!;
+
+    public string? EdescriEam { get; set; }
+
+    public bool EestaEam { get; set; }
+
+    public DateTime Efecha { get; set; }
+
 }

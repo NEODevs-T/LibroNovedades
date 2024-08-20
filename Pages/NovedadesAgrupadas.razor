@@ -1,7 +1,7 @@
 @page "/FormatoAgrupado/{id:int?}"
 
 
-@inject IPaisData PaisData;
+@inject IPaisData DataPais;
 @inject IEmpresaData DataEmpresa;
 @inject IDivisionData DataDivision;
 @inject ILineaData LineaData;
@@ -23,11 +23,14 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
+@using DTOs.Maestra
 @using LibroNovedades.Interface.Maestra
 @using LibroNovedades.Interface
+@using NeoAPI.DTOs.LibroNovedades
 @using LibroNovedades.Data.LibroNov
 @using LibroNovedades.Data.Maestra
 @using Microsoft.EntityFrameworkCore
+@using NeoAPI.DTOs.Maestra
 
 
 <PageTitle>Formato</PageTitle>
@@ -139,9 +142,12 @@
                                 }
     using NeoAPI.DTOs.LibroNovedades;
     using NeoAPI.DTOs.LibroNovedades;
+    using NeoAPI.DTOs.LibroNovedades;
+    using NeoAPI.DTOs.Maestra;
                             </BSCol>
     using NeoAPI.DTOs.LibroNovedades;
                         </BSRow>  
+    using DTOs.Maestra;
                         <br>
                         <br>
                         @if((paradasBandera) || (rol.Contains("Mantenimiento"))){
@@ -373,15 +379,15 @@
     private bool IsCargado  { get; set;}
     private bool isTPM  { get; set;}
     private bool isFichaManual { get; set;}
-    private List<Pai> listaPais {get;set;}    
-    private List<Empresa> listaEmpresa {get;set;}
-    private List<Centro> listaCentro {get;set;}
-    private List<Division> listaDivision {get;set;}
-    private List<Linea> listaLinea {get;set;}
-    private List<EquipoEam> listaEquiposEAM{ get; set;}
-    private List<EquipoEam> listaAllEquiposEAM { get; set;}
-    private List<ClasifiTpm> listaClasificacionTPM { get; set;}
-    private List<TiParTp> listaTiposNovedad { get; set;}
+    private List<PaiDTO> listaPais {get;set;}    
+    private List<EmpresasVDTO> listaEmpresa {get;set;}
+    private List<CentrosVDTO> listaCentro {get;set;}
+    private List<DivisionesVDTO> listaDivision {get;set;}
+    private List<LineaVDTO> listaLinea {get;set;}
+    private List<EquipoEamDTO> listaEquiposEAM{ get; set;}
+    private List<EquipoEamDTO> listaAllEquiposEAM { get; set;}
+    private List<ClasifiTpmDTO> listaClasificacionTPM { get; set;}
+    private List<TiParTpDTO> listaTiposNovedad { get; set;}
     private List<string> listaTurnoYGrupo { get; set;}
     private List<int> indexParadas  { get; set;}
     RadzenDropDown<string> radzenDropDown { get; set;}
@@ -462,7 +468,7 @@
                     dataNove.IdAreaCar = 10;
                     
                     // Todos los paises con todas las empresas centros, divisiones y lineas
-                    listaPais = await PaisData.ObtenerTodosLosPaises();
+                    listaPais = await DataPais.ObtenerTodosLosPaises();
                     listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
                     listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);

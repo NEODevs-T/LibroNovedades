@@ -3,14 +3,15 @@ using System.Collections.Generic;
 
 namespace NeoAPI.DTOs.ReunionDiaria;
 
-//TODO: cambiar atributos y cambiar namespace
 public class CambFecDTO
 {
     public int IdCambFec { get; set; }
 
-    public string Tpcodigo { get; set; } = null!;
+    public int IdReuDia { get; set; }
 
-    public string Tpnombre { get; set; } = null!;
+    public DateTime Cffec { get; set; }
 
-    public bool Tpestado { get; set; }
+    public DateTime CffecNew { get; set; }
+
+    public string Cfuser { get; set; } = null!;
 }

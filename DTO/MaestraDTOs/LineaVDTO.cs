@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 
 namespace NeoAPI.DTOs.Maestra;
-//TODO: cambiar atributos y cambiar namespace
+
 public class LineaVDTO
 {
-    public int idPais { get; set; } = 0;
-    public int idEmpresa { get; set; } = 0;
-    public int idCentro { get; set; } = 0;
-    public int idDivision { get; set; }
+    public int IdDivision { get; set; }
+
+    public int IdLinea { get; set; }
+
+    public string Linea { get; set; } = null!;
+
+    public bool Estado { get; set; }
 }

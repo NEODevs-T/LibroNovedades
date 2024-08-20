@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 
 namespace NeoAPI.DTOs.Maestra;
-//TODO: cambiar atributos y cambiar namespace
+
 public class PaiDTO
 {
-    public int idPais { get; set; } = 0;
-    public int idEmpresa { get; set; } = 0;
-    public int idCentro { get; set; } = 0;
-    public int idDivision { get; set; }
+    public int IdPais { get; set; }
+
+    public string Pnombre { get; set; } = null!;
+
+    public bool Pestado { get; set; }
+
+    public DateTime Pfecha { get; set; }
+
 }

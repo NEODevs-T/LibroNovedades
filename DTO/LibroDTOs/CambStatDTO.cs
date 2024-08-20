@@ -4,15 +4,15 @@ using System.Collections.Generic;
 namespace NeoAPI.DTOs.ReunionDiaria;
 
 
-//TODO: cambiar atributos y cambiar namespace
-
 public class CambStatDTO
 {
     public int IdCambStat { get; set; }
 
-    public string Tpcodigo { get; set; } = null!;
+    public int IdReuDia { get; set; }
 
-    public string Tpnombre { get; set; } = null!;
+    public DateTime? Cbfecha { get; set; }
 
-    public bool Tpestado { get; set; }
+    public string? Cbstat { get; set; }
+
+    public string? Cbuser { get; set; }
 }

@@ -81,7 +81,7 @@ builder.Services.AddScoped<ILibroNovData, LibroNovData>();
 builder.Services.AddScoped<IDataTiParTP, DataTiParTP>();
 builder.Services.AddScoped<IDataPizarra, DataPizarra>();
 builder.Services.AddScoped<IClasifiTPMData, ClasifiTPMData>();
-builder.Services.AddScoped<IDataChismoso, DataChismoso>();
+builder.Services.AddScoped<IDataAvisador, DataAvisador>();
 
 
 builder.Services.AddScoped<ILogicLibroNov, LogicLibroNov>();

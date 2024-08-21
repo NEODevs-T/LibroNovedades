@@ -1,12 +1,8 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using LibroNovedades.Models.Neo;
-using LibroNovedades.ModelsDocIng;
 using LibroNovedades.Interface;
-using LibroNovedades.DTO;
-using NeoAPI.DTOs.LibroNovedades;
-using NeoAPI.DTOs.ReunionDiaria;
-using LibroNovedades.Models;
+using LibroNovedades.DTOs;
+using ReunionDiaria.DTOs;
 
 namespace LibroNovedades.Data.LibroNov
 {

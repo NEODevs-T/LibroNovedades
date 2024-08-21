@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace LibroNovedades.DTO;
+namespace LibroNovedades.DTOs;
 public partial class ClasifiTpmDTO
 {
     public int IdCtpm { get; set; }

@@ -2,11 +2,11 @@
 
 @inject NotificationService notificationService
 
-@inject IDataLibroNov DataLibroNov
+@inject ILibroNovData LibroNovData
 
-@inject IDataPais DataPais;
-@inject IDataEmpresa DataEmpresa;
-@inject IDataCentro DataCentro;
+@inject IPaisData PaisData;
+@inject IEmpresaData EmpresaData;
+@inject ICentroData CentroData;
 @inject IDivisionData DivisionData;
 @inject ILineaData LineaData;
 @inject IEquipoEAMData EquipoEAMData;
@@ -17,36 +17,43 @@
 
 
     <Authorized>
-        <RadzenStack Orientation="Orientation.Vertical" Gap="1rem" Class="rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+        <RadzenStack Orientation="Orientation.Vertical" Gap="1rem" Class="rz-mb-6 rz-border-radius-1"
+            Style="border: var(--rz-grid-cell-border);">
             <div class="rz-p-sm-0 rz-text-align-justify">
                 <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
                     <RadzenColumn Size="12" SizeMD="12">
                         <RadzenFormField Size="12" SizeMD="2" Text="Desde">
-                            <RadzenDatePicker DateFormat="dd/MM/yyyy" TValue="DateTime" @bind-Value=@fechaI/>
+                            <RadzenDatePicker DateFormat="dd/MM/yyyy" TValue="DateTime" @bind-Value=@fechaI />
                         </RadzenFormField>
                         <RadzenFormField Size="12" SizeMD="2" Text="Hasta">
-                            <RadzenDatePicker DateFormat="dd/MM/yyyy" TValue="DateTime" @bind-Value=@fechaF/>
+                            <RadzenDatePicker DateFormat="dd/MM/yyyy" TValue="DateTime" @bind-Value=@fechaF />
                         </RadzenFormField>
                         <RadzenFormField Size="12" SizeMD="2" Text="Tipo de Filtro">
                             <RadzenDropDown @bind-Value=@tipo Data=@listaTipo Change="ActualizarTipoDeFiltro" />
                         </RadzenFormField>
                         <RadzenFormField Size="12" SizeMD="2" Text="Centro">
-                            <RadzenDropDown @bind-Value=@idCentro Data=@listaCentro Change="BuscarDivisiones" TextProperty="Cnom" ValueProperty="IdCentro"/>
+                            <RadzenDropDown @bind-Value=@idCentro Data=@listaCentro Change="BuscarDivisiones"
+                                TextProperty="Cnom" ValueProperty="IdCentro" />
                         </RadzenFormField>
-                        @if(bandDivision){
+                        @if (bandDivision)
+                        {
                             <RadzenFormField Size="12" SizeMD="2" Text="División">
-                                <RadzenDropDown @bind-Value=@idDivision Data=@listaDivision Change="BuscarLinea" TextProperty="Dnombre" ValueProperty="IdDivision"/> 
+                                <RadzenDropDown @bind-Value=@idDivision Data=@listaDivision Change="BuscarLinea"
+                                    TextProperty="Dnombre" ValueProperty="IdDivision" />
                             </RadzenFormField>
                         }
 
-                        @if(bandLinea){
+                        @if (bandLinea)
+                        {
                             <RadzenFormField Size="12" SizeMD="4" Text="Línea">
-                                <RadzenDropDown @bind-Value=@idLinea Data=@listaLinea TextProperty="Lnom" ValueProperty="IdLinea"/> 
+                                <RadzenDropDown @bind-Value=@idLinea Data=@listaLinea TextProperty="Lnom"
+                                    ValueProperty="IdLinea" />
                             </RadzenFormField>
                         }
                     </RadzenColumn>
                     <RadzenRow Size="12" SizeMD="12" Gap="2rem" Class="rz-p-0 rz-p-lg-4">
-                        <RadzenButton Click=CalcularCumplimiento Text="Filtrar" Icon="refresh" ButtonStyle="ButtonStyle.Success" />
+                        <RadzenButton Click=CalcularCumplimiento Text="Filtrar" Icon="refresh"
+                            ButtonStyle="ButtonStyle.Success" />
                     </RadzenRow>
                 </RadzenRow>
             </div>
@@ -57,18 +64,20 @@
         <br>
 
         @* @if(data != null){
-            @foreach (var item in data)
-            {
-                @item.Key
+        @foreach (var item in data)
+        {
+        @item.Key
 
-                <br>
-                <RadzenDataGrid Data="@item" TItem="LibroNove" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
-                    <Columns>
-                        <RadzenDataGridColumn TItem="LibroNove" Property="IdLineaNavigation.Lnom" Title="Linea"  />
-                        <RadzenDataGridColumn TItem="LibroNove" Property="Lnfecha" Title="Fecha"  />
-                    </Columns>
-                </RadzenDataGrid>
-            }
+        <br>
+        <RadzenDataGrid Data="@item" TItem="LibroNove" AllowFiltering="true" AllowColumnResize="true"
+        AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5"
+        AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true">
+        <Columns>
+        <RadzenDataGridColumn TItem="LibroNove" Property="IdLineaNavigation.Lnom" Title="Linea" />
+        <RadzenDataGridColumn TItem="LibroNove" Property="Lnfecha" Title="Fecha" />
+        </Columns>
+        </RadzenDataGrid>
+        }
         } *@
     </Authorized>
 
@@ -81,27 +90,27 @@
     </NotAuthorized>
 </AuthorizeView>
 
-@code{
-    private IEnumerable<IGrouping<DateTime, LibroNove>> data {get;set;}
-    private List<Pai> listaPais {get;set;} 
-    private List<Empresa> listaEmpresa {get;set;}
-    private List<Centro> listaCentro {get;set;}
-    private List<Division> listaDivision {get;set;}
-    private List<Linea> listaLinea {get;set;}
-    private List<string> listaTipo {get;set;}
+@code {
+    private IEnumerable<IGrouping<DateTime, LibroNoveDTO>> data { get; set; }
+    private List<PaiDTO> listaPais { get; set; }
+    private List<EmpresasVDTO> listaEmpresa { get; set; }
+    private List<CentrosVDTO> listaCentro { get; set; }
+    private List<DivisionesVDTO> listaDivision { get; set; }
+    private List<LineaVDTO> listaLinea { get; set; }
+    private List<string> listaTipo { get; set; }
     private int idPais { get; set; }
     private int idEmpresa { get; set; }
-    private int idCentro  { get; set;}
-    private int idDivision { get; set;}
+    private int idCentro { get; set; }
+    private int idDivision { get; set; }
     private int idLinea { get; set; }
-    private DateTime fechaI {get; set; }
-    private DateTime fechaF {get; set; }
-    private string tipo {get;set;}
-    private bool bandPais {get;set;}
-    private bool bandEmpresa {get;set;}
-    private bool bandCentro {get;set;}
-    private bool bandDivision {get;set;}
-    private bool bandLinea {get;set;}
+    private DateTime fechaI { get; set; }
+    private DateTime fechaF { get; set; }
+    private string tipo { get; set; }
+    private bool bandPais { get; set; }
+    private bool bandEmpresa { get; set; }
+    private bool bandCentro { get; set; }
+    private bool bandDivision { get; set; }
+    private bool bandLinea { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,104 +120,229 @@
         listaTipo.Add("Centro");
         listaTipo.Add("Division");
         listaTipo.Add("Linea");
-        listaCentro = await DataCentro.ObtenerTodosLosCentro();
+        listaCentro = await CentroData.ObtenerTodosLosCentro();
         //await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,"division",1);
     }
-    protected async Task ActualizarTipoDeFiltro(){
+    protected async Task ActualizarTipoDeFiltro()
+    {
         bandDivision = true;
         bandLinea = true;
         idDivision = 0;
         idLinea = 0;
 
-        if(tipo.Contains("Centro")){
+        if (tipo.Contains("Centro"))
+        {
             bandDivision = false;
             bandLinea = false;
 
-        }else if(tipo.Contains("Division")){
+        }
+        else if (tipo.Contains("Division"))
+        {
             bandLinea = false;
         }
     }
-    protected async Task CalcularCumplimiento(){
-        if(tipo != null){ 
-            if(tipo.Contains("Centro")){
-                (data,_,_,_) = await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,tipo,idCentro);
-            }else if(tipo.Contains("Division")){
-                (data,_,_,_) = await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,tipo,idDivision);
-            }else if(tipo.Contains("Linea")){
-                (data,_,_,_) = await DataLibroNov.CalcularCumplimiento(fechaI,fechaF,tipo,idLinea);
+    @* protected async Task CalcularCumplimiento()
+{
+// TODO:QUE SE HACE AQUI!!!
+if (tipo != null)
+{
+if (tipo.Contains("Centro"))
+{
+(data, _, _, _) = await LibroNovData.CalcularCumplimiento(fechaI, fechaF, tipo, idCentro);
+}
+else if (tipo.Contains("Division"))
+{
+(data, _, _, _) = await LibroNovData.CalcularCumplimiento(fechaI, fechaF, tipo, idDivision);
+}
+else if (tipo.Contains("Linea"))
+{
+(data, _, _, _) = await LibroNovData.CalcularCumplimiento(fechaI, fechaF, tipo, idLinea);
+}
+}
+else
+{
+Notificacion("error", "Error. ", "Seleccione un tipo de filtro");
+}
+} *@
+
+    protected async Task CalcularCumplimiento()
+    {
+        if (tipo != null)
+        {
+            LibroNoveDTO resultado = null;
+
+            if (tipo.Contains("Centro"))
+            {
+                resultado = await LibroNovData.CalcularCumplimiento(fechaI, fechaF, tipo, idCentro);
             }
-        }else{
-            Notificacion("error","Error. ","Seleccione un tipo de filtro");
+            else if (tipo.Contains("Division"))
+            {
+                resultado = await LibroNovData.CalcularCumplimiento(fechaI, fechaF, tipo, idDivision);
+            }
+            else if (tipo.Contains("Linea"))
+            {
+                resultado = await LibroNovData.CalcularCumplimiento(fechaI, fechaF, tipo, idLinea);
+            }
+
+            if (resultado != null)
+            {
+                // Descomposición del objeto LibroNoveDTO
+                var (idLinea, idEquipo, lnfecha, lnisPizUni) = resultado;
+
+                // Aquí necesitarías construir la colección que data espera
+                var agrupacion = new List<IGrouping<DateTime, LibroNoveDTO>>
+{
+new GrupoLibroNoveDTO(lnfecha, new List<LibroNoveDTO> { resultado })
+};
+
+                data = agrupacion;
+            }
+        }
+        else
+        {
+            Notificacion("error", "Error. ", "Seleccione un tipo de filtro");
         }
     }
 
-    protected async Task BuscarEmpresas(){
+    // Implementación de un IGrouping ficticio para agrupar los resultados
+    public class GrupoLibroNoveDTO : IGrouping<DateTime, LibroNoveDTO>
+    {
+        private readonly IEnumerable<LibroNoveDTO> _items;
+
+        public GrupoLibroNoveDTO(DateTime key, IEnumerable<LibroNoveDTO> items)
+        {
+            Key = key;
+            _items = items;
+        }
+
+        public DateTime Key { get; }
+
+        public IEnumerator<LibroNoveDTO> GetEnumerator() => _items.GetEnumerator();
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => _items.GetEnumerator();
+    }
+
+
+    protected async Task BuscarEmpresas()
+    {
         idEmpresa = 0;
         idCentro = 0;
         idDivision = 0;
         idLinea = 0;
-        try{
-            if(idCentro != 0){
-                listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
+        try
+        {
+            if (idCentro != 0)
+            {
+                listaEmpresa = await EmpresaData.ObtenerEmpresasPorPaies(idPais);
             }
-        }catch(Exception ex){
-            Notificacion("error","Error en el programa. ",ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Notificacion("error", "Error en el programa. ", ex.Message);
         }
     }
 
-    protected async Task BuscarCentros(){
+    protected async Task BuscarCentros()
+    {
         idCentro = 0;
-        try{
-            if(idCentro != 0){
-                listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
+        try
+        {
+            if (idCentro != 0)
+            {
+                listaCentro = await CentroData.ObtenerCentrosPorEmpresa(idEmpresa);
             }
-        }catch(Exception ex){
-            Notificacion("error","Error en el programa. ",ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Notificacion("error", "Error en el programa. ", ex.Message);
         }
     }
 
-    protected async Task BuscarDivisiones(){
-        if(bandDivision){
+    protected async Task BuscarDivisiones()
+    {
+        if (bandDivision)
+        {
             idDivision = 0;
             idLinea = 0;
-            try{
-                if(idCentro != 0){
-                    listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
+            try
+            {
+                if (idCentro != 0)
+                {
+                    listaDivision = await DivisionData.ObtenerDivisionDelCentro(idCentro);
                 }
-            }catch(Exception ex){
-                Notificacion("error","Error en el programa. ",ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Notificacion("error", "Error en el programa. ", ex.Message);
             }
         }
     }
 
-    protected async Task BuscarLinea(){
-        if(bandLinea){
+    protected async Task BuscarLinea()
+    {
+        if (bandLinea)
+        {
             idLinea = 0;
-            try{
-                if(idCentro != 0){
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+            try
+            {
+                if (idCentro != 0)
+                {
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }
-            }catch(Exception ex){
-                Notificacion("error","Error en el programa. ",ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Notificacion("error", "Error en el programa. ", ex.Message);
             }
         }
     }
 
-    public void Notificacion(string tipo,string mensaje,string detalle)
+    public void Notificacion(string tipo, string mensaje, string detalle)
     {
 
         NotificationMessage notificacion;
-        if(tipo == "error"){
-            notificacion = new NotificationMessage { Severity = NotificationSeverity.Error, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        if (tipo == "error")
+        {
+            notificacion = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = mensaje,
+                    Detail = detalle,
+                    Duration = 8000
+                };
             notificationService.Notify(notificacion);
-        }else if(tipo == "info"){
-            notificacion = new NotificationMessage { Severity = NotificationSeverity.Info, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }
+        else if (tipo == "info")
+        {
+            notificacion = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Info,
+                    Summary = mensaje,
+                    Detail = detalle,
+                    Duration = 8000
+                };
             notificationService.Notify(notificacion);
-        }else if(tipo == "exito"){
-            notificacion = new NotificationMessage { Severity = NotificationSeverity.Success, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }
+        else if (tipo == "exito")
+        {
+            notificacion = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = mensaje,
+                    Detail = detalle,
+                    Duration = 8000
+                };
             notificationService.Notify(notificacion);
-        }else if(tipo == "advertencia"){
-            notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
+        }
+        else if (tipo == "advertencia")
+        {
+            notificacion = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Warning,
+                    Summary = mensaje,
+                    Detail = detalle,
+                    Duration = 8000
+                };
             notificationService.Notify(notificacion);
         }
     }

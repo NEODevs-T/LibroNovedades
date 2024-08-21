@@ -9,7 +9,7 @@ namespace LibroNovedades.Models.Neo
         public int IdLinea { get; set; }
         public string IdEquipo { get; set; } = null!;
         public string Lndiscrepa { get; set; } = null!;
-        public int LntiePerMi { get; set; }
+        public double LntiePerMi { get; set; } //54555555
         public string LnfichaRes { get; set; } = null!;
         public DateTime Lnfecha { get; set; }
         public string Lngrupo { get; set; } = null!;

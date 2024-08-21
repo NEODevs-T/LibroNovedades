@@ -3,7 +3,7 @@ using BlazorStrap.Service;
 using LibroNovedades.Models.Neo;
 using LibroNovedades.Models.Neo.Views;
 using LibroNovedades.Interface.Maestra;
-using NeoAPI.DTOs.Maestra;
+using Maestra.DTOs;
 
 namespace LibroNovedades.Data.Maestra
 {

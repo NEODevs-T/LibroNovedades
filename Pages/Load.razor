@@ -1,9 +1,8 @@
 @page "/load"
-@inject IDataArea DataArea;
-@inject IDataCentro DataCentro;
+@inject ICentroData DataCentro;
 @inject ILineaData LineaData;
 @inject IDataAPI DataAPI;
-@inject IDataLibroNov DataLibroNov;
+@inject ILibroNovData LibroNovData;
 @inject IDataTiParTP DataTiParTP;
 @inject IBlazorStrap blazorStrap
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
@@ -13,29 +12,32 @@
 <PageTitle>load</PageTitle>
 
 <BSRow class="carga" Justify="Justify.Center">
-    <BSCol Column="3">
-      <div class="loader"><div class="loader2"></div></div>
-    </BSCol>  
+  <BSCol Column="3">
+    <div class="loader">
+      <div class="loader2"></div>
+    </div>
+  </BSCol>
 </BSRow>
 
-<BSModal DataId="model9"  @ref="refModal">
-    <Header>Modal Title</Header>
-    <Content>Woohoo, you're reading this text in a modal!</Content>
-    <Footer Context="modal">
-        <BSButton MarginStart="Margins.Auto" Color="BSColor.Secondary" @onclick="modal.HideAsync">Close</BSButton>
-        <BSButton Color="BSColor.Primary">Save changes</BSButton>
-    </Footer>
+<BSModal DataId="model9" @ref="refModal">
+  <Header>Modal Title</Header>
+  <Content>Woohoo, you're reading this text in a modal!</Content>
+  <Footer Context="modal">
+    <BSButton MarginStart="Margins.Auto" Color="BSColor.Secondary" @onclick="modal.HideAsync">Close</BSButton>
+    <BSButton Color="BSColor.Primary">Save changes</BSButton>
+  </Footer>
 </BSModal>
 <BSButton Color="BSColor.Primary" @onclick="cambio">Launch demo modal</BSButton>
 
-@code{
+@code {
   BSModal refModal;
 
-  protected override async Task  OnInitializedAsync()
+  protected override async Task OnInitializedAsync()
   {
     refModal = new BSModal();
   }
-  protected async Task cambio(){
+  protected async Task cambio()
+  {
     await refModal.ShowAsync();
   }
 }

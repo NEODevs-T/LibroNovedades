@@ -23,16 +23,6 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-@using DTOs.Maestra
-@using LibroNovedades.Interface.Maestra
-@using LibroNovedades.Interface
-@using NeoAPI.DTOs.LibroNovedades
-@using LibroNovedades.Data.LibroNov
-@using LibroNovedades.Data.Maestra
-@using Microsoft.EntityFrameworkCore
-@using NeoAPI.DTOs.Maestra
-
-
 <PageTitle>Formato</PageTitle>
 
 @if(IsCargado){
@@ -140,12 +130,7 @@
                                 @if(dataNove.IdLinea != 0){
                                     <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>Sin Perdida De tiempo</BSButton>
                                 }
-    using NeoAPI.DTOs.LibroNovedades;
-    using NeoAPI.DTOs.LibroNovedades;
-    using NeoAPI.DTOs.LibroNovedades;
-    using NeoAPI.DTOs.Maestra;
-    using NeoAPI.DTOs.LibroNovedades;
-    using DTOs.Maestra;
+    using Maestra.DTOs;
                             </BSCol>
                         </BSRow>  
                         <br>
@@ -358,10 +343,10 @@
     private string? nota { get; set;}   
     private string? rol { get; set;} 
     private string? ficha { get; set;} 
-    private LibroNove dataNove  { get; set;}
-    private TiParTp tipoParada  { get; set;}
+    private LibroNoveDTO dataNove  { get; set;}
+    private TiParTpDTO tipoParada  { get; set;}
     private List<List<string>> paradas { get; set;}
-    private List<LibroNove> listaNove { get; set;}
+    private List<LibroNoveDTO> listaNove { get; set;}
     private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
     private int idPais { get; set; }
     private int idEmpresa { get; set; }
@@ -395,7 +380,7 @@
     private bool paradasBandera {get; set;}
     private bool IsNuevo  { get; set;}
     private bool bandera  { get; set;}
-    private double tiempoPerdido { get; set;}
+    private int tiempoPerdido { get; set;}
     private int indexCambio  { get; set;}
     public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA) empresas = (PAVECA: 1,CHEMPRO: 2, PANASA: 3,PAINSA: 4);
     public readonly Dictionary<string,string> grupoPAVECA = new Dictionary<string, string>{{"GrupoA", "A"}, {"GrupoB", "B"},{"GrupoC", "C"},{"GrupoD", "D"}};
@@ -427,13 +412,13 @@
                 isFichaManual = false;
 
                 if(id == id){
-                    dataNove = new LibroNove();
+                    dataNove = new LibroNoveDTO();
                     dataNove.Lnobserv = "";
                     dataNove.Lndiscrepa = "";
                     dataNove.LnisResu = 0;
                     causaCargada = false;
                 }else{
-                    @* dataNove = await LibroNovData.ObtenerLibroPorId(id ?? 0) ?? new LibroNove(); *@
+                    @* dataNove = await LibroNovData.ObtenerLibroPorId(id ?? 0) ?? new LibroNoveDTO(); *@
                 }
 
                 claims = user.Claims;
@@ -629,7 +614,6 @@
                 dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
                 dataNove.IdEquipo = dataNove.IdEquipo.Trim().ToUpper();
                 dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
-                dataNove.LntiePerMi = Math.Round(dataNove.LntiePerMi,5);
                 dataNove.Lndiscrepa =  dataNove.Lndiscrepa.ToUpper();
                 dataNove.Lnobserv =  dataNove.Lnobserv.ToLower();
 
@@ -638,7 +622,7 @@
                     if(IsNuevo){
                         bandera = await LibroNovData.InsertarRegistro(dataNove);
                     }else{
-                        bandera = await  LibroNovData.ActualizacionCompleta(dataNove.IdlibrNov,dataNove);
+                        bandera = await  LibroNovData.ActualizacionNovedad(dataNove.IdlibrNov,dataNove);
                     }
 
                     if(bandera){
@@ -648,14 +632,13 @@
                         int d1 = dataNove.IdAreaCar;
                         int d2 =  dataNove.IdLinea;
                         string d4 = dataNove.LnfichaRes;
-                        string d5 = dataNove.IdMaquina;
-                        int d6 = dataNove.IdCtpm ?? 0;
-
+                        @* TODO: REVISAR VIEJA IMPLEMENTACION int d6 = dataNove.IdCtpm ?? 0; *@
+                        int d6 = dataNove.IdCtpm;
                         if(indexCambio != -1){
                             paradas[6][indexCambio] = "1";
                         }
                             
-                        dataNove = new LibroNove();
+                        dataNove = new LibroNoveDTO();
                         listaEquiposEAM = listaAllEquiposEAM.ToList();
                         InvokeAsync(StateHasChanged);
 
@@ -668,7 +651,6 @@
                         dataNove.IdAreaCar = d1;
                         dataNove.IdLinea = d2;
                         dataNove.LnfichaRes = d4;
-                        dataNove.IdMaquina = d5;
                         causaCargada = false;
                         GrupoTurno();
                         dataNove.IdCtpm = d6;
@@ -701,20 +683,20 @@
 
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
         try{
-            Linea linea;
+            LineaVDTO linea;
             string temporal;
             List<string> listaDeEstado;
-            LibroNove? dataNov;
+            LibroNoveDTO? dataNov;
             double parada;
 
             dataNove.IdLinea = int.Parse(e.Value.ToString());
-            listaEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
-            listaAllEquiposEAM = await DataEquipoEAM.BuscarEquiposSegunLinea(dataNove.IdLinea);
+            listaEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
+            listaAllEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
             linea =  listaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
-            dataNove.IdMaquina = linea.Lofic;
+            // dataNove.IdMaquina = linea.Lofic;
             listaNove = await LibroNovData.RegistroDeHoyPorLinea(dataNove.IdLinea);
             // TODO: pendinete para mejorar listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
-            paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
+            //TODO: APLICAR NUEVAS IMPLEMENTACION paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
             listaDeEstado = new List<string>();
             
             for (int i = 0; i < paradas[0].Count; i++)
@@ -762,7 +744,7 @@
     public async Task eleccion(int item){
         try{
             string temporal;
-            LibroNove data;
+            LibroNoveDTO data;
 
             indexCambio = item;
             temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
@@ -771,7 +753,6 @@
             if(data == null){
                 tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
                 dataNove.IdTipoNove = tipoParada.IdTiParTp;
-                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
                 GrupoTurno();
                 dataNove.IdEquipo = "";
                 dataNove.Lnobserv = "";
@@ -785,7 +766,6 @@
                 dataNove.IdAreaCar = data.IdAreaCar;
                 dataNove.IdEquipo = data.IdEquipo;
                 dataNove.IdlibrNov =  data.IdlibrNov;
-                dataNove.IdMaquina = data.IdMaquina;
                 dataNove.IdParada = data.IdParada;
                 dataNove.IdTipoNove = data.IdTipoNove;
                 dataNove.Lndiscrepa = data.Lndiscrepa;
@@ -794,7 +774,6 @@
                 dataNove.Lngrupo = data.Lngrupo;
                 dataNove.LnisPizUni = data.LnisPizUni;
                 dataNove.Lnobserv = data.Lnobserv;
-                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
                 dataNove.Lnturno = data.Lnturno;
                 dataNove.IdCtpm = data.IdCtpm;
                 dataNove.LnisResu = data.LnisResu;

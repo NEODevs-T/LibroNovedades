@@ -1,4 +1,7 @@
-namespace NeoAPI.DTOs.Maestra
+using System;
+using System.Collections.Generic;
+
+namespace DTOs.Maestra
 {
     public class MaestraDTO
     {

@@ -1,10 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BlazorStrap.Service;
-using LibroNovedades.Models.Neo;
-using LibroNovedades.DTO;
-using LibroNovedades.Models.Neo.Views;
-using NeoAPI.DTOs.LibroNovedades;
-using NeoAPI.DTOs.ReunionDiaria;
+using ReunionDiaria.DTOs;
+using LibroNovedades.DTOs;
 
 namespace LibroNovedades.Interface
 {

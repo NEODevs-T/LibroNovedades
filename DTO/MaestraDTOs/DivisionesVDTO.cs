@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DTOs.Maestra;
+namespace Maestra.DTOs;
 
 public class DivisionesVDTO
 {

@@ -1,4 +1,4 @@
-namespace NeoAPI.DTOs.Maestra
+namespace Maestra.DTOs
 {
     public class FiltroGTDTO
     {

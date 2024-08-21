@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace NeoAPI.DTOs.ReunionDiaria;
+namespace ReunionDiaria.DTOs;
+
 
 public partial class ReuDiumDTO
 {

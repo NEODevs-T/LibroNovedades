@@ -6,71 +6,105 @@ using Newtonsoft.Json;
 using LibroNovedades.Models.Neo;
 using LibroNovedades.ModelsDocIng;
 using LibroNovedades.Data.LibroNov;
+using LibroNovedades.DTOs;
+using LibroNovedades.Interface;
+using System.Net.Http;
+using LibroNovedades.Models;
+using ReunionDiaria.DTOs;
 
 
 
-namespace LibroNovedades.Logic{
+namespace LibroNovedades.Logic
+{
     public interface ILogicLibroNov
     {
-        Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idEmpresa,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroCLTPM,string nombre);
+        Task<Tuple<bool, List<LibroNoveDTO>>> CambiosBDLibro(int idPais, int idEmpresa, int idCentro, int idDivision, List<LibroNoveDTO> listaNovedades, DateTime filtroFechaInicio, DateTime filtroFechaFinal, int filtroLinea, int filtroCLTPM, string nombre);
     }
 
     public class LogicLibroNov : ILogicLibroNov
     {
 
-        public async Task<Tuple<bool,List<LibroNove>>> CambiosBDLibro(int idPais,int idEmpresa,int idCentro,int idDivision,List<LibroNove> listaNovedades,DateTime filtroFechaInicio,DateTime filtroFechaFinal,int filtroLinea,int filtroCLTPM,string nombre){
-            DbNeoContext contex = new DbNeoContext();
-            IDataLibroNov dataLibroNov = new DataLibroNov(contex);
-            IDataPizarra dataPizarra = new DataPizarra(contex);
-            IDataChismoso dataChismoso = new DataChismoso(contex);
-            LibroNove? temporal;
-            ReuDium registroNuevo = new ReuDium();
-            CambFec ChismosoCambioFecha =  new CambFec();
-            CambStat ChismosoCambioEstado = new  CambStat();
-            List<CambFec> ListaChismosoCambioFecha  = new List<CambFec>();
-            List<CambStat> ListaChismosoCambioEstado  = new List<CambStat>();
-            List<ReuDium> listaPizarra = new List<ReuDium>(listaNovedades.Count);
-            List<LibroNove> listaNovedadesFiltrada = new List<LibroNove>();
+        private readonly IHttpClientFactory _clientFactory;
+        public LogicLibroNov(IHttpClientFactory clientFactory)
+        {
+            _clientFactory = clientFactory;
+        }
+        public async Task SomeMethodAsync()
+        {
+            var client = _clientFactory.CreateClient();
+            var response = await client.GetAsync("http://neo.paveca.com.ve/apineomaster/api/LogicLibroNov");
 
-            List<LibroNove> listaNovedades2;
-            if(filtroFechaInicio.Date == filtroFechaFinal.Date) {
-                listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroCLTPM,2);
-            }else if(filtroFechaInicio.Date < filtroFechaFinal.Date){
-                listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroCLTPM,2);
-            }else{
-                listaNovedades2 = await dataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaFinal,filtroFechaInicio,idDivision,filtroLinea,filtroCLTPM,2);
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        public async Task<Tuple<bool, List<LibroNoveDTO>>> CambiosBDLibro(int idPais, int idEmpresa, int idCentro, int idDivision, List<LibroNoveDTO> listaNovedades, DateTime filtroFechaInicio, DateTime filtroFechaFinal, int filtroLinea, int filtroCLTPM, string nombre)
+        {
+            ILibroNovData libroNovData = new LibroNovData(_clientFactory);
+            IDataPizarra pizarraData = new DataPizarra(_clientFactory);
+            IDataAvisador avisadorData = new DataAvisador(_clientFactory);
+            LibroNoveDTO? temporal;
+            ReuDiumDTO registroNuevo = new ReuDiumDTO();
+            CambFecDTO ChismosoCambioFecha = new CambFecDTO();
+            CambStatDTO ChismosoCambioEstado = new CambStatDTO();
+            List<CambFecDTO> ListaChismosoCambioFecha = new List<CambFecDTO>();
+            List<CambStatDTO> ListaChismosoCambioEstado = new List<CambStatDTO>();
+            List<ReuDiumDTO> listaPizarra = new List<ReuDiumDTO>(listaNovedades.Count);
+            List<LibroNoveDTO> listaNovedadesFiltrada = new List<LibroNoveDTO>();
+
+            List<LibroNoveDTO> listaNovedades2;
+            if (filtroFechaInicio.Date == filtroFechaFinal.Date)
+            {
+                listaNovedades2 = await libroNovData.ObtenerLibroNovedadesPorFiltro(idCentro, filtroFechaInicio, idDivision, filtroLinea, filtroCLTPM, 2);
+            }
+            else if (filtroFechaInicio.Date < filtroFechaFinal.Date)
+            {
+                listaNovedades2 = await libroNovData.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro, filtroFechaInicio, filtroFechaFinal, idDivision, filtroLinea, filtroCLTPM, 2);
+            }
+            else
+            {
+                listaNovedades2 = await libroNovData.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro, filtroFechaFinal, filtroFechaInicio, idDivision, filtroLinea, filtroCLTPM, 2);
             }
 
             foreach (var item in listaNovedades)
             {
-                temporal = listaNovedades2.Find(x=> x.IdlibrNov == item.IdlibrNov);
-                if(temporal != null){
-                    if((temporal.LnisPizUni != item.LnisPizUni) && (item.LnisPizUni == true) && (item.LnisResu == 0)){
-                        if(temporal.IdTipoNove == 8 || temporal.IdAreaCar == 2 || temporal.IdCtpm == 4){
+                temporal = listaNovedades2.Find(x => x.IdlibrNov == item.IdlibrNov);
+                if (temporal != null)
+                {
+                    if ((temporal.LnisPizUni != item.LnisPizUni) && (item.LnisPizUni == true) && (item.LnisResu == 0))
+                    {
+                        if (temporal.IdTipoNove == 8 || temporal.IdAreaCar == 2 || temporal.IdCtpm == 4)
+                        {
                             //* Calidad
                             registroNuevo.Idksf = 3;
-                        }else if(temporal.IdTipoNove == 13 || temporal.IdAreaCar == 3 || temporal.IdCtpm == 1){
+                        }
+                        else if (temporal.IdTipoNove == 13 || temporal.IdAreaCar == 3 || temporal.IdCtpm == 1)
+                        {
                             //* Seguridad
                             registroNuevo.Idksf = 5;
-                        }else{
+                        }
+                        else
+                        {
                             //* produccion
                             registroNuevo.Idksf = 1;
                         }
                         //TODO: Revisar cambio para poder ubicar al nombre del centro 
                         //registroNuevo.Rdcentro = temporal.IdLineaNavigation.IdDivisionNavigation.IdCentroNavigation.Cnom;
-                        registroNuevo.Rddiv = temporal.IdLineaNavigation.IdDivisionNavigation.Dnombre;
-                        registroNuevo.Rdarea = temporal.IdLineaNavigation.Lnom;
+                        //registroNuevo.Rddiv = temporal.IdLineaNavigation.IdDivisionNavigation.Dnombre;
+                        //registroNuevo.Rdarea = temporal.IdLineaNavigation.Lnom;
                         registroNuevo.RdcodEq = temporal.IdEquipo;
                         registroNuevo.Rddisc = temporal.Lndiscrepa;
-                        registroNuevo.RdfecReu = DateTime.Now;
-                        registroNuevo.RdfecTra = DateTime.Now;
+                        registroNuevo.RdfecReu = DateOnly.FromDateTime(DateTime.Now);
+                        registroNuevo.RdfecTra = DateOnly.FromDateTime(DateTime.Now);
                         registroNuevo.Rdstatus = "Pendiente";
-                        registroNuevo.IdResReu =  11;
-                        registroNuevo.IdPais = idPais;
+                        registroNuevo.IdResReu = 11;
+                        //registroNuevo.IdPais = idPais;
                         registroNuevo.IdEmpresa = idEmpresa;
                         listaPizarra.Add(registroNuevo);
 
-                        ChismosoCambioFecha.IdReuDiaNavigation = registroNuevo;
+                        //ChismosoCambioFecha.IdReuDiaNavigation = registroNuevo;
                         ChismosoCambioFecha.Cffec = DateTime.Now;
                         ChismosoCambioFecha.CffecNew = DateTime.Now;
                         ChismosoCambioFecha.Cfuser = nombre;
@@ -78,25 +112,30 @@ namespace LibroNovedades.Logic{
 
                         ChismosoCambioEstado.Cbuser = nombre;
                         ChismosoCambioEstado.Cbstat = "Pendiente";
-                        ChismosoCambioEstado.Cbfecha =  DateTime.Now;
-                        ChismosoCambioEstado.IdReuDiaNavigation =  registroNuevo;
+                        ChismosoCambioEstado.Cbfecha = DateTime.Now;
+                        //ChismosoCambioEstado.IdReuDiaNavigation = registroNuevo;
                         ListaChismosoCambioEstado.Add(ChismosoCambioEstado);
 
-                        registroNuevo = new ReuDium();
-                        ChismosoCambioFecha = new CambFec();
-                        ChismosoCambioEstado = new  CambStat();
-                        
+                        registroNuevo = new ReuDiumDTO();
+                        ChismosoCambioFecha = new CambFecDTO();
+                        ChismosoCambioEstado = new CambStatDTO();
+
                         listaNovedadesFiltrada.Add(item);
                     }
-                }else{
+                }
+                else
+                {
                     continue;
                 }
             }
-            if(listaPizarra.Count > 0){
-                dataChismoso.InsertarRegistros(ListaChismosoCambioFecha,ListaChismosoCambioEstado);
-                return Tuple.Create(true,listaNovedadesFiltrada);
-            }else{
-                return Tuple.Create(false,listaNovedadesFiltrada);
+            if (listaPizarra.Count > 0)
+            {
+                avisadorData.InsertarRegistros(ListaChismosoCambioFecha, ListaChismosoCambioEstado);
+                return Tuple.Create(true, listaNovedadesFiltrada);
+            }
+            else
+            {
+                return Tuple.Create(false, listaNovedadesFiltrada);
             }
         }
     }

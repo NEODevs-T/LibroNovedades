@@ -1,13 +1,13 @@
 @page "/Historico"
 
-@inject IDataPais DataPais;
-@inject IDataEmpresa DataEmpresa;
-@inject IDataCentro DataCentro;
+@inject IPaisData DataPais;
+@inject IEmpresaData DataEmpresa
+@inject ICentroData DataCentro;
 @inject IDivisionData DivisionData;
 @inject ILineaData LineaData;
 @inject IEquipoEAMData EquipoEAMData;
 @inject IDataAPI DataAPI;
-@inject IDataLibroNov DataLibroNov;
+@inject ILibroNovData LibroNovData;
 @inject IDataTiParTP DataTiParTP;
 @inject IClasifiTPMData ClasifiTPMData;
 @inject ILogicLibroNov LogicLibroNov;
@@ -308,15 +308,15 @@
     private bool IsDisableFTPM { get; set;}
     private string? rol { get; set;}
     private string mensaje { get; set;}
-    private List<Pai> listaPais {get;set;} 
-    private List<Empresa> listaEmpresa {get;set;}
-    private List<Centro> listaCentro {get;set;}
-    private List<Division> listaDivision {get;set;}
-    private List<Linea> listaLinea {get;set;}
-    private List<LibroNove> listaNovedades { get; set;}
-    private List<TiParTp> listaTiposNovedad { get; set;}
-    private List<ClasifiTpm> listaClasificacionTPM { get; set;}
-    private LibroNove dataNove {get; set;}
+    private List<PaiDTO> listaPais {get;set;} 
+    private List<EmpresasVDTO> listaEmpresa {get;set;}
+    private List<CentrosVDTO> listaCentro {get;set;}
+    private List<DivisionesVDTO> listaDivision {get;set;}
+    private List<LineaVDTO> listaLinea {get;set;}
+    private List<LibroNoveDTO> listaNovedades { get; set;}
+    private List<TiParTpDTO> listaTiposNovedad { get; set;}
+    private List<ClasifiTpmDTO> listaClasificacionTPM { get; set;}
+    private LibroNoveDTO dataNove {get; set;}
     private int idPais { get; set; }
     private int idEmpresa { get; set; }
     private int idCentro  { get; set;}
@@ -376,8 +376,8 @@
                     listaPais = await DataPais.ObtenerTodosLosPaises();
                     listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
-                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaDivision = await DivisionData.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
 
                 }else if(rol.Contains("SuperUser")){
                     isAccesoPais = true;
@@ -392,8 +392,8 @@
                     listaPais = await DataPais.ObtenerTodosLosPaises();
                     listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
-                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaDivision = await DivisionData.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
 
                 }else if(rol.Contains("UserPais")){
                     isAccesoEmpresa = true;
@@ -408,8 +408,8 @@
                     // Todas las empresas de ese pais con sus centros, divisiones y lineas
                     listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
-                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaDivision = await DivisionData.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }else if(rol.Contains("UserEmpresa")){
                     isAccesoCentro = true;
                     isAccesoDivision = true;
@@ -421,8 +421,8 @@
 
                     // todos los centros,divisiones y lineas de esa empresa
                     listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
-                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaDivision = await DivisionData.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }else if(rol.Contains("UserCentro")){ 
                     isAccesoDivision = true;
                     isAccesoLinea = true;
@@ -431,17 +431,17 @@
                         IsAccesoPizarra = true;
                     }
                     // todas las divisiones y lineas de ese centro
-                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaDivision = await DivisionData.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }else if(rol.Contains("UserDivision")){
                     isAccesoLinea = true;
                     // todas las lineas de esa division
                     if(idPais == 1){
                         isAccesoDivision = true;
-                        listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                        listaDivision = await DivisionData.ObtenerDivisionDelCentro(idCentro);
                     }
 
-                    listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }
 
 
@@ -506,7 +506,7 @@
         idLinea = 0;
         try{
             if(idCentro != 0){
-                listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                listaDivision= await DivisionData.ObtenerDivisionDelCentro(idCentro);
             }
         }catch(Exception ex){
             mensaje = "Error: " + ex.Message;
@@ -520,7 +520,7 @@
         filtroLinea = 0;
         try{
             if(idCentro != 0){
-                listaLinea = await DataLinea.ObtenerLasLineasPorDivision(idDivision);
+                listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
             }
         }catch(Exception ex){
             mensaje = "Error: " + ex.Message;
@@ -534,13 +534,13 @@
         try{
             if(filtroFechaInicio.Date == filtroFechaFinal.Date) {
                 listaNovedades = null;
-                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
+                listaNovedades = await LibroNovData.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
             }else if(filtroFechaInicio.Date < filtroFechaFinal.Date){
                 listaNovedades = null;
-                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
+                listaNovedades = await LibroNovData.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
             }else{
                 listaNovedades = null;
-                listaNovedades = await DataLibroNov.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
+                listaNovedades = await LibroNovData.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
             }
         }catch(Exception ex){
             mensaje = "Error: " + ex.Message;
@@ -556,7 +556,7 @@
             dataNove = listaNovedades.Where(x => x.IdlibrNov == idLibroNov).First();
             if((dataNove.Lnfecha.AddDays(1) > DateTime.Now) || ((DateTime.Now.DayOfWeek.ToString() == "Monday") && (dataNove.Lnfecha.AddDays(3) > DateTime.Now))){
                 dataNove.LnisResu = dataNove.LnisResu == 1 ?  dataNove.LnisResu = 0 : dataNove.LnisResu = 1;
-                band = await DataLibroNov.ActualizacionEstado(idLibroNov,dataNove);
+                band = await LibroNovData.ActualizacionNovedad(idLibroNov,dataNove);
                 if(band){
                     indexLista = listaNovedades.IndexOf(dataNove);
                     listaNovedades[indexLista] = dataNove;
@@ -574,13 +574,13 @@
 
     protected async Task Guardar(){
         isDisabled = true;
-        List<LibroNove> listaFiltrada = new List<LibroNove>();
+        List<LibroNoveDTO> listaFiltrada = new List<LibroNoveDTO>();
 
         try{
             mensaje = "";
             (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idEmpresa,idCentro,idDivision,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroClasificacionTPM,nombre + " " + apellido);
             if(band1){
-                band2 = await DataLibroNov.UpdateRegistros(listaFiltrada);
+                band2 = await LibroNovData.UpdateRegistros(listaFiltrada);
                 if(band2){
                     mensaje = "Se realizo de manera exitosa";
                     Notificacion("exito","",mensaje);

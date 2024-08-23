@@ -208,7 +208,7 @@
                                 @foreach (var item in listaNovedades){
                                     <BSTR>
                                         <BSTD>@(listaNovedades.IndexOf(item) + 1)</BSTD>
-                                        <BSTD>@item.IdLineaNavigation.Lnom</BSTD>
+                                        @* <BSTD>@item.IdLineaNavigation.Lnom</BSTD> *@
                                         <BSTD>@item.Lnfecha.ToString("dd/MM/yyyy")</BSTD>
                                         <BSTD>@item.IdEquipo</BSTD>
                                         <BSTD>@item.Lngrupo</BSTD>
@@ -221,7 +221,7 @@
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                         }
                                         <BSTD>@item.Lndiscrepa</BSTD>
-                                        <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD>
+                                        @* <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD> *@
                                         
                                         <BSTD>
                                             @if(item.LnisResu == 1){
@@ -309,10 +309,10 @@
     private string? rol { get; set;}
     private string mensaje { get; set;}
     private List<PaiDTO> listaPais {get;set;} 
-    private List<EmpresasVDTO> listaEmpresa {get;set;}
-    private List<CentrosVDTO> listaCentro {get;set;}
-    private List<DivisionesVDTO> listaDivision {get;set;}
-    private List<LineaVDTO> listaLinea {get;set;}
+    private List<EmpresasDTO> listaEmpresa {get;set;}
+    private List<CentrosDTO> listaCentro {get;set;}
+    private List<DivisionesDTO> listaDivision {get;set;}
+    private List<LineaDTO> listaLinea {get;set;}
     private List<LibroNoveDTO> listaNovedades { get; set;}
     private List<TiParTpDTO> listaTiposNovedad { get; set;}
     private List<ClasifiTpmDTO> listaClasificacionTPM { get; set;}

@@ -130,7 +130,6 @@
                                 @if(dataNove.IdLinea != 0){
                                     <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>Sin Perdida De tiempo</BSButton>
                                 }
-    using Maestra.DTOs;
                             </BSCol>
                         </BSRow>  
                         <br>
@@ -365,10 +364,10 @@
     private bool isTPM  { get; set;}
     private bool isFichaManual { get; set;}
     private List<PaiDTO> listaPais {get;set;}    
-    private List<EmpresasVDTO> listaEmpresa {get;set;}
-    private List<CentrosVDTO> listaCentro {get;set;}
-    private List<DivisionesVDTO> listaDivision {get;set;}
-    private List<LineaVDTO> listaLinea {get;set;}
+    private List<EmpresasDTO> listaEmpresa {get;set;}
+    private List<CentrosDTO> listaCentro {get;set;}
+    private List<DivisionesDTO> listaDivision {get;set;}
+    private List<LineaDTO> listaLinea {get;set;}
     private List<EquipoEamDTO> listaEquiposEAM{ get; set;}
     private List<EquipoEamDTO> listaAllEquiposEAM { get; set;}
     private List<ClasifiTpmDTO> listaClasificacionTPM { get; set;}
@@ -683,7 +682,7 @@
 
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
         try{
-            LineaVDTO linea;
+            LineaDTO linea;
             string temporal;
             List<string> listaDeEstado;
             LibroNoveDTO? dataNov;

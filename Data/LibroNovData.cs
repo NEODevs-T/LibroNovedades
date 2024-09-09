@@ -32,6 +32,8 @@ namespace LibroNovedades.Data.LibroNov
     {
         private readonly IHttpClientFactory _clientFactory;
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/LibroNove";
+
+        // private const string BaseUrl = "http://localhost:5021/api/LibroNove";
         private HttpClient cliente { get; set; } = new HttpClient();    //direccion va todo
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
         private string url { get; set; } = "";

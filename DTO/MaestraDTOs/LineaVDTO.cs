@@ -3,19 +3,17 @@ using System.Collections.Generic;
 
 namespace Maestra.DTOs;
 
-public class LineaDTO
+public partial class LineaVDTO
 {
+    public int IdDivision { get; set; }
+
     public int IdLinea { get; set; }
 
-    public string Lnom { get; set; } = null!;
+    public string Linea { get; set; } = null!;
 
-    public string? Ldetalle { get; set; }
+    public string LcenCos { get; set; } = null!;
 
-    public bool Lestado { get; set; }
+    public int IdMaster { get; set; }
 
-    public string? LcenCos { get; set; }
-
-    public DateTime Lfecha { get; set; }
-
-    public string? Lofic { get; set; }
+    public bool Estado { get; set; }
 }

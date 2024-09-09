@@ -63,7 +63,7 @@
                                                 <option value="0">Seleccione un Centro</option>
                                                 @foreach (var item in listaEmpresa)
                                                 {
-                                                    <option value="@item.IdEmpresa">@item.Enombre</option>
+                                                    <option value="@item.IdEmpresa">@item.Empresa</option>
                                                 }
                                             }else{
                                                 <option value="0">Cargando...</option>
@@ -80,7 +80,7 @@
                                                 <option value="0">Seleccione un Centro</option>
                                                 @foreach (var item in listaCentro)
                                                 {
-                                                    <option value="@item.IdCentro">@item.Cnom</option>
+                                                    <option value="@item.IdCentro">@item.Centro</option>
                                                 }
                                             }else{
                                                 <option value="0">Cargando...</option>
@@ -97,7 +97,7 @@
                                                 <option value="0">Seleccione una division</option>
                                                 @foreach (var item in listaDivision)
                                                 {
-                                                    <option value="@item.IdDivision">@item.Dnombre</option>
+                                                    <option value="@item.IdDivision">@item.Ndivision</option>
                                                 }
                                             }else{
                                                 <option value="0">Cargando...</option>
@@ -115,7 +115,7 @@
                                                     <option value="0">Seleccione un Linea</option>
                                                     @foreach (var item in listaLinea)
                                                     {
-                                                        <option value="@item.IdLinea">@item.Lnom</option>
+                                                        <option value="@item.IdLinea">@item.Linea</option>
                                                     }
                                                 }else{
                                                     <option value="0">Cargando...</option>
@@ -211,7 +211,7 @@
                                                 <option value="0">Seleccione un Centro</option>
                                                 @foreach (var item in listaCentro)
                                                 {
-                                                    <option value="@item.IdCentro">@item.Cnom</option>
+                                                    <option value="@item.IdCentro">@item.Centro</option>
                                                 }
                                             }else{
                                                 <option value="0">Cargando...</option>
@@ -228,7 +228,7 @@
                                                 <option value="0">Seleccione un Linea</option>
                                                 @foreach (var item in listaLinea)
                                                 {
-                                                    <option value="@item.IdLinea">@item.Lnom</option>
+                                                    <option value="@item.IdLinea">@item.Linea</option>
                                                 }
                                             }else{
                                                 <option value="0">Cargando...</option>
@@ -364,10 +364,10 @@
     private bool isTPM  { get; set;}
     private bool isFichaManual { get; set;}
     private List<PaiDTO> listaPais {get;set;}    
-    private List<EmpresasDTO> listaEmpresa {get;set;}
-    private List<CentrosDTO> listaCentro {get;set;}
-    private List<DivisionesDTO> listaDivision {get;set;}
-    private List<LineaDTO> listaLinea {get;set;}
+    private List<EmpresasVDTO> listaEmpresa {get;set;}
+    private List<CentrosVDTO> listaCentro {get;set;}
+    private List<DivisionesVDTO> listaDivision {get;set;}
+    private List<LineaVDTO> listaLinea {get;set;}
     private List<EquipoEamDTO> listaEquiposEAM{ get; set;}
     private List<EquipoEamDTO> listaAllEquiposEAM { get; set;}
     private List<ClasifiTpmDTO> listaClasificacionTPM { get; set;}
@@ -615,6 +615,8 @@
                 dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
                 dataNove.Lndiscrepa =  dataNove.Lndiscrepa.ToUpper();
                 dataNove.Lnobserv =  dataNove.Lnobserv.ToLower();
+                dataNove.IdMaster = listaLinea.Where(l => l.IdLinea == dataNove.IdLinea).First().IdMaster;
+                
 
                 try
                 {
@@ -682,7 +684,7 @@
 
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
         try{
-            LineaDTO linea;
+            LineaVDTO linea;
             string temporal;
             List<string> listaDeEstado;
             LibroNoveDTO? dataNov;
@@ -692,10 +694,10 @@
             listaEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
             listaAllEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
             linea =  listaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
-            // dataNove.IdMaquina = linea.Lofic;
+    
             listaNove = await LibroNovData.RegistroDeHoyPorLinea(dataNove.IdLinea);
-            // TODO: pendinete para mejorar listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
-            //TODO: APLICAR NUEVAS IMPLEMENTACION paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
+            //listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
+            paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
             listaDeEstado = new List<string>();
             
             for (int i = 0; i < paradas[0].Count; i++)

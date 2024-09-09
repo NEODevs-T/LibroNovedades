@@ -8,7 +8,6 @@ using Maestra.DTOs;
 namespace LibroNovedades.Data.Maestra
 {
 
-
     public class PaisData : IPaisData
     {
         private readonly IHttpClientFactory _clientFactory;
@@ -43,11 +42,11 @@ namespace LibroNovedades.Data.Maestra
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<EmpresasDTO>> ObtenerEmpresasPorPaies(int idPais)
+        public async Task<List<EmpresasVDTO>> ObtenerEmpresasPorPaies(int idPais)
         {
             url = $"{BaseUrl}/GetEmpresas/{idPais}";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<EmpresasDTO>>(url) ?? new List<EmpresasDTO>();
+            return await cliente.GetFromJsonAsync<List<EmpresasVDTO>>(url) ?? new List<EmpresasVDTO>();
         }
     }
 
@@ -64,18 +63,18 @@ namespace LibroNovedades.Data.Maestra
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<CentrosDTO>> ObtenerTodosLosCentro()
+        public async Task<List<CentrosVDTO>> ObtenerTodosLosCentro()
         {
             url = $"{BaseUrl}/GetAllCentros/";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<CentrosDTO>>(url) ?? new List<CentrosDTO>();
+            return await cliente.GetFromJsonAsync<List<CentrosVDTO>>(url) ?? new List<CentrosVDTO>();
         }
 
-        public async Task<List<CentrosDTO>> ObtenerCentrosPorEmpresa(int idEmpresa)
+        public async Task<List<CentrosVDTO>> ObtenerCentrosPorEmpresa(int idEmpresa)
         {
             url = $"{BaseUrl}/GetCentros/{idEmpresa}";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<CentrosDTO>>(url) ?? new List<CentrosDTO>();
+            return await cliente.GetFromJsonAsync<List<CentrosVDTO>>(url) ?? new List<CentrosVDTO>();
         }
     }
     public class DivisionData : IDivisionData
@@ -90,11 +89,11 @@ namespace LibroNovedades.Data.Maestra
         {
             _clientFactory = clientFactory;
         }
-        public async Task<List<DivisionesDTO>> ObtenerDivisionDelCentro(int idCentro)
+        public async Task<List<DivisionesVDTO>> ObtenerDivisionDelCentro(int idCentro)
         {
             url = $"{BaseUrl}/GetDivisiones/{idCentro}";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<DivisionesDTO>>(url) ?? new List<DivisionesDTO>();
+            return await cliente.GetFromJsonAsync<List<DivisionesVDTO>>(url) ?? new List<DivisionesVDTO>();
         }
     }
     public class LineaData : ILineaData
@@ -110,18 +109,18 @@ namespace LibroNovedades.Data.Maestra
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<LineaDTO>> ObtenerTodasLasLineas()
+        public async Task<List<LineaVDTO>> ObtenerTodasLasLineas()
         {
             url = $"{BaseUrl}/GetAllLineas/";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<LineaDTO>>(url) ?? new List<LineaDTO>();
+            return await cliente.GetFromJsonAsync<List<LineaVDTO>>(url) ?? new List<LineaVDTO>();
         }
 
-        public async Task<List<LineaDTO>> ObtenerLasLineasPorDivision(int idDivision)
+        public async Task<List<LineaVDTO>> ObtenerLasLineasPorDivision(int idDivision)
         {
             url = $"{BaseUrl}/GetLineas/{idDivision}";
             cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<LineaDTO>>(url) ?? new List<LineaDTO>();
+            return await cliente.GetFromJsonAsync<List<LineaVDTO>>(url) ?? new List<LineaVDTO>();
         }
     }
 

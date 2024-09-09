@@ -108,7 +108,7 @@
                                             @if(listaEmpresa != null){
                                                 @foreach (var item in listaEmpresa)
                                                 {
-                                                    <option value="@item.IdEmpresa">@item.Enombre</option>
+                                                    <option value="@item.IdEmpresa">@item.Empresa</option>
                                                 }
                                             }else{
                                                 <option value="0">Cargando...</option>
@@ -125,7 +125,7 @@
                                             @if(listaCentro != null){
                                                 @foreach (var item in listaCentro)
                                                 {
-                                                    <option value="@item.IdCentro">@item.Cnom</option>
+                                                    <option value="@item.IdCentro">@item.Centro</option>
                                                 }
                                             }else{
                                                 <option value="0">Cargando...</option>
@@ -142,7 +142,7 @@
                                                 <option value="0">Todas</option>
                                                 @foreach (var item in listaDivision)
                                                 {
-                                                    <option value="@item.IdDivision">@item.Dnombre</option>
+                                                    <option value="@item.IdDivision">@item.Ndivision</option>
                                                 }
                                             }else{
                                                 <option value="0">Cargando...</option>
@@ -160,7 +160,7 @@
                                                     <option value="0">Todas</option>
                                                     @foreach (var item in listaLinea)
                                                     {
-                                                        <option value="@item.IdLinea">@item.Lnom</option>
+                                                        <option value="@item.IdLinea">@item.Linea</option>
                                                     }
                                                 }else{
                                                     <option value="0">Cargando...</option>
@@ -309,10 +309,10 @@
     private string? rol { get; set;}
     private string mensaje { get; set;}
     private List<PaiDTO> listaPais {get;set;} 
-    private List<EmpresasDTO> listaEmpresa {get;set;}
-    private List<CentrosDTO> listaCentro {get;set;}
-    private List<DivisionesDTO> listaDivision {get;set;}
-    private List<LineaDTO> listaLinea {get;set;}
+    private List<EmpresasVDTO> listaEmpresa {get;set;}
+    private List<CentrosVDTO> listaCentro {get;set;}
+    private List<DivisionesVDTO> listaDivision {get;set;}
+    private List<LineaVDTO> listaLinea {get;set;}
     private List<LibroNoveDTO> listaNovedades { get; set;}
     private List<TiParTpDTO> listaTiposNovedad { get; set;}
     private List<ClasifiTpmDTO> listaClasificacionTPM { get; set;}

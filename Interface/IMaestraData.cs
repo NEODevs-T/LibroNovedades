@@ -14,25 +14,25 @@ namespace LibroNovedades.Interface.Maestra
 
     public interface IEmpresaData
     {
-        Task<List<EmpresasDTO>> ObtenerEmpresasPorPaies(int idPais);
+        Task<List<EmpresasVDTO>> ObtenerEmpresasPorPaies(int idPais);
     }
     public interface ICentroData
     {
-        Task<List<CentrosDTO>> ObtenerTodosLosCentro();
+        Task<List<CentrosVDTO>> ObtenerTodosLosCentro();
 
-        Task<List<CentrosDTO>> ObtenerCentrosPorEmpresa(int idEmpresa);
+        Task<List<CentrosVDTO>> ObtenerCentrosPorEmpresa(int idEmpresa);
     }
 
     public interface IDivisionData
     {
-        Task<List<DivisionesDTO>> ObtenerDivisionDelCentro(int idCentro);
+        Task<List<DivisionesVDTO>> ObtenerDivisionDelCentro(int idCentro);
 
     }
 
     public interface ILineaData
     {
-        Task<List<LineaDTO>> ObtenerTodasLasLineas();
-        Task<List<LineaDTO>> ObtenerLasLineasPorDivision(int idDivision);
+        Task<List<LineaVDTO>> ObtenerTodasLasLineas();
+        Task<List<LineaVDTO>> ObtenerLasLineasPorDivision(int idDivision);
     }
 
     public interface IEquipoEAMData

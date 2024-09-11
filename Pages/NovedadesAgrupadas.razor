@@ -272,6 +272,7 @@
                                 }
                                 <BSCol Position="Position.Relative" Place ColumnMedium="5">
                                     <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
+                                    @* TODO: REVISION*@
                                     <BSInput IsDisabled="@isDisableManualCTPM" id="TPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
                                         @if(listaClasificacionTPM != null){
                                             <option value="0">Seleccione</option>
@@ -343,6 +344,7 @@
     private string? rol { get; set;} 
     private string? ficha { get; set;} 
     private LibroNoveDTO dataNove  { get; set;}
+    private List<LibroNoveDTO> listaDataNove  { get; set;} = new List<LibroNoveDTO>();
     private TiParTpDTO tipoParada  { get; set;}
     private List<List<string>> paradas { get; set;}
     private List<LibroNoveDTO> listaNove { get; set;}
@@ -616,12 +618,12 @@
                 dataNove.Lndiscrepa =  dataNove.Lndiscrepa.ToUpper();
                 dataNove.Lnobserv =  dataNove.Lnobserv.ToLower();
                 dataNove.IdMaster = listaLinea.Where(l => l.IdLinea == dataNove.IdLinea).First().IdMaster;
-                
+                listaDataNove.Add(dataNove);
 
                 try
                 {
                     if(IsNuevo){
-                        bandera = await LibroNovData.InsertarRegistro(dataNove);
+                        bandera = await LibroNovData.InsertarRegistro(listaDataNove);
                     }else{
                         bandera = await  LibroNovData.ActualizacionNovedad(dataNove.IdlibrNov,dataNove);
                     }
@@ -669,7 +671,7 @@
                 catch(Exception ex){
                     mensaje = "Error: " + ex.Message;
                     Notificacion("error","",mensaje);
-                }
+                } 
             }else{
                 mensaje = "La descripción de la acción tomada es obligatoria";
                 Notificacion("error","",mensaje);

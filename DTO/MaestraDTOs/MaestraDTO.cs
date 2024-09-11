@@ -12,7 +12,7 @@ namespace DTOs.Maestra
         public string Centro { get; set; } = null!;
 
         public string? División { get; set; }
-
+        
         public string Linea { get; set; } = null!;
 
         public string? CentroDeTrabajo { get; set; }
@@ -20,7 +20,7 @@ namespace DTOs.Maestra
         public int IdPais { get; set; }
 
         public int IdEmpresa { get; set; }
-
+        
         public int IdCentro { get; set; }
 
         public int IdDivision { get; set; }

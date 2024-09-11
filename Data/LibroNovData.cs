@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using LibroNovedades.Interface;
 using LibroNovedades.DTOs;
 using ReunionDiaria.DTOs;
+using DTOs.Maestra;
 
 namespace LibroNovedades.Data.LibroNov
 {
@@ -42,7 +43,7 @@ namespace LibroNovedades.Data.LibroNov
         {
             _clientFactory = clientFactory;     // Constructor
         }
-        public async Task<bool> InsertarRegistro(LibroNoveDTO libroNove)
+        public async Task<bool> InsertarRegistro(List<LibroNoveDTO> libroNove)
         {
             bool band = false;
 
@@ -50,11 +51,24 @@ namespace LibroNovedades.Data.LibroNov
             cliente = _clientFactory.CreateClient();
             mensaje = await cliente.PostAsJsonAsync(url, libroNove);
 
-            if (mensaje.IsSuccessStatusCode)
-            {
-                band = await mensaje.Content.ReadFromJsonAsync<bool>();
-            }
+            //if (mensaje.IsSuccessStatusCode)
+            //{
+            band = await mensaje.Content.ReadFromJsonAsync<bool>();
+            //}
+            // else
+            // {
+            //     // Si no es un estado exitoso, leer el contenido del error
+            //     var errorContent = await mensaje.Content.ReadAsStringAsync();
+                
+            //     // Puedes registrar o mostrar el contenido del error para más detalles
+            //     Console.WriteLine($"Error al hacer la solicitud: {errorContent}");
+
+                // Puedes lanzar una excepción o manejar el error de acuerdo a tu necesidad
+                // throw new HttpRequestException($"La solicitud falló con el código: {mensaje.StatusCode} y el contenido: {errorContent}");
+            //}
+
             return band;
+
         }
 
         public async Task<LibroNoveDTO>? ObtenerPorIdParada(string idParada)
@@ -107,28 +121,54 @@ namespace LibroNovedades.Data.LibroNov
             return band;
         }
 
-        public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltro(int idCentro, DateTime fecha, int idDivision, int idLinea, int tipoClasi, int filtroIsResuelto)
+public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltro(int idCentro, DateTime fecha, int idDivision, int idLinea, int IdCTPM, int LNIsResu)
+{
+    try
+    {
+        // Convertir la fecha al formato yyyy-MM-dd
+        string formattedDate = fecha.ToString("yyyy-MM-dd");
+
+        // Formar la URL con la fecha formateada
+        url = $"{BaseUrl}/GetLibroNovedadesPorFiltro/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{LNIsResu}/{formattedDate}";
+        cliente = _clientFactory.CreateClient();
+
+        // Hacer la solicitud HTTP y obtener la respuesta
+        var response = await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url);
+
+        // Verificar si la respuesta es nula
+        if (response == null)
         {
-            url = $"{BaseUrl}/GetLibroNovedadesPorFiltro/{idCentro}/{idDivision}/{idLinea}/{tipoClasi}/{filtroIsResuelto}/{fecha}";
-            cliente = _clientFactory.CreateClient();
-            return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
+            throw new HttpRequestException("La API no devolvió ningún dato. La respuesta es nula.");
         }
 
-        public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltroEntreFechas(int idCentro, DateTime fechaInicio, DateTime fechaFinal, int idDivision, int idLinea, int tipoClasi, int filtroIsResuelto)
+        return response;
+    }
+    catch (HttpRequestException httpEx)
+    {
+        Console.WriteLine($"Error HTTP: {httpEx.Message}");
+        throw;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error general: {ex.Message}");
+        throw;
+    }
+}
+        public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltroEntreFechas(int idCentro, DateTime fechaInicio, DateTime fechaFinal, int idDivision, int idLinea, int IdCTPM, int LNIsResu)
         {
-            url = $"{BaseUrl}/GetObtenerLibroNovedadesPorFiltroEntreFechas/{idCentro}/{idDivision}/{idLinea}/{tipoClasi}/{filtroIsResuelto}/{fechaInicio}/{fechaFinal}";
+            url = $"{BaseUrl}/GetObtenerLibroNovedadesPorFiltroEntreFechas/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{LNIsResu}/{fechaInicio}/{fechaFinal}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
         }
-        public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha, int idCentro, int idDivision, int idLinea, int tipoClasi, int IdAreaCar, int filtroIsResuelto)
+        public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha, int idCentro, int idDivision, int idLinea, int IdCTPM, int IdAreaCar, int LNIsResu)
         {
-            url = $"{BaseUrl}/GetObtenerLibroNovedadesDelAreaQueCarga/{fecha}/{idCentro}/{idDivision}/{idLinea}/{tipoClasi}/{IdAreaCar}/{filtroIsResuelto}";
+            url = $"{BaseUrl}/GetObtenerLibroNovedadesDelAreaQueCarga/{fecha}/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{IdAreaCar}/{LNIsResu}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
         }
-        public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(DateTime fechaInicio, DateTime fechaFinal, int idCentro, int idDivision, int idLinea, int tipoClasi, int IdAreaCar, int filtroIsResuelto)
+        public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(DateTime fechaInicio, DateTime fechaFinal, int idCentro, int idDivision, int idLinea, int IdCTPM, int IdAreaCar, int LNIsResu)
         {
-            url = $"{BaseUrl}/GetObtenerLibroNovedadesDelAreaQueCargaEntreFechas/{fechaInicio}/{fechaFinal}/{idCentro}/{idDivision}/{idLinea}/{tipoClasi}/{IdAreaCar}/{filtroIsResuelto}";
+            url = $"{BaseUrl}/GetObtenerLibroNovedadesDelAreaQueCargaEntreFechas/{fechaInicio}/{fechaFinal}/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{IdAreaCar}/{LNIsResu}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
         }

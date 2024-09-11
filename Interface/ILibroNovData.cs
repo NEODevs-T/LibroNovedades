@@ -11,7 +11,7 @@ namespace LibroNovedades.Interface
     }
     public interface ILibroNovData
     {
-        Task<bool> InsertarRegistro(LibroNoveDTO libroNove);
+        Task<bool> InsertarRegistro(List<LibroNoveDTO> libroNove);
         Task<List<LibroNoveDTO>> RegistroDeHoyPorLinea(int idLinea);
         Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltro(int idCentro, DateTime fecha, int idDivision, int idLinea, int tipoClasi, int filtroIsResuelto);
         Task<bool> UpdateRegistros(List<LibroNoveDTO> novedades);

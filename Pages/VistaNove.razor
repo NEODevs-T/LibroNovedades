@@ -1,7 +1,8 @@
 @page "/Historico"
 
+
 @inject IPaisData DataPais;
-@inject IEmpresaData DataEmpresa
+@inject IEmpresaData DataEmpresa;
 @inject ICentroData DataCentro;
 @inject IDivisionData DivisionData;
 @inject ILineaData LineaData;
@@ -131,6 +132,7 @@
                                                 <option value="0">Cargando...</option>
                                             }
                                         </BSInput>
+
                                 </BSCol>
                             }
 
@@ -208,9 +210,9 @@
                                 @foreach (var item in listaNovedades){
                                     <BSTR>
                                         <BSTD>@(listaNovedades.IndexOf(item) + 1)</BSTD>
-                                        @* <BSTD>@item.IdLineaNavigation.Lnom</BSTD> *@
+                                        <BSTD>@item.IdMasterNavigation.IdLineaNavigation.Lnom</BSTD>
                                         <BSTD>@item.Lnfecha.ToString("dd/MM/yyyy")</BSTD>
-                                        <BSTD>@item.IdEquipo</BSTD>
+                                        <BSTD>@item.IdEquipo.</BSTD>
                                         <BSTD>@item.Lngrupo</BSTD>
                                         <BSTD>@item.Lnturno</BSTD>
                                         @if(item.LntiePerMi == -1){
@@ -221,7 +223,7 @@
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                         }
                                         <BSTD>@item.Lndiscrepa</BSTD>
-                                        @* <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD> *@
+                                        <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD>
                                         
                                         <BSTD>
                                             @if(item.LnisResu == 1){
@@ -258,7 +260,6 @@
                                             </BSTD>
                                         }
                                     </BSTR>
-                                    
                                 }
                             </BSTBody>
                         </BSTable>
@@ -313,7 +314,9 @@
     private List<CentrosVDTO> listaCentro {get;set;}
     private List<DivisionesVDTO> listaDivision {get;set;}
     private List<LineaVDTO> listaLinea {get;set;}
+
     private List<LibroNoveDTO> listaNovedades { get; set;}
+
     private List<TiParTpDTO> listaTiposNovedad { get; set;}
     private List<ClasifiTpmDTO> listaClasificacionTPM { get; set;}
     private LibroNoveDTO dataNove {get; set;}
@@ -531,7 +534,7 @@
 
 
     protected async Task buscar(){
-        try{
+        //try{
             if(filtroFechaInicio.Date == filtroFechaFinal.Date) {
                 listaNovedades = null;
                 listaNovedades = await LibroNovData.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
@@ -542,10 +545,10 @@
                 listaNovedades = null;
                 listaNovedades = await LibroNovData.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
             }
-        }catch(Exception ex){
-            mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
-        }
+           /* }catch(Exception ex){
+                mensaje = "Error: " + ex.Message;
+                Notificacion("error","",mensaje);
+        } */
     }
 
     public async Task Edicion(int idLibroNov){

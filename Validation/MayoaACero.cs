@@ -11,7 +11,7 @@ namespace LibroNovedades.Validate
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             if(value != null){
-                if(Int64.Parse(value.ToString()) > 0 || Int64.Parse(value.ToString()) == -1){
+                if(float.Parse(value.ToString()) > 0 || float.Parse(value.ToString()) == -1){
                     return ValidationResult.Success;
                 }
             }

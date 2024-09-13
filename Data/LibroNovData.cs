@@ -51,21 +51,21 @@ namespace LibroNovedades.Data.LibroNov
             cliente = _clientFactory.CreateClient();
             mensaje = await cliente.PostAsJsonAsync(url, libroNove);
 
-            //if (mensaje.IsSuccessStatusCode)
-            //{
+            if (mensaje.IsSuccessStatusCode)
+            {
             band = await mensaje.Content.ReadFromJsonAsync<bool>();
-            //}
-            // else
-            // {
-            //     // Si no es un estado exitoso, leer el contenido del error
-            //     var errorContent = await mensaje.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                // Si no es un estado exitoso, leer el contenido del error
+                var errorContent = await mensaje.Content.ReadAsStringAsync();
                 
-            //     // Puedes registrar o mostrar el contenido del error para más detalles
-            //     Console.WriteLine($"Error al hacer la solicitud: {errorContent}");
+                // Puedes registrar o mostrar el contenido del error para más detalles
+                Console.WriteLine($"Error al hacer la solicitud: {errorContent}");
 
-                // Puedes lanzar una excepción o manejar el error de acuerdo a tu necesidad
-                // throw new HttpRequestException($"La solicitud falló con el código: {mensaje.StatusCode} y el contenido: {errorContent}");
-            //}
+               // Puedes lanzar una excepción o manejar el error de acuerdo a tu necesidad
+                throw new HttpRequestException($"La solicitud falló con el código: {mensaje.StatusCode} y el contenido: {errorContent}");
+            }
 
             return band;
 

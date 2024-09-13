@@ -642,6 +642,7 @@
                         }
                             
                         dataNove = new LibroNoveDTO();
+                        listaDataNove = new List<LibroNoveDTO>();
                         listaEquiposEAM = listaAllEquiposEAM.ToList();
                         InvokeAsync(StateHasChanged);
 
@@ -753,7 +754,7 @@
             temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
             data = await LibroNovData.ObtenerPorIdParada(temporal);
 
-            if(data == null){
+            if(data.IdParada == null){
                 tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
                 dataNove.IdTipoNove = tipoParada.IdTiParTp;
                 GrupoTurno();

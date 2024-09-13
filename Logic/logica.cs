@@ -42,6 +42,7 @@ namespace LibroNovedades.Logic
 
         public async Task<Tuple<bool, List<LibroNoveDTO>>> CambiosBDLibro(int idPais, int idEmpresa, int idCentro, int idDivision, List<LibroNoveDTO> listaNovedades, DateTime filtroFechaInicio, DateTime filtroFechaFinal, int filtroLinea, int filtroCLTPM, string nombre)
         {
+            // TODO: arreglaar la pizarra
             ILibroNovData libroNovData = new LibroNovData(_clientFactory);
             IDataPizarra pizarraData = new DataPizarra(_clientFactory);
             IDataAvisador avisadorData = new DataAvisador(_clientFactory);

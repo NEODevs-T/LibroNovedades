@@ -53,17 +53,17 @@ namespace LibroNovedades.Data.LibroNov
 
             if (mensaje.IsSuccessStatusCode)
             {
-            band = await mensaje.Content.ReadFromJsonAsync<bool>();
+                band = await mensaje.Content.ReadFromJsonAsync<bool>();
             }
             else
             {
                 // Si no es un estado exitoso, leer el contenido del error
                 var errorContent = await mensaje.Content.ReadAsStringAsync();
-                
+
                 // Puedes registrar o mostrar el contenido del error para más detalles
                 Console.WriteLine($"Error al hacer la solicitud: {errorContent}");
 
-               // Puedes lanzar una excepción o manejar el error de acuerdo a tu necesidad
+                // Puedes lanzar una excepción o manejar el error de acuerdo a tu necesidad
                 throw new HttpRequestException($"La solicitud falló con el código: {mensaje.StatusCode} y el contenido: {errorContent}");
             }
 
@@ -121,42 +121,44 @@ namespace LibroNovedades.Data.LibroNov
             return band;
         }
 
-public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltro(int idCentro, DateTime fecha, int idDivision, int idLinea, int IdCTPM, int LNIsResu)
-{
-    try
-    {
-        // Convertir la fecha al formato yyyy-MM-dd
-        string formattedDate = fecha.ToString("yyyy-MM-dd");
-
-        // Formar la URL con la fecha formateada
-        url = $"{BaseUrl}/GetLibroNovedadesPorFiltro/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{LNIsResu}/{formattedDate}";
-        cliente = _clientFactory.CreateClient();
-
-        // Hacer la solicitud HTTP y obtener la respuesta
-        var response = await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url);
-
-        // Verificar si la respuesta es nula
-        if (response == null)
+        public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltro(int idCentro, DateTime fecha, int idDivision, int idLinea, int IdCTPM, int LNIsResu)
         {
-            throw new HttpRequestException("La API no devolvió ningún dato. La respuesta es nula.");
-        }
+            try
+            {
+                // Convertir la fecha al formato yyyy-MM-dd
+                string formattedDate = fecha.ToString("yyyy-MM-dd");
 
-        return response;
-    }
-    catch (HttpRequestException httpEx)
-    {
-        Console.WriteLine($"Error HTTP: {httpEx.Message}");
-        throw;
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error general: {ex.Message}");
-        throw;
-    }
-}
+                // Formar la URL con la fecha formateada
+                url = $"{BaseUrl}/GetLibroNovedadesPorFiltro/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{LNIsResu}/{formattedDate}";
+                cliente = _clientFactory.CreateClient();
+
+                // Hacer la solicitud HTTP y obtener la respuesta
+                var response = await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url);
+
+                // Verificar si la respuesta es nula
+                if (response == null)
+                {
+                    throw new HttpRequestException("La API no devolvió ningún dato. La respuesta es nula.");
+                }
+
+                return response;
+            }
+            catch (HttpRequestException httpEx)
+            {
+                Console.WriteLine($"Error HTTP: {httpEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error general: {ex.Message}");
+                throw;
+            }
+        }
         public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltroEntreFechas(int idCentro, DateTime fechaInicio, DateTime fechaFinal, int idDivision, int idLinea, int IdCTPM, int LNIsResu)
         {
-            url = $"{BaseUrl}/GetObtenerLibroNovedadesPorFiltroEntreFechas/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{LNIsResu}/{fechaInicio}/{fechaFinal}";
+            string formattedDate1 = fechaInicio.ToString("yyyy-MM-dd");
+            string formattedDate2 = fechaFinal.ToString("yyyy-MM-dd");
+            url = $"{BaseUrl}/GetObtenerLibroNovedadesPorFiltroEntreFechas/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{LNIsResu}/{formattedDate1}/{formattedDate2}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
         }
@@ -168,13 +170,17 @@ public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltro(int idCentr
         }
         public async Task<List<LibroNoveDTO>> ObtenerLibroNovedadesDelAreaQueCargaEntreFechas(DateTime fechaInicio, DateTime fechaFinal, int idCentro, int idDivision, int idLinea, int IdCTPM, int IdAreaCar, int LNIsResu)
         {
-            url = $"{BaseUrl}/GetObtenerLibroNovedadesDelAreaQueCargaEntreFechas/{fechaInicio}/{fechaFinal}/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{IdAreaCar}/{LNIsResu}";
+            string formattedDate1 = fechaInicio.ToString("yyyy-MM-dd");
+            string formattedDate2 = fechaFinal.ToString("yyyy-MM-dd");
+            url = $"{BaseUrl}/GetObtenerLibroNovedadesDelAreaQueCargaEntreFechas/{formattedDate1}/{formattedDate2}/{idCentro}/{idDivision}/{idLinea}/{IdCTPM}/{IdAreaCar}/{LNIsResu}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<LibroNoveDTO>>(url) ?? new List<LibroNoveDTO>();
         }
         public async Task<LibroNoveDTO> CalcularCumplimiento(DateTime fechaInicio, DateTime fechafinal, string tipo, int idCondicional)
         {
-            url = $"{BaseUrl}/GetCalcularCumplimiento/{fechaInicio}/{fechafinal}/{tipo}/{idCondicional}";
+            string formattedDate1 = fechaInicio.ToString("yyyy-MM-dd");
+            string formattedDate2 = fechafinal.ToString("yyyy-MM-dd");
+            url = $"{BaseUrl}/GetCalcularCumplimiento/{formattedDate1}/{formattedDate2}/{tipo}/{idCondicional}";
             cliente = _clientFactory.CreateClient();
             var retorno = await cliente.GetFromJsonAsync<LibroNoveDTO>(url) ?? new LibroNoveDTO();
             return retorno;

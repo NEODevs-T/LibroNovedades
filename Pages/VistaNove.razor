@@ -210,7 +210,7 @@
                                 @foreach (var item in listaNovedades){
                                     <BSTR>
                                         <BSTD>@(listaNovedades.IndexOf(item) + 1)</BSTD>
-                                        <BSTD>@item.IdMasterNavigation.IdLineaNavigation.Lnom</BSTD>
+                                        <BSTD>@item.Linea</BSTD>
                                         <BSTD>@item.Lnfecha.ToString("dd/MM/yyyy")</BSTD>
                                         <BSTD>@item.IdEquipo.</BSTD>
                                         <BSTD>@item.Lngrupo</BSTD>
@@ -223,7 +223,7 @@
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                         }
                                         <BSTD>@item.Lndiscrepa</BSTD>
-                                        <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD>
+                                        <BSTD>@item.AreaCarga</BSTD>
                                         
                                         <BSTD>
                                             @if(item.LnisResu == 1){
@@ -558,6 +558,8 @@
         try{
             dataNove = listaNovedades.Where(x => x.IdlibrNov == idLibroNov).First();
             if((dataNove.Lnfecha.AddDays(1) > DateTime.Now) || ((DateTime.Now.DayOfWeek.ToString() == "Monday") && (dataNove.Lnfecha.AddDays(3) > DateTime.Now))){
+                /*dataNove.AreaCarga = null;
+                dataNove.Linea = null;*/
                 dataNove.LnisResu = dataNove.LnisResu == 1 ?  dataNove.LnisResu = 0 : dataNove.LnisResu = 1;
                 band = await LibroNovData.ActualizacionNovedad(idLibroNov,dataNove);
                 if(band){

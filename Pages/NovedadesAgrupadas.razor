@@ -388,7 +388,7 @@
     public readonly Dictionary<string,string> grupoPAINSA = new Dictionary<string, string>{{"Grupo1", "1"}, {"Grupo2", "2"},{"Grupo3", "3"},{"Grupo4", "4"}};
     public readonly Dictionary<string,string> grupoPANASA = new Dictionary<string, string>{{"Grupo1", "-"}};
     public Dictionary<string,string>? grupos = new Dictionary<string, string>();
-    //TODO: Pendiente por mejorar private List<LibroNove> listaNoveSinTiempoPerdido { get; set;}
+    
     protected override async Task  OnInitializedAsync()
     {
 
@@ -635,7 +635,6 @@
                         int d1 = dataNove.IdAreaCar;
                         int d2 =  dataNove.IdLinea;
                         string d4 = dataNove.LnfichaRes;
-                        @* TODO: REVISAR VIEJA IMPLEMENTACION int d6 = dataNove.IdCtpm ?? 0; *@
                         int d6 = dataNove.IdCtpm;
                         if(indexCambio != -1){
                             paradas[6][indexCambio] = "1";
@@ -760,11 +759,12 @@
                 GrupoTurno();
                 dataNove.IdEquipo = "";
                 dataNove.Lnobserv = "";
-                nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];;
+                nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];
                 dataNove.Lndiscrepa = "";
                 dataNove.IdParada =  temporal;
                 IsNuevo = true;
                 dataNove.IdCtpm = 2;
+                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
             }else{
                 dataNove.IdLinea = data.IdLinea;
                 dataNove.IdAreaCar = data.IdAreaCar;
@@ -782,6 +782,7 @@
                 dataNove.IdCtpm = data.IdCtpm;
                 dataNove.LnisResu = data.LnisResu;
                 IsNuevo = false;
+                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
             }
             causaCargada = true;
         }catch(Exception e){

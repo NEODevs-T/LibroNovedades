@@ -99,17 +99,22 @@
             {
                 if (validarToken == "NotFoundUser")
                 {
-                    mensaje = "Verifique el usuario";
+                    mensaje = "Verifique el usuario.";
                     Notificacion("error","",mensaje);
                 }
                 else if (validarToken == "WrongPassword")
                 {
-                    mensaje = "Verifique la contraseña";
+                    mensaje = "Contraseña Incorrecta.";
                     Notificacion("error","",mensaje);
-                }
-                else if (validarToken == "null")
+                }else if(validarToken == "DeactivatedUser"){
+                    mensaje = "El usuario esta desactivado en este proyecto";
+                    Notificacion("error","",mensaje);
+                }else if(validarToken == "DeactivatedUserAll"){
+                    mensaje = "El usuario esta desactivado";
+                    Notificacion("error","",mensaje);
+                }else if (validarToken == "null")
                 {
-                    mensaje = "Verifique el usuario";
+                    mensaje = "Este usuario no está registrado en este proyecto.";
                     Notificacion("error","",mensaje);
                 }
                 else
@@ -125,7 +130,7 @@
                 Notificacion("error","",mensaje);
             }
         }else{
-            mensaje = "Ingrese un usuario, contraseña valida y ficha valida";
+            mensaje = "Ingrese un usuario valido";
             Notificacion("error","",mensaje);
         }
         isDisabled = false;

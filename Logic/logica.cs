@@ -131,7 +131,9 @@ namespace LibroNovedades.Logic
             }
             if (listaPizarra.Count > 0)
             {
-                avisadorData.InsertarRegistros(ListaChismosoCambioFecha, ListaChismosoCambioEstado);
+                avisadorData.InsertCambioFec(ChismosoCambioFecha);
+                avisadorData.InsertCambioStatus(ChismosoCambioEstado);
+                // avisadorData.InsertarRegistros(ListaChismosoCambioFecha, ListaChismosoCambioEstado);
                 return Tuple.Create(true, listaNovedadesFiltrada);
             }
             else

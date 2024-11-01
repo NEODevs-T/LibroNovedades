@@ -273,5 +273,34 @@ namespace LibroNovedades.Data.LibroNov
             }
             return band;
         }
+        public async Task<bool> InsertCambioStatus(CambStatDTO status)
+        {
+            bool band = false;
+            url = $"{BaseUrl}/AddCambioStatus";
+            cliente = _clientFactory.CreateClient();
+            mensaje = await cliente.PostAsJsonAsync(url, status);
+
+            if (mensaje.IsSuccessStatusCode)
+            {
+                band = await mensaje.Content.ReadFromJsonAsync<bool>();
+            }
+            return band;
+        }
+
+
+        public async Task<bool> InsertCambioFec(CambFecDTO cambiofec)
+        {
+            bool band = false;
+            url = $"{BaseUrl}/AddCambioFec";
+            cliente = _clientFactory.CreateClient();
+            mensaje = await cliente.PostAsJsonAsync(url, cambiofec);
+
+            if (mensaje.IsSuccessStatusCode)
+            {
+                band = await mensaje.Content.ReadFromJsonAsync<bool>();
+            }
+            return band;
+        }
+
     }
 }

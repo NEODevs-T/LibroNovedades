@@ -37,6 +37,8 @@ namespace LibroNovedades.Interface
     public interface IDataAvisador
     {
         Task<bool> InsertarRegistros(List<CambFecDTO> data, List<CambStatDTO> data2);
+        Task<bool> InsertCambioStatus(CambStatDTO status);
+        Task<bool> InsertCambioFec(CambFecDTO cambiofec);
     }
 
 }

@@ -384,7 +384,7 @@
     private bool bandera  { get; set;}
     private double tiempoPerdido { get; set;}
     private int indexCambio  { get; set;}
-    public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA, int PAPISA) empresas = (PAVECA: 1,CHEMPRO: 2, PANASA: 3,PAINSA: 4, PAPISA: 5);
+    public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA, int PAPISA, int BIOPACOL, int TTL) empresas = (PAVECA: 1,CHEMPRO: 2, PANASA: 3,PAINSA: 4, PAPISA: 5,BIOPACOL: 6, TTL: 7);
     public readonly Dictionary<string,string> grupoPAVECA = new Dictionary<string, string>{{"GrupoA", "A"}, {"GrupoB", "B"},{"GrupoC", "C"},{"GrupoD", "D"}};
     public readonly Dictionary<string,string> grupoPAINSA = new Dictionary<string, string>{{"Grupo1", "1"}, {"Grupo2", "2"},{"Grupo3", "3"},{"Grupo4", "4"}};
     public readonly Dictionary<string,string> grupoPAPISA = new Dictionary<string, string> { { "GrupoA", "A" }, { "GrupoB", "B" }, { "GrupoC", "C" } };
@@ -898,6 +898,13 @@
         else if (idEmpresa == empresas.PAPISA)
         {
             grupos = new Dictionary<string, string>(grupoPAPISA);
+        }else if(idEmpresa == empresas.BIOPACOL){
+            grupos = new Dictionary<string,string>(grupoPANASA);
+            dataNove.Lngrupo = "-";
+        }else if(idEmpresa == empresas.TTL){
+            grupos = new Dictionary<string,string>(grupoPAVECA);
+        }else{
+            grupos = new Dictionary<string,string>(grupoPAVECA);
         }
     }
     void LoadData(LoadDataArgs args)

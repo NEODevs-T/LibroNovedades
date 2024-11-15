@@ -23,265 +23,526 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Historico</PageTitle>
-@if(IsCargado){
-    <BSContainer PaddingBottom="Padding.Large">
-        <BSRow>
-            <h1 class="titulo">Historico</h1>
-        </BSRow>
-    </BSContainer>
+@if(idPais == TrinidadYTobago){
+    @if(IsCargado){
+        <BSContainer PaddingBottom="Padding.Large">
+            <BSRow>
+                <h1 class="titulo">Historical</h1>
+            </BSRow>
+        </BSContainer>
 
-    <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-            <BSCard CardType="CardType.Body">
+        <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
+                <BSCard CardType="CardType.Body">
 
-                <BSCard CardType="CardType.Text">
-                    
-                    <BSRow>
-                        <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                            <BSLabel class="labelFormulario">Desde</BSLabel>
-                            <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaInicio"></BSInput>
-                        </BSCol>
-                        <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                            <BSLabel class="labelFormulario">Hasta</BSLabel>
-                            <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaFinal"></BSInput>
-                        </BSCol>
-                    </BSRow>
-                    <br>
-                    <BSRow>
-                        @* <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">Tipo de Novedad</BSLabel>
-                                <BSInput  InputType="InputType.Select" @onchange="CambioTN" @bind-Value="filtroTipoNovedad">
-                                    <option value="0">Todas</option>
-                                    @if (listaTiposNovedad != null)
-                                    {
-                                        @foreach (var item in listaTiposNovedad)
+                    <BSCard CardType="CardType.Text">
+                        
+                        <BSRow>
+                            <BSCol Position="Position.Relative" Place ColumnMedium="3">
+                                <BSLabel class="labelFormulario">From</BSLabel>
+                                <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaInicio"></BSInput>
+                            </BSCol>
+                            <BSCol Position="Position.Relative" Place ColumnMedium="3">
+                                <BSLabel class="labelFormulario">to</BSLabel>
+                                <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaFinal"></BSInput>
+                            </BSCol>
+                        </BSRow>
+                        <br>
+                        <BSRow>
+                            @* <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                                <BSLabel class="labelFormulario">Tipo de Novedad</BSLabel>
+                                    <BSInput  InputType="InputType.Select" @onchange="CambioTN" @bind-Value="filtroTipoNovedad">
+                                        <option value="0">Todas</option>
+                                        @if (listaTiposNovedad != null)
                                         {
-                                            <option value="@item.IdTiParTp">@item.Tpnombre.ToUpper()</option>
-                                        }  
-                                    }
-                                </BSInput>
-                        </BSCol> *@
-                        <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">Estado</BSLabel>
-                                <BSInput  InputType="InputType.Select" @bind-Value="filtroIsResuelto">
-                                    <option value="2">Todos</option>
-                                    <option value="0">Sin resolver</option>
-                                    <option value="1">Resueltos</option>
-                                </BSInput>
-                        </BSCol>
+                                            @foreach (var item in listaTiposNovedad)
+                                            {
+                                                <option value="@item.IdTiParTp">@item.Tpnombre.ToUpper()</option>
+                                            }  
+                                        }
+                                    </BSInput>
+                            </BSCol> *@
+                            <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                                <BSLabel class="labelFormulario">State</BSLabel>
+                                    <BSInput  InputType="InputType.Select" @bind-Value="filtroIsResuelto">
+                                        <option value="2">All</option>
+                                        <option value="0">Unsolved</option>
+                                        <option value="1">Solved</option>
+                                    </BSInput>
+                            </BSCol>
 
-                        <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
-                                <BSInput  InputType="InputType.Select" IsDisabled="@IsDisableFTPM" @bind-Value="filtroClasificacionTPM">
-                                    <option value="0">Todas</option>
-                                    @if (listaClasificacionTPM != null)
-                                    {
-                                        @foreach (var item in listaClasificacionTPM)
+                            <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                                <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
+                                    <BSInput  InputType="InputType.Select" IsDisabled="@IsDisableFTPM" @bind-Value="filtroClasificacionTPM">
+                                        <option value="0">All</option>
+                                        @if (listaClasificacionTPM != null)
                                         {
-                                            <option value="@item.IdCtpm">@item.Ctpmnom.ToUpper()</option>
-                                        }  
-                                    }
-                                </BSInput>
-                        </BSCol>
+                                            @foreach (var item in listaClasificacionTPM)
+                                            {
+                                                <option value="@item.IdCtpm">@item.Ctpmnom.ToUpper()</option>
+                                            }  
+                                        }
+                                    </BSInput>
+                            </BSCol>
 
-                        @if(isAccesoPais){
-                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Pais</BSLabel>
-                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
-                                            <option value="0">Seleccione</option>
-                                            @if(listaPais != null){
-                                                @foreach (var item in listaPais)
-                                                {
-                                                    <option value="@item.IdPais">@item.Pnombre</option>
-                                                }
-                                            }else{
-                                                <option value="0">Cargando...</option>
-                                            }
-                                        </BSInput>
-                                </BSCol>
-                            }
-
-                            @if(isAccesoEmpresa){
-                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Empresas</BSLabel>
-                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
-                                            <option value="0">Seleccione</option>
-                                            @if(listaEmpresa != null){
-                                                @foreach (var item in listaEmpresa)
-                                                {
-                                                    <option value="@item.IdEmpresa">@item.Enombre</option>
-                                                }
-                                            }else{
-                                                <option value="0">Cargando...</option>
-                                            }
-                                        </BSInput>
-                                </BSCol>
-                            }
-
-                            @if(isAccesoCentro){
-                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Centro</BSLabel>
-                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
-                                            <option value="0">Seleccione</option>
-                                            @if(listaCentro != null){
-                                                @foreach (var item in listaCentro)
-                                                {
-                                                    <option value="@item.IdCentro">@item.Cnom</option>
-                                                }
-                                            }else{
-                                                <option value="0">Cargando...</option>
-                                            }
-                                        </BSInput>
-                                </BSCol>
-                            }
-
-                            @if(isAccesoDivision){
-                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Divisiones</BSLabel>
-                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
-                                            @if(listaDivision != null){
-                                                <option value="0">Todas</option>
-                                                @foreach (var item in listaDivision)
-                                                {
-                                                    <option value="@item.IdDivision">@item.Dnombre</option>
-                                                }
-                                            }else{
-                                                <option value="0">Cargando...</option>
-                                            }
-                                        </BSInput>
-                                </BSCol>
-                            }
-
-                            <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Linea</BSLabel>
-                                        <BSInput InputType="InputType.Select" @bind-Value="filtroLinea">
-                                            @if (idDivision != 0)
-                                            {   
-                                                @if(listaLinea != null){
-                                                    <option value="0">Todas</option>
-                                                    @foreach (var item in listaLinea)
+                            @if(isAccesoPais){
+                                    <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Country</BSLabel>
+                                            <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
+                                                <option value="0">Select</option>
+                                                @if(listaPais != null){
+                                                    @foreach (var item in listaPais)
                                                     {
-                                                        <option value="@item.IdLinea">@item.Lnom</option>
+                                                        <option value="@item.IdPais">@item.Pnombre</option>
+                                                    }
+                                                }else{
+                                                    <option value="0">Loading...</option>
+                                                }
+                                            </BSInput>
+                                    </BSCol>
+                                }
+
+                                @if(isAccesoEmpresa){
+                                    <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Companies</BSLabel>
+                                            <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
+                                                <option value="0">Select</option>
+                                                @if(listaEmpresa != null){
+                                                    @foreach (var item in listaEmpresa)
+                                                    {
+                                                        <option value="@item.IdEmpresa">@item.Enombre</option>
+                                                    }
+                                                }else{
+                                                    <option value="0">Loading...</option>
+                                                }
+                                            </BSInput>
+                                    </BSCol>
+                                }
+
+                                @if(isAccesoCentro){
+                                    <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Center</BSLabel>
+                                            <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
+                                                <option value="0">Seleccione</option>
+                                                @if(listaCentro != null){
+                                                    @foreach (var item in listaCentro)
+                                                    {
+                                                        <option value="@item.IdCentro">@item.Cnom</option>
                                                     }
                                                 }else{
                                                     <option value="0">Cargando...</option>
                                                 }
-                                            }else{
-                                                <option value="0">Seleccione una División</option>
-                                            }
-                                        </BSInput>
+                                            </BSInput>
+                                    </BSCol>
+                                }
+
+                                @if(isAccesoDivision){
+                                    <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Divisions</BSLabel>
+                                            <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
+                                                @if(listaDivision != null){
+                                                    <option value="0">All</option>
+                                                    @foreach (var item in listaDivision)
+                                                    {
+                                                        <option value="@item.IdDivision">@item.Dnombre</option>
+                                                    }
+                                                }else{
+                                                    <option value="0">Loading...</option>
+                                                }
+                                            </BSInput>
+                                    </BSCol>
+                                }
+
+                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Line</BSLabel>
+                                            <BSInput InputType="InputType.Select" @bind-Value="filtroLinea">
+                                                @if (idDivision != 0)
+                                                {   
+                                                    @if(listaLinea != null){
+                                                        <option value="0">All</option>
+                                                        @foreach (var item in listaLinea)
+                                                        {
+                                                            <option value="@item.IdLinea">@item.Lnom</option>
+                                                        }
+                                                    }else{
+                                                        <option value="0">Loading...</option>
+                                                    }
+                                                }else{
+                                                    <option value="0">Select a Division</option>
+                                                }
+                                            </BSInput>
+                                </BSCol>
+                            
+                        </BSRow> 
+                        <br>
+                        <BSRow>
+                            <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">Search</BSButton>
                             </BSCol>
-                        
-                    </BSRow> 
-                    <br>
-                    <BSRow>
-                        <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">Buscar</BSButton>
-                        </BSCol>
-                    </BSRow>
-                    @if (listaNovedades != null)
-                    {
-                        <br>
-                        <br>
-                        <BSTable IsResponsive="true" IsStriped="true">
-                            <BSTHead>
-                                <BSTR class="cabeceraTabla">
-                                    <BSTD>#</BSTD>
-                                    <BSTD>Linea</BSTD>
-                                    <BSTD>Fecha</BSTD>
-                                    <BSTD>Codigo de Equipo</BSTD>
-                                    <BSTD>Grupo</BSTD>
-                                    <BSTD>Turno</BSTD>
-                                    <BSTD>Tiempo Perdido (min)</BSTD>
-                                    <BSTD>Discrepancia</BSTD>
-                                    <BSTD>Area cargador</BSTD>
-                                    <BSTD>Estado</BSTD>
-                                    @if(IsAccesoCambioEstado){
-                                        <BSTD>Cambio de estado</BSTD>
-                                    }
-                                    
-                                    @if(IsAccesoPizarra){
-                                        <BSTD>Pizarra Unificada</BSTD>
-                                    }
-                                </BSTR>
-                            </BSTHead>
-                            <BSTBody class="cuerpoTabla">
-                                @foreach (var item in listaNovedades){
-                                    <BSTR>
-                                        <BSTD>@(listaNovedades.IndexOf(item) + 1)</BSTD>
-                                        <BSTD>@item.IdLineaNavigation.Lnom</BSTD>
-                                        <BSTD>@item.Lnfecha.ToString("dd/MM/yyyy")</BSTD>
-                                        <BSTD>@item.IdEquipo</BSTD>
-                                        <BSTD>@item.Lngrupo</BSTD>
-                                        <BSTD>@item.Lnturno</BSTD>
-                                        @if(item.LntiePerMi == -1){
-                                            <BSTD>0</BSTD> 
-                                        }else if(item.LntiePerMi.ToString().Count() < 5){
-                                            <BSTD>@item.LntiePerMi.ToString().Replace(".",",")</BSTD> 
-                                        }else{
-                                            <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
-                                        }
-                                        <BSTD>@item.Lndiscrepa</BSTD>
-                                        <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD>
-                                        
-                                        <BSTD>
-                                            @if(item.LnisResu == 1){
-                                                <p>Resuelto</p>
-                                            }else if(item.LnisResu == 0){
-                                                <p>Sin Resolver</p>
-                                            }else{
-                                                <p> - </p>
-                                            }
-                                        </BSTD>
-                                        
+                        </BSRow>
+                        @if (listaNovedades != null)
+                        {
+                            <br>
+                            <br>
+                            <BSTable IsResponsive="true" IsStriped="true">
+                                <BSTHead>
+                                    <BSTR class="cabeceraTabla">
+                                        <BSTD>#</BSTD>
+                                        <BSTD>Line</BSTD>
+                                        <BSTD>Date</BSTD>
+                                        <BSTD>Equipment Code</BSTD>
+                                        <BSTD>Group</BSTD>
+                                        <BSTD>Shift</BSTD>
+                                        <BSTD>Lost Time (min)</BSTD>
+                                        <BSTD>Issue</BSTD>
+                                        <BSTD>Registering Department</BSTD>
+                                        <BSTD>Status</BSTD>
                                         @if(IsAccesoCambioEstado){
+                                            <BSTD>Status change</BSTD>
+                                        }
+                                        
+                                        @if(IsAccesoPizarra){
+                                            <BSTD>Unified Whiteboard</BSTD>
+                                        }
+                                    </BSTR>
+                                </BSTHead>
+                                <BSTBody class="cuerpoTabla">
+                                    @foreach (var item in listaNovedades){
+                                        <BSTR>
+                                            <BSTD>@(listaNovedades.IndexOf(item) + 1)</BSTD>
+                                            <BSTD>@item.IdLineaNavigation.Lnom</BSTD>
+                                            <BSTD>@item.Lnfecha.ToString("dd/MM/yyyy")</BSTD>
+                                            <BSTD>@item.IdEquipo</BSTD>
+                                            <BSTD>@item.Lngrupo</BSTD>
+                                            <BSTD>@item.Lnturno</BSTD>
+                                            @if(item.LntiePerMi == -1){
+                                                <BSTD>0</BSTD> 
+                                            }else if(item.LntiePerMi.ToString().Count() < 5){
+                                                <BSTD>@item.LntiePerMi.ToString().Replace(".",",")</BSTD> 
+                                            }else{
+                                                <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
+                                            }
+                                            <BSTD>@item.Lndiscrepa</BSTD>
+                                            <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD>
+                                            
                                             <BSTD>
                                                 @if(item.LnisResu == 1){
-                                                    <div>
-                                                        <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
-                                                        @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
-                                                    </div>
+                                                    <p>Resuelto</p>
                                                 }else if(item.LnisResu == 0){
-                                                    <div>
-                                                        <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
-                                                        @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
-                                                    </div>
+                                                    <p>Sin Resolver</p>
                                                 }else{
                                                     <p> - </p>
                                                 }
                                             </BSTD>
-                                        }
-                                        @if(IsAccesoPizarra){
-                                            <BSTD>
-                                                <div >
-                                                    <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
-                                                </div>
-                                            </BSTD>
-                                        }
-                                    </BSTR>
-                                    
-                                }
-                            </BSTBody>
-                        </BSTable>
+                                            
+                                            @if(IsAccesoCambioEstado){
+                                                <BSTD>
+                                                    @if(item.LnisResu == 1){
+                                                        <div>
+                                                            <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
+                                                            @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
+                                                        </div>
+                                                    }else if(item.LnisResu == 0){
+                                                        <div>
+                                                            <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
+                                                            @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
+                                                        </div>
+                                                    }else{
+                                                        <p> - </p>
+                                                    }
+                                                </BSTD>
+                                            }
+                                            @if(IsAccesoPizarra){
+                                                <BSTD>
+                                                    <div >
+                                                        <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
+                                                    </div>
+                                                </BSTD>
+                                            }
+                                        </BSTR>
+                                        
+                                    }
+                                </BSTBody>
+                            </BSTable>
+                            <BSRow>
+                                <BSCol Column="12">
+                                    @if(IsAccesoPizarra){
+                                        <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Add</BSButton>
+                                    }
+                                </BSCol>
+                            </BSRow>
+                        }
+                    
+                    </BSCard>
+            </BSCard>
+        </BSCard>
+    }else{
+        <BSRow class="carga" Justify="Justify.Center">
+            <BSCol Column="3">
+            <div class="loader"></div>
+            </BSCol>  
+        </BSRow>
+    }
+}else
+{
+    @if(IsCargado){
+        <BSContainer PaddingBottom="Padding.Large">
+            <BSRow>
+                <h1 class="titulo">Historico</h1>
+            </BSRow>
+        </BSContainer>
+
+        <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
+                <BSCard CardType="CardType.Body">
+
+                    <BSCard CardType="CardType.Text">
+                        
                         <BSRow>
-                            <BSCol Column="12">
-                                @if(IsAccesoPizarra){
-                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
-                                }
+                            <BSCol Position="Position.Relative" Place ColumnMedium="3">
+                                <BSLabel class="labelFormulario">Desde</BSLabel>
+                                <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaInicio"></BSInput>
+                            </BSCol>
+                            <BSCol Position="Position.Relative" Place ColumnMedium="3">
+                                <BSLabel class="labelFormulario">Hasta</BSLabel>
+                                <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaFinal"></BSInput>
                             </BSCol>
                         </BSRow>
-                    }
-                
-                </BSCard>
-        </BSCard>
-    </BSCard>
-}else{
-    <BSRow class="carga" Justify="Justify.Center">
-        <BSCol Column="3">
-        <div class="loader"></div>
-        </BSCol>  
-    </BSRow>
-}
+                        <br>
+                        <BSRow>
+                            @* <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                                <BSLabel class="labelFormulario">Tipo de Novedad</BSLabel>
+                                    <BSInput  InputType="InputType.Select" @onchange="CambioTN" @bind-Value="filtroTipoNovedad">
+                                        <option value="0">Todas</option>
+                                        @if (listaTiposNovedad != null)
+                                        {
+                                            @foreach (var item in listaTiposNovedad)
+                                            {
+                                                <option value="@item.IdTiParTp">@item.Tpnombre.ToUpper()</option>
+                                            }  
+                                        }
+                                    </BSInput>
+                            </BSCol> *@
+                            <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                                <BSLabel class="labelFormulario">Estado</BSLabel>
+                                    <BSInput  InputType="InputType.Select" @bind-Value="filtroIsResuelto">
+                                        <option value="2">Todos</option>
+                                        <option value="0">Sin resolver</option>
+                                        <option value="1">Resueltos</option>
+                                    </BSInput>
+                            </BSCol>
 
+                            <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
+                                <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
+                                    <BSInput  InputType="InputType.Select" IsDisabled="@IsDisableFTPM" @bind-Value="filtroClasificacionTPM">
+                                        <option value="0">Todas</option>
+                                        @if (listaClasificacionTPM != null)
+                                        {
+                                            @foreach (var item in listaClasificacionTPM)
+                                            {
+                                                <option value="@item.IdCtpm">@item.Ctpmnom.ToUpper()</option>
+                                            }  
+                                        }
+                                    </BSInput>
+                            </BSCol>
+
+                            @if(isAccesoPais){
+                                    <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Pais</BSLabel>
+                                            <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
+                                                <option value="0">Seleccione</option>
+                                                @if(listaPais != null){
+                                                    @foreach (var item in listaPais)
+                                                    {
+                                                        <option value="@item.IdPais">@item.Pnombre</option>
+                                                    }
+                                                }else{
+                                                    <option value="0">Cargando...</option>
+                                                }
+                                            </BSInput>
+                                    </BSCol>
+                                }
+
+                                @if(isAccesoEmpresa){
+                                    <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Empresas</BSLabel>
+                                            <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
+                                                <option value="0">Seleccione</option>
+                                                @if(listaEmpresa != null){
+                                                    @foreach (var item in listaEmpresa)
+                                                    {
+                                                        <option value="@item.IdEmpresa">@item.Enombre</option>
+                                                    }
+                                                }else{
+                                                    <option value="0">Cargando...</option>
+                                                }
+                                            </BSInput>
+                                    </BSCol>
+                                }
+
+                                @if(isAccesoCentro){
+                                    <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Centro</BSLabel>
+                                            <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
+                                                <option value="0">Seleccione</option>
+                                                @if(listaCentro != null){
+                                                    @foreach (var item in listaCentro)
+                                                    {
+                                                        <option value="@item.IdCentro">@item.Cnom</option>
+                                                    }
+                                                }else{
+                                                    <option value="0">Cargando...</option>
+                                                }
+                                            </BSInput>
+                                    </BSCol>
+                                }
+
+                                @if(isAccesoDivision){
+                                    <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Divisiones</BSLabel>
+                                            <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
+                                                @if(listaDivision != null){
+                                                    <option value="0">Todas</option>
+                                                    @foreach (var item in listaDivision)
+                                                    {
+                                                        <option value="@item.IdDivision">@item.Dnombre</option>
+                                                    }
+                                                }else{
+                                                    <option value="0">Cargando...</option>
+                                                }
+                                            </BSInput>
+                                    </BSCol>
+                                }
+
+                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                            <BSLabel class="labelFormulario">Linea</BSLabel>
+                                            <BSInput InputType="InputType.Select" @bind-Value="filtroLinea">
+                                                @if (idDivision != 0)
+                                                {   
+                                                    @if(listaLinea != null){
+                                                        <option value="0">Todas</option>
+                                                        @foreach (var item in listaLinea)
+                                                        {
+                                                            <option value="@item.IdLinea">@item.Lnom</option>
+                                                        }
+                                                    }else{
+                                                        <option value="0">Cargando...</option>
+                                                    }
+                                                }else{
+                                                    <option value="0">Seleccione una División</option>
+                                                }
+                                            </BSInput>
+                                </BSCol>
+                            
+                        </BSRow> 
+                        <br>
+                        <BSRow>
+                            <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">Buscar</BSButton>
+                            </BSCol>
+                        </BSRow>
+                        @if (listaNovedades != null)
+                        {
+                            <br>
+                            <br>
+                            <BSTable IsResponsive="true" IsStriped="true">
+                                <BSTHead>
+                                    <BSTR class="cabeceraTabla">
+                                        <BSTD>#</BSTD>
+                                        <BSTD>Linea</BSTD>
+                                        <BSTD>Fecha</BSTD>
+                                        <BSTD>Codigo de Equipo</BSTD>
+                                        <BSTD>Grupo</BSTD>
+                                        <BSTD>Turno</BSTD>
+                                        <BSTD>Tiempo Perdido (min)</BSTD>
+                                        <BSTD>Discrepancia</BSTD>
+                                        <BSTD>Area cargador</BSTD>
+                                        <BSTD>Estado</BSTD>
+                                        @if(IsAccesoCambioEstado){
+                                            <BSTD>Cambio de estado</BSTD>
+                                        }
+                                        
+                                        @if(IsAccesoPizarra){
+                                            <BSTD>Pizarra Unificada</BSTD>
+                                        }
+                                    </BSTR>
+                                </BSTHead>
+                                <BSTBody class="cuerpoTabla">
+                                    @foreach (var item in listaNovedades){
+                                        <BSTR>
+                                            <BSTD>@(listaNovedades.IndexOf(item) + 1)</BSTD>
+                                            <BSTD>@item.IdLineaNavigation.Lnom</BSTD>
+                                            <BSTD>@item.Lnfecha.ToString("dd/MM/yyyy")</BSTD>
+                                            <BSTD>@item.IdEquipo</BSTD>
+                                            <BSTD>@item.Lngrupo</BSTD>
+                                            <BSTD>@item.Lnturno</BSTD>
+                                            @if(item.LntiePerMi == -1){
+                                                <BSTD>0</BSTD> 
+                                            }else if(item.LntiePerMi.ToString().Count() < 5){
+                                                <BSTD>@item.LntiePerMi.ToString().Replace(".",",")</BSTD> 
+                                            }else{
+                                                <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
+                                            }
+                                            <BSTD>@item.Lndiscrepa</BSTD>
+                                            <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD>
+                                            
+                                            <BSTD>
+                                                @if(item.LnisResu == 1){
+                                                    <p>Resuelto</p>
+                                                }else if(item.LnisResu == 0){
+                                                    <p>Sin Resolver</p>
+                                                }else{
+                                                    <p> - </p>
+                                                }
+                                            </BSTD>
+                                            
+                                            @if(IsAccesoCambioEstado){
+                                                <BSTD>
+                                                    @if(item.LnisResu == 1){
+                                                        <div>
+                                                            <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
+                                                            @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
+                                                        </div>
+                                                    }else if(item.LnisResu == 0){
+                                                        <div>
+                                                            <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
+                                                            @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
+                                                        </div>
+                                                    }else{
+                                                        <p> - </p>
+                                                    }
+                                                </BSTD>
+                                            }
+                                            @if(IsAccesoPizarra){
+                                                <BSTD>
+                                                    <div >
+                                                        <BSInputCheckbox Size="Size.ExtraLarge" CheckedValue="true" UnCheckedValue="false" @bind-Value="item.LnisPizUni"/>
+                                                    </div>
+                                                </BSTD>
+                                            }
+                                        </BSTR>
+                                        
+                                    }
+                                </BSTBody>
+                            </BSTable>
+                            <BSRow>
+                                <BSCol Column="12">
+                                    @if(IsAccesoPizarra){
+                                        <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
+                                    }
+                                </BSCol>
+                            </BSRow>
+                        }
+                    
+                    </BSCard>
+            </BSCard>
+        </BSCard>
+    }else{
+        <BSRow class="carga" Justify="Justify.Center">
+            <BSCol Column="3">
+            <div class="loader"></div>
+            </BSCol>  
+        </BSRow>
+    }
+}
 
 
 @code{
@@ -323,7 +584,7 @@
     private int idDivision { get; set; }
     private int idLinea { get; set; }
     private int idAreCargada { get; set;}
-
+    private int TrinidadYTobago = 6;
     private BSAlert _alertRef { get; set;}
     private string nombre  { get; set;}
     private string apellido  { get; set;}

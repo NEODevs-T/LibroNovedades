@@ -201,7 +201,7 @@
                                         }
                                         
                                         @if(IsAccesoPizarra){
-                                            <BSTD>Unified Whiteboard</BSTD>
+                                            <BSTD>Send to meeting</BSTD>
                                         }
                                     </BSTR>
                                 </BSTHead>
@@ -226,9 +226,9 @@
                                             
                                             <BSTD>
                                                 @if(item.LnisResu == 1){
-                                                    <p>Resuelto</p>
+                                                    <p>Resolved</p>
                                                 }else if(item.LnisResu == 0){
-                                                    <p>Sin Resolver</p>
+                                                    <p>Unresolved</p>
                                                 }else{
                                                     <p> - </p>
                                                 }

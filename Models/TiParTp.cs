@@ -11,8 +11,6 @@ namespace LibroNovedades.Models
         public TiParTp()
         {
             LibroNoves = new HashSet<LibroNove>();
-            ParaTps = new HashSet<ParaTp>();
-            TiPaPars = new HashSet<TiPaPar>();
         }
 
         /// <summary>
@@ -33,7 +31,5 @@ namespace LibroNovedades.Models
         public bool Tpestado { get; set; }
 
         public virtual ICollection<LibroNove> LibroNoves { get; set; }
-        public virtual ICollection<ParaTp> ParaTps { get; set; }
-        public virtual ICollection<TiPaPar> TiPaPars { get; set; }
     }
 }

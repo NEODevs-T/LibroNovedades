@@ -64,7 +64,7 @@ builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataEmpresa, glob
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataCentro, global::LibroNovedades.Data.Global.DataCentro>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataDivision, global::LibroNovedades.Data.Global.DataDivision>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataLinea, global::LibroNovedades.Data.Global.DataLinea>();
-builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
+// builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataArea, global::LibroNovedades.Data.Global.DataArea>();
 builder.Services.AddScoped<global::LibroNovedades.Data.Global.IDataEquipoEAM, global::LibroNovedades.Data.Global.DataEquipoEAM>();
 
 

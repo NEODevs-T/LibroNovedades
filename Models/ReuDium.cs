@@ -83,8 +83,6 @@ namespace LibroNovedades.Models
         public string? Rdobs { get; set; }
 
         public virtual Empresa? IdEmpresaNavigation { get; set; }
-        public virtual RespoReu IdResReuNavigation { get; set; } = null!;
-        public virtual Ksf IdksfNavigation { get; set; } = null!;
         public virtual ICollection<CambFec> CambFecs { get; set; }
         public virtual ICollection<CambStat> CambStats { get; set; }
     }

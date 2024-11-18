@@ -117,19 +117,19 @@ namespace LibroNovedades.Data.Global
     {
         Task<List<LinAre>> ObtenerLasAreasPorLinea(int idLinea);
     }
-    public class DataArea : IDataArea
-    {
-        private readonly DbNeoContext _cotext;
+    // public class DataArea : IDataArea
+    // {
+    //     private readonly DbNeoContext _cotext;
 
-        public DataArea(DbNeoContext context)
-        {
-            this._cotext = context; 
-        }
-        public async Task<List<LinAre>> ObtenerLasAreasPorLinea(int idLinea)
-        {
-            return await _cotext.LinAres.Where(x => x.IdLinea == idLinea && x.IdAreaNavigation.Aestado == true).Include(x => x.IdAreaNavigation).ToListAsync();//.Include(x => x.IdArea).ToListAsync();
-        }   
-    }
+    //     public DataArea(DbNeoContext context)
+    //     {
+    //         this._cotext = context; 
+    //     }
+    //     public async Task<List<LinAre>> ObtenerLasAreasPorLinea(int idLinea)
+    //     {
+    //         return await _cotext.LinAres.Where(x => x.IdLinea == idLinea && x.IdAreaNavigation.Aestado == true).Include(x => x.IdAreaNavigation).ToListAsync();//.Include(x => x.IdArea).ToListAsync();
+    //     }   
+    // }
 
     public interface IDataEquipoEAM
     {

@@ -280,7 +280,7 @@
                                                 <option value="0">Select</option>
                                                 @foreach (var item in listaClasificacionTPM)
                                                 {
-                                                    <option value="@item.IdCtpm">@item.Ctpmnom</option>
+                                                    <option value="@item.IdCtpm">@item.Ctpmenglis</option>
                                                 }
                                             }else{
                                                 <option value="0">Loading...</option>
@@ -967,7 +967,7 @@
                         int d2 =  dataNove.IdLinea;
                         string d4 = dataNove.LnfichaRes;
                         string d5 = dataNove.IdMaquina;
-                        int d6 = dataNove.IdCtpm ?? 0;
+                        int d6 = dataNove.IdCtpm;
 
                         if(indexCambio != -1){
                             paradas[6][indexCambio] = "1";

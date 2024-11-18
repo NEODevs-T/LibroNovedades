@@ -1,21 +1,69 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@if(idPais == TrinidadYTobago)
+{
+    <PageTitle>Index</PageTitle>
 
-<section id="cajaPadre">
-    <section id="cajaContenido">
-        <div id="cajaLogo">
-            <RadzenImage id="logoindex" Path="img/LogoGris.png" AlternateText="Neo" />
-        </div>
-        <div id="cajaInformacion">
-            <p id="tituloInfo">Información</p>
-            <ul id="Info">
-                <li>Pestaña Formato: Posee el formulario para el registro de novedades a lo largo del turno.</li>
-                <li>Pestaña Histórico: Histórico de las novedades cargadas en el sistema a lo largo del tiempo.</li>
-            </ul>
-        </div>
+    <section id="cajaPadre">
+        <section id="cajaContenido">
+            <div id="cajaLogo">
+                <RadzenImage id="logoindex" Path="img/LogoGris.png" AlternateText="Neo" />
+            </div>
+            <div id="cajaInformacion">
+                <p id="tituloInfo">Information</p>
+                <ul id="Info">
+                    <li>Format Tab: It has the form for recording news throughout the shift.</li>
+                    <li>History Tab: History of the news uploaded to the system over time.</li>
+                </ul>
+            </div>
+        </section>
+        <section id="cajaImg">
+            <RadzenImage Path="img/Neo.png" AlternateText="Neo"/>
+        </section>
     </section>
-    <section id="cajaImg">
-        <RadzenImage Path="img/Neo.png" AlternateText="Neo"/>
+} else {
+        <section id="cajaPadre">
+        <section id="cajaContenido">
+            <div id="cajaLogo">
+                <RadzenImage id="logoindex" Path="img/LogoGris.png" AlternateText="Neo" />
+            </div>
+            <div id="cajaInformacion">
+                <p id="tituloInfo">Información</p>
+                <ul id="Info">
+                    <li>Pestaña Formato: Posee el formulario para el registro de novedades a lo largo del turno.</li>
+                    <li>Pestaña Histórico: Histórico de las novedades cargadas en el sistema a lo largo del tiempo.</li>
+                </ul>
+            </div>
+        </section>
+        <section id="cajaImg">
+            <RadzenImage Path="img/Neo.png" AlternateText="Neo"/>
+        </section>
     </section>
-</section>
+
+}
+@code{
+    private int idPais { get; set; }
+    private int TrinidadYTobago = 6;
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            AuthenticationState authState = await authenticationState;
+            ClaimsPrincipal? usuario = authState?.User;
+
+            if (usuario?.Identity is not null && usuario.Identity.IsAuthenticated)
+            {
+                idPais = GetIdPais(usuario);
+            }
+                
+        }
+    }
+
+    private int GetIdPais(ClaimsPrincipal user)
+        {
+            int _idPais = Int32.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0");
+            return _idPais;
+        }
+}

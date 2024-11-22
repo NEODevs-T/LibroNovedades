@@ -713,9 +713,6 @@
             {
                 IsCargado = false;
                 tiempoPerdido = 0;
-                mensaje = "Registre una Novedad";
-                Notificacion("info","",mensaje);
-
                 isDisableManualGT = false;
                 isTPM = true;
                 isDisabledButton = false;
@@ -740,7 +737,14 @@
                 idDivision = int.Parse(user.FindFirst(c => c.Type == "IdDivision")?.Value ?? "0") ;
                 idEmpresa = int.Parse(user.FindFirst(c => c.Type == "IdEmpresa")?.Value ?? "0") ;
                 ficha = user.FindFirst(c => c.Type == "Ficha")?.Value ?? "" ;
-
+                if(idPais == TrinidadYTobago)
+                {
+                mensaje = "Add a Log Entry";
+                }else
+                {
+                mensaje = "Registre una Novedad";
+                }
+                Notificacion("info","",mensaje);
                 if(ficha == "null"){
                     isFichaManual = true;
                 }
@@ -845,7 +849,13 @@
                 }else if(rol.Contains("Super") || rol.Contains("Admin")){
                     
                 }else{
+                    if(idPais == TrinidadYTobago)
+                    {
+                    mensaje = "There was an error, please log in again. If the error continues, contact continuous improvement";
+                    }else
+                    {
                     mensaje = "Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua";
+                    }
                     Notificacion("error","",mensaje);
                 }
             }
@@ -992,7 +1002,12 @@
                         dataNove.IdCtpm = d6;
                         indexCambio = -1;
                     }else{
+                        if(idPais == TrinidadYTobago)
+                        {
+                        mensaje = "Error. Try again";
+                        }else{
                         mensaje = "Error. Intente de nuevo";
+                        }
                         Notificacion("error","",mensaje);
                     }
                 }
@@ -1006,11 +1021,21 @@
                     Notificacion("error","",mensaje);
                 }
             }else{
+                if(idPais == TrinidadYTobago)
+                {
+                mensaje = "Description of the action taken is mandatory";
+                }else{
                 mensaje = "La descripción de la acción tomada es obligatoria";
+                }
                 Notificacion("error","",mensaje);
             }
         }else{
-            mensaje = "Campo vacío, por favor revisa todo el formulario";
+            if(idPais == TrinidadYTobago)
+                {
+                mensaje = "Empty field, please review the entire form";
+                }else{
+                mensaje = "Campo vacío, por favor revisa todo el formulario";
+                }
             Notificacion("error","",mensaje);
         }
         isDisabledButton = false;
@@ -1068,7 +1093,13 @@
             }
         }catch(Exception ex){
             if(ex.Message.Contains("Response status code does not indicate success: 500 (Internal Server Error).")){
+                if(idPais == TrinidadYTobago)
+                {
                 mensaje = "Error al consultar al gespline.";
+                }else
+                {
+                mensaje = "Error al consultar al gespline.";
+                }
                 Notificacion("error","",mensaje);
                 paradasBandera = true;
             }else{
@@ -1139,7 +1170,13 @@
                 tiempoPerdido = 0;
                 mensaje = "";
             }else{
+                if(idPais == TrinidadYTobago)
+                {
+                mensaje = "Set a time greater than 0 and a specific cause";
+                } else
+                {
                 mensaje = "Coloque un tiempo mayor a 0 y una causa especifica";
+                }
                 Notificacion("error","",mensaje);
             }
         }catch(Exception ex){

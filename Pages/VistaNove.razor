@@ -597,8 +597,7 @@
             ClaimsPrincipal? user = authState?.User;
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
-                mensaje = "Historico de registro de las novedades";
-                Notificacion("info","",mensaje);
+
 
                 isDisabled = false;
                 idAreCargada = 0;
@@ -623,6 +622,15 @@
 
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
                 listaClasificacionTPM = await DataClasifiTPM.ObtenerClasificacion();
+
+                if(idPais == TrinidadYTobago)
+                {
+                mensaje = "Log History";
+                }else
+                {
+                mensaje = "Historico de registro de las novedades";
+                }
+                Notificacion("info","",mensaje);
 
                 if(rol.Contains("SuperAdmin")){
                     isAccesoPais = true;
@@ -723,7 +731,13 @@
                     idAreCargada = 10;
                 }
             }else{
+                if(idPais == TrinidadYTobago)
+                {
+                mensaje = "No Access";
+                }else
+                {
                 mensaje = "Sin Acceso";
+                }
                 Notificacion("info","",mensaje);
             }
         }
@@ -843,14 +857,32 @@
             if(band1){
                 band2 = await DataLibroNov.UpdateRegistros(listaFiltrada);
                 if(band2){
+                    if(idPais == TrinidadYTobago)
+                    {
+                    mensaje = "It was carried out successfully";
+                    }else
+                    {
                     mensaje = "Se realizo de manera exitosa";
+                    }
                     Notificacion("exito","",mensaje);
                 }else{
+                    if(idPais == TrinidadYTobago)
+                    {
+                    mensaje = "Failure to update in the log book, the data was sent to the meeting";
+                    }else
+                    {
                     mensaje = "Falla en la actualizacion en el libro de novedades, la data fue registrada en la pizarra unificada";
+                    }
                     Notificacion("info","",mensaje);
                 }
             }else{
+                if(idPais == TrinidadYTobago)
+                {
+                mensaje = "No valid data was found to register in the news book. Remember that solved activities cannot be sent to the Whiteboard, and you will not be able to send activities that have already been uploaded previously.";
+                }else
+                {
                 mensaje = "No se encontró ningún dato valido para registrar al libro de novedades. Recuerde que las actividades resueltas no pueden ser enviadas a la Pizarra, además no podrá enviar actividades que ya se cargaron anteriormente.";
+                }
                 Notificacion("info","",mensaje);
             }
         }catch(Exception ex){

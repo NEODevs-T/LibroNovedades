@@ -67,4 +67,15 @@ main {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }
+
+    .caja-idioma{
+        padding: 30px;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .idioma{
+        border-radius: 5%;
+        color: #000;
+    }
 }

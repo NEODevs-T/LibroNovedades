@@ -3,7 +3,7 @@
 // using System.ComponentModel.DataAnnotations;
 // using LibroNovedades.Validate;
 
-// namespace LibroNovedades.Modelss
+// namespace LibroNovedades.Models
 // {
 //     public partial class LibroNove
 //     {
@@ -33,11 +33,11 @@
 //         public string? IdParada { get; set; }
 //         public bool LnisPizUni { get; set; }
 
-//         public int? IdCtpm { get; set; }
+//         public int IdCtpm { get; set; }
 //         public int? LnisResu { get; set; }
 
-//         public virtual Centro IdAreaCarNavigation { get; set; } = null!;
-//         public virtual ClasifiTpm? IdCtpmNavigation { get; set; }
+//         public virtual AreaCarga IdAreaCarNavigation { get; set; } = null!;
+//         public virtual ClasifiTpm IdCtpmNavigation { get; set; }
 //         public virtual Linea IdLineaNavigation { get; set; } = null!;
 //         public virtual TiParTp IdTipoNoveNavigation { get; set; } = null!;
 //     }

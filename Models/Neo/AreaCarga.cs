@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace LibroNovedades.Models
+namespace LibroNovedades.Models.Neo
 {
     public partial class AreaCarga
     {
@@ -14,8 +14,7 @@ namespace LibroNovedades.Models
         public string Acnombre { get; set; } = null!;
         public string? Acdetalle { get; set; }
         public bool Acestado { get; set; }
-        public string ACEngllish { get; set; } = null!;
-
+        public string? Acengllish { get; set; }
 
         public virtual ICollection<LibroNove> LibroNoves { get; set; }
     }

@@ -222,7 +222,7 @@
                                                 <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                             }
                                             <BSTD>@item.Lndiscrepa</BSTD>
-                                            <BSTD>@item.IdAreaCarNavigation.Acnombre</BSTD>
+                                            <BSTD>@item.IdAreaCarNavigation.ACEngllish</BSTD>
                                             
                                             <BSTD>
                                                 @if(item.LnisResu == 1){
@@ -835,16 +835,41 @@
                 if(band){
                     indexLista = listaNovedades.IndexOf(dataNove);
                     listaNovedades[indexLista] = dataNove;
-                    Notificacion("exito","","El cambio fue exitoso");
+                    if(idPais == TrinidadYTobago)
+                    {
+                        Notificacion("exito","","The change was successful");
+                    }else
+                    {
+                        Notificacion("exito","","El cambio fue exitoso");
+                    }
                 }else{
+                    if(idPais == TrinidadYTobago)
+                    {
+                    Notificacion("error","Error: ","Try again. If the problem persists, send an email to Continuous Improvement");
+                    }else
+                    {
                     Notificacion("error","Error: ","Intente de Nuevo. Si el problema persiste enviar un correo a Mejora Continua");
+                    }
                 }
             }else{
-                Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 72 horas, no se puede cambiar el estado de esta novedad");
+                if(idPais == TrinidadYTobago)
+                {
+                    Notificacion("info","Error: ","The discrepancy of the news has already passed 72 hours, the status of this news cannot be changed");
+                }else
+                {
+                    Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 72 horas, no se puede cambiar el estado de esta novedad");
+                }
             }
         }catch(Exception e){
-            Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 72 horas, no se puede cambiar el estado de esta novedad");
-        }
+                if(idPais == TrinidadYTobago)
+                {
+                    Notificacion("info","Error: ","The discrepancy of the news has already passed 72 hours, the status of this news cannot be changed");
+                }else
+                {
+                    Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 72 horas, no se puede cambiar el estado de esta novedad");
+                }
+            }
+        
     }
 
     protected async Task Guardar(){

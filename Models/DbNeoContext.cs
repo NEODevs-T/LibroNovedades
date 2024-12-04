@@ -26,13 +26,9 @@ namespace LibroNovedades.Models
         public virtual DbSet<EquipoEam> EquipoEams { get; set; } = null!;
         public virtual DbSet<LibroNove> LibroNoves { get; set; } = null!;
         public virtual DbSet<Linea> Lineas { get; set; } = null!;
-        public virtual DbSet<Nivel> Nivels { get; set; } = null!;
         public virtual DbSet<Pai> Pais { get; set; } = null!;
-        public virtual DbSet<ProyectoUsr> ProyectoUsrs { get; set; } = null!;
         public virtual DbSet<ReuDium> ReuDia { get; set; } = null!;
-        public virtual DbSet<Rol> Rols { get; set; } = null!;
         public virtual DbSet<TiParTp> TiParTps { get; set; } = null!;
-        public virtual DbSet<Usuario> Usuarios { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -56,6 +52,12 @@ namespace LibroNovedades.Models
                 entity.Property(e => e.Acdetalle)
                     .IsUnicode(false)
                     .HasColumnName("ACDetalle");
+
+                entity.Property(e => e.Acengllish)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("ACEngllish")
+                    .HasDefaultValueSql("('English')");
 
                 entity.Property(e => e.Acestado).HasColumnName("ACEstado");
 
@@ -386,35 +388,6 @@ namespace LibroNovedades.Models
                     .HasConstraintName("FK_Linea_Division");
             });
 
-            modelBuilder.Entity<Nivel>(entity =>
-            {
-                entity.HasKey(e => e.IdNivel);
-
-                entity.ToTable("Nivel");
-
-                entity.HasOne(d => d.IdDivisionNavigation)
-                    .WithMany(p => p.Nivels)
-                    .HasForeignKey(d => d.IdDivision)
-                    .HasConstraintName("FK_Nivel_Division");
-
-                entity.HasOne(d => d.IdProyectoNavigation)
-                    .WithMany(p => p.Nivels)
-                    .HasForeignKey(d => d.IdProyecto)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Nivel_ProyectoUsr");
-
-                entity.HasOne(d => d.IdRolNavigation)
-                    .WithMany(p => p.Nivels)
-                    .HasForeignKey(d => d.IdRol)
-                    .HasConstraintName("FK_Nivel_Rol");
-
-                entity.HasOne(d => d.IdUsuarioNavigation)
-                    .WithMany(p => p.Nivels)
-                    .HasForeignKey(d => d.IdUsuario)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Nivel_Usuario");
-            });
-
             modelBuilder.Entity<Pai>(entity =>
             {
                 entity.HasKey(e => e.IdPais);
@@ -423,21 +396,6 @@ namespace LibroNovedades.Models
 
                 entity.Property(e => e.Pnombre)
                     .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("PNombre");
-            });
-
-            modelBuilder.Entity<ProyectoUsr>(entity =>
-            {
-                entity.HasKey(e => e.IdProyecto)
-                    .HasName("PK_Proyecto_1");
-
-                entity.ToTable("ProyectoUsr");
-
-                entity.Property(e => e.Pestado).HasColumnName("PEstado");
-
-                entity.Property(e => e.Pnombre)
-                    .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("PNombre");
             });
@@ -542,25 +500,6 @@ namespace LibroNovedades.Models
                     .HasConstraintName("FK_ReuDia_Empresa");
             });
 
-            modelBuilder.Entity<Rol>(entity =>
-            {
-                entity.HasKey(e => e.IdRol);
-
-                entity.ToTable("Rol");
-
-                entity.Property(e => e.Rdescri)
-                    .HasMaxLength(500)
-                    .IsUnicode(false)
-                    .HasColumnName("RDescri");
-
-                entity.Property(e => e.Restado).HasColumnName("REstado");
-
-                entity.Property(e => e.Rnombre)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("RNombre");
-            });
-
             modelBuilder.Entity<TiParTp>(entity =>
             {
                 entity.HasKey(e => e.IdTiParTp);
@@ -579,6 +518,12 @@ namespace LibroNovedades.Models
                     .HasColumnName("TPCodigo")
                     .HasComment("codigo del tipo parada");
 
+                entity.Property(e => e.Tpenglish)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("TPEnglish")
+                    .HasDefaultValueSql("('English')");
+
                 entity.Property(e => e.Tpestado)
                     .HasColumnName("TPEstado")
                     .HasComment("0: Inactivo, 1:Activo");
@@ -588,51 +533,6 @@ namespace LibroNovedades.Models
                     .IsUnicode(false)
                     .HasColumnName("TPNombre")
                     .HasComment("nombre del centro");
-            });
-
-            modelBuilder.Entity<Usuario>(entity =>
-            {
-                entity.HasKey(e => e.IdUsuario);
-
-                entity.ToTable("Usuario");
-
-                entity.HasComment("Responsable del proyecto");
-
-                entity.HasIndex(e => e.UsUsuario, "IX_Usuario")
-                    .IsUnique();
-
-                entity.Property(e => e.IdUsuario).HasComment("Identificador del usuario");
-
-                entity.Property(e => e.UsApellido)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UsClave)
-                    .HasMaxLength(1000)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UsCorreo)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UsEstatus).HasComment("estatus(0:inactivo,1:activo)");
-
-                entity.Property(e => e.UsFicha)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UsNombre)
-                    .HasMaxLength(200)
-                    .IsUnicode(false)
-                    .HasComment("nombre del usuario");
-
-                entity.Property(e => e.UsPass)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UsUsuario)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);

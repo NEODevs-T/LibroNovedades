@@ -17,7 +17,8 @@ namespace LibroNovedades.Data.User
             this._cotext = context;
         }
         public async Task<Usuario>? ObtenerUsuario(string username,string password){
-            return await _cotext.Usuarios.Where(u => u.UsNombre == username && u.UsPass == password && u.UsEstatus == true).FirstOrDefaultAsync();
+            throw new NotImplementedException();
+
         }
 
     }
@@ -37,7 +38,7 @@ namespace LibroNovedades.Data.User
         }
 
         public async Task<List<Nivel>>? ObtenerNivelesDelUsuarioSegunProyecto(Usuario usuario,ProyectoUsr proyecto){
-            return await _cotext.Nivels.Include(n => n.IdUsuarioNavigation).Include(n => n.IdDivisionNavigation).Include(n => n.IdProyectoNavigation).Include(n => n.IdRolNavigation).Where(n => n.IdUsuarioNavigation.IdUsuario == usuario.IdUsuario && n.IdProyectoNavigation.IdProyecto == proyecto.IdProyecto).ToListAsync();
+            throw new NotImplementedException();
         }
     }
 
@@ -54,7 +55,7 @@ namespace LibroNovedades.Data.User
             this._cotext = context;
         }
         public async Task<ProyectoUsr>? ObtenerProyectoSegunNombre(string nombreProyecto){
-            return await _cotext.ProyectoUsrs.Where(p => p.Pnombre == nombreProyecto && p.Pestado == true).FirstOrDefaultAsync();
+            throw new NotImplementedException();
         }
     }
 

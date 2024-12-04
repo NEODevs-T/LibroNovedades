@@ -29,6 +29,7 @@ namespace LibroNovedades.Models
         /// 0: Inactivo, 1:Activo
         /// </summary>
         public bool Tpestado { get; set; }
+        public string? Tpenglish { get; set; }
 
         public virtual ICollection<LibroNove> LibroNoves { get; set; }
     }

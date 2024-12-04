@@ -8,7 +8,6 @@ namespace LibroNovedades.Models
         public Division()
         {
             Lineas = new HashSet<Linea>();
-            Nivels = new HashSet<Nivel>();
         }
 
         public int IdDivision { get; set; }
@@ -19,6 +18,5 @@ namespace LibroNovedades.Models
 
         public virtual Centro? IdCentroNavigation { get; set; }
         public virtual ICollection<Linea> Lineas { get; set; }
-        public virtual ICollection<Nivel> Nivels { get; set; }
     }
 }

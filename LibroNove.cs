@@ -1,4 +1,4 @@
-﻿// using System;
+﻿// <using System;
 // using System.Collections.Generic;
 // using System.ComponentModel.DataAnnotations;
 // using LibroNovedades.Validate;
@@ -21,7 +21,7 @@
 //         public DateTime Lnfecha { get; set; }
 //         [ValidDiferenteACero]
 //         public string Lngrupo { get; set; } = null!;
-//         [ValidDiferenteACero]
+//         [ValidTurno]
 //         public string Lnturno { get; set; } = null!;
 //         [Required(ErrorMessage ="Coloque el id de la maquina.")]
 //         public string IdMaquina { get; set; } = null!;

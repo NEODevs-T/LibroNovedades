@@ -660,6 +660,7 @@
     private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
     private int idPais { get; set; }
     private int TrinidadYTobago = 5;
+    private int Venezuela = 1;
     private int idEmpresa { get; set; }
     private int idCentro  { get; set;} = 0;
     private int idDivision { get; set; }
@@ -1057,7 +1058,13 @@
             dataNove.IdMaquina = linea.Lofic;
             listaNove = await DataLibroNov.RegistroDeHoyPorLinea(dataNove.IdLinea);
             // TODO: pendinete para mejorar listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
-            paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
+            
+            if(idPais == Venezuela){
+                paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
+            }else{
+                paradas = new List<List<string>>();
+                paradas.Add(new List<string>());
+            }
             listaDeEstado = new List<string>();
             
             for (int i = 0; i < paradas[0].Count; i++)

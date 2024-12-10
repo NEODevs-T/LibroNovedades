@@ -232,7 +232,7 @@ namespace LibroNovedades.Data.LibroNov
             _clientFactory = clientFactory;     // Constructor
         }
 
-        public async Task<bool> InsertarRegistros(List<ReuDiumDTO> reunionDia)
+        public async Task<bool> InsertarRegistros(List<ReunionDTO> reunionDia)
         {
             bool band = false;
             url = $"{BaseUrl}/AddRegistros";
@@ -260,19 +260,20 @@ namespace LibroNovedades.Data.LibroNov
             _clientFactory = clientFactory;     // Constructor
         }
 
-        public async Task<bool> InsertarRegistros(List<CambFecDTO> data, List<CambStatDTO> data2)
-        {
-            url = $"{BaseUrl}/AddRegistros";
-            cliente = _clientFactory.CreateClient();
-            mensaje = await cliente.PostAsJsonAsync(url, (data, data2));
-            bool band = false;
+    public async Task<bool> InsertarRegistros(RegistroCambiosDTO registroCambios)
+    {
+        bool band = false;
+        url = $"{BaseUrl}/AddRegistrosCambios";
+        cliente = _clientFactory.CreateClient();
+        mensaje = await cliente.PostAsJsonAsync(url, registroCambios);
 
-            if (mensaje.IsSuccessStatusCode)
-            {
-                band = await mensaje.Content.ReadFromJsonAsync<bool>();
-            }
-            return band;
+        if (mensaje.IsSuccessStatusCode)
+        {
+            band = await mensaje.Content.ReadFromJsonAsync<bool>();
         }
+        return band;
+    }
+
         public async Task<bool> InsertCambioStatus(CambStatDTO status)
         {
             bool band = false;

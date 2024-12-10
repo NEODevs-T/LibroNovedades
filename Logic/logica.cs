@@ -47,12 +47,12 @@ namespace LibroNovedades.Logic
             IDataPizarra pizarraData = new DataPizarra(_clientFactory);
             IDataAvisador avisadorData = new DataAvisador(_clientFactory);
             LibroNoveDTO? temporal;
-            ReuDiumDTO registroNuevo = new ReuDiumDTO();
+            ReunionDTO registroNuevo = new ReunionDTO();
             CambFecDTO ChismosoCambioFecha = new CambFecDTO();
             CambStatDTO ChismosoCambioEstado = new CambStatDTO();
             List<CambFecDTO> ListaChismosoCambioFecha = new List<CambFecDTO>();
             List<CambStatDTO> ListaChismosoCambioEstado = new List<CambStatDTO>();
-            List<ReuDiumDTO> listaPizarra = new List<ReuDiumDTO>(listaNovedades.Count);
+            List<ReunionDTO> listaPizarra = new List<ReunionDTO>(listaNovedades.Count);
             List<LibroNoveDTO> listaNovedadesFiltrada = new List<LibroNoveDTO>();
 
             List<LibroNoveDTO> listaNovedades2;
@@ -117,7 +117,7 @@ namespace LibroNovedades.Logic
                         //ChismosoCambioEstado.IdReuDiaNavigation = registroNuevo;
                         ListaChismosoCambioEstado.Add(ChismosoCambioEstado);
 
-                        registroNuevo = new ReuDiumDTO();
+                        registroNuevo = new ReunionDTO();
                         ChismosoCambioFecha = new CambFecDTO();
                         ChismosoCambioEstado = new CambStatDTO();
 

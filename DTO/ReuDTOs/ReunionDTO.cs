@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ReunionDiaria.DTOs;
 
 
-public partial class ReuDiumDTO
+public partial class ReunionDTO
 {
     public int IdReuDia { get; set; }
 
@@ -38,11 +38,24 @@ public partial class ReuDiumDTO
 
     public string? RdnumDis { get; set; }
 
-    public DateOnly? RdfecReu { get; set; }
+    public DateTime? RdfecReu { get; set; }
 
-    public DateOnly? RdfecTra { get; set; }
+    public DateTime RdfecTra { get; set; }
 
     public string? Rdobs { get; set; }
 
-    public DateOnly? RdfecCrea { get; set; }
+    public DateTime? RdfecCrea { get; set; }
+
+    public int IdCausaCal { get; set; }
+
+    public int IdOrigen { get; set; }
+
+    public int IdTipReu { get; set; }
+
+    public string? Ksf {get; set; }
+    
+    public string? Responsable {get; set; }
+
+    public int? IdPais {get; set; }
+
 }

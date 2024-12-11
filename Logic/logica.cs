@@ -3,13 +3,11 @@ using Microsoft.Data.SqlClient;
 using System.Data.OleDb;
 using System.Data;
 using Newtonsoft.Json;
-using LibroNovedades.Models.Neo;
 using LibroNovedades.ModelsDocIng;
 using LibroNovedades.Data.LibroNov;
 using LibroNovedades.DTOs;
 using LibroNovedades.Interface;
 using System.Net.Http;
-using LibroNovedades.Models;
 using ReunionDiaria.DTOs;
 
 
@@ -97,8 +95,8 @@ namespace LibroNovedades.Logic
                         //registroNuevo.Rdarea = temporal.IdLineaNavigation.Lnom;
                         registroNuevo.RdcodEq = temporal.IdEquipo;
                         registroNuevo.Rddisc = temporal.Lndiscrepa;
-                        registroNuevo.RdfecReu = DateOnly.FromDateTime(DateTime.Now);
-                        registroNuevo.RdfecTra = DateOnly.FromDateTime(DateTime.Now);
+                        registroNuevo.RdfecReu = DateTime.Now;
+                        registroNuevo.RdfecTra = DateTime.Now;
                         registroNuevo.Rdstatus = "Pendiente";
                         registroNuevo.IdResReu = 11;
                         //registroNuevo.IdPais = idPais;
@@ -120,7 +118,7 @@ namespace LibroNovedades.Logic
                         registroNuevo = new ReunionDTO();
                         ChismosoCambioFecha = new CambFecDTO();
                         ChismosoCambioEstado = new CambStatDTO();
-
+                        registroNuevo.IdTipReu = 2;
                         listaNovedadesFiltrada.Add(item);
                     }
                 }
@@ -131,9 +129,8 @@ namespace LibroNovedades.Logic
             }
             if (listaPizarra.Count > 0)
             {
-                avisadorData.InsertCambioFec(ChismosoCambioFecha);
-                avisadorData.InsertCambioStatus(ChismosoCambioEstado);
-                // avisadorData.InsertarRegistros(ListaChismosoCambioFecha, ListaChismosoCambioEstado);
+                RegistroCambiosDTO  registroCambios = new RegistroCambiosDTO(ChismosoCambioFecha, ChismosoCambioEstado, registroNuevo);
+                avisadorData.InsertarRegistros(registroCambios);
                 return Tuple.Create(true, listaNovedadesFiltrada);
             }
             else

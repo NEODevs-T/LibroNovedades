@@ -13,7 +13,7 @@ using Blazored.LocalStorage;
 using LibroNovedades.Data.API;
 using LibroNovedades.Data.Maestra;
 using LibroNovedades.Data.LibroNov;
-using LibroNovedades.Models.Neo;
+
 using LibroNovedades.ModelsDocIng;
 using LibroNovedades.Logic;
 
@@ -50,9 +50,7 @@ builder.Services.AddBlazoredSessionStorage(config =>
 
 builder.Services.AddBlazoredSessionStorage();
 
-builder.Services.AddDbContext<DbNeoContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionDbNeo")), ServiceLifetime.Transient
-);
+
 
 builder.Services.AddDbContext<DOC_IngIContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionDbIng")), ServiceLifetime.Transient

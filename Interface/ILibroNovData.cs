@@ -26,8 +26,7 @@ namespace LibroNovedades.Interface
     }
     public interface IDataPizarra
     {
-        Task<bool> InsertarRegistros(RegistroCambiosDTO registroCambios);
-
+        Task<bool> InsertarRegistros(List<ReunionDTO> reunionDia);
     }
     public interface IDataTiParTP
     {

@@ -1,6 +1,5 @@
 using BlazorStrap.Service;
-
-
+using DTOs.Maestra;
 using Maestra.DTOs;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +8,11 @@ namespace LibroNovedades.Interface.Maestra
     public interface IPaisData
     {
         Task<List<PaiDTO>> ObtenerTodosLosPaises();
+
+    }
+    public interface IMaestraData
+    {
+        Task<List<MaestraVDTO>> GetMaestraId(int idMaster);
 
     }
 

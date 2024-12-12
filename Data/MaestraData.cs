@@ -4,6 +4,7 @@ using BlazorStrap.Service;
 
 using LibroNovedades.Interface.Maestra;
 using Maestra.DTOs;
+using DTOs.Maestra;
 
 namespace LibroNovedades.Data.Maestra
 {
@@ -26,6 +27,28 @@ namespace LibroNovedades.Data.Maestra
             url = $"{BaseUrl}/GetPaises/";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<PaiDTO>>(url) ?? new List<PaiDTO>();
+        }
+    }
+    public class MaestraData : IMaestraData
+    {
+        private readonly IHttpClientFactory _clientFactory;
+        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra";
+        private const string BaseUrl2 = "http://localhost:5021/api/Maestra";
+        private HttpClient cliente { get; set; } = new HttpClient();
+        private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
+        private string url { get; set; } = "";
+
+        public MaestraData(IHttpClientFactory clientFactory)
+        {
+            _clientFactory = clientFactory;
+        }
+
+        public async Task<List<MaestraVDTO>> GetMaestraId(int idMaster)
+
+        {
+            url = $"{BaseUrl2}/GetMaestraId/{idMaster}";
+            cliente = _clientFactory.CreateClient();
+            return await cliente.GetFromJsonAsync<List<MaestraVDTO>>(url) ?? new List<MaestraVDTO>();
         }
     }
 

@@ -8,7 +8,7 @@ public partial class ReunionDTO
 {
     public int IdReuDia { get; set; }
 
-    public int? IdMaster { get; set; }
+    public int IdMaster { get; set; }
 
     public int IdEmpresa { get; set; }
 

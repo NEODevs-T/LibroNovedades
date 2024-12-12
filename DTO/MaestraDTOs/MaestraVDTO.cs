@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DTOs.Maestra
 {
-    public class MaestraDTO
+    public class MaestraVDTO
     {
         public string Pais { get; set; } = null!;
 

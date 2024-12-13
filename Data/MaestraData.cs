@@ -46,7 +46,7 @@ namespace LibroNovedades.Data.Maestra
         public async Task<List<MaestraVDTO>> GetMaestraId(int idMaster)
 
         {
-            url = $"{BaseUrl2}/GetMaestraId/{idMaster}";
+            url = $"{BaseUrl}/GetMaestraId/{idMaster}";
             cliente = _clientFactory.CreateClient();
             return await cliente.GetFromJsonAsync<List<MaestraVDTO>>(url) ?? new List<MaestraVDTO>();
         }

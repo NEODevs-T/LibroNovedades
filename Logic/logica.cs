@@ -60,7 +60,9 @@ namespace LibroNovedades.Logic
             List<ReunionDTO> listaPizarra = new List<ReunionDTO>(listaNovedades.Count);
             List<LibroNoveDTO> listaNovedadesFiltrada = new List<LibroNoveDTO>();
             List<LibroNoveDTO> listaNovedades2;
+            int reunionTurno = 2;
             LibroNoveDTO dataNovedades;
+            bool validacion = false;
 
             if (filtroFechaInicio.Date == filtroFechaFinal.Date)
             {
@@ -80,6 +82,7 @@ namespace LibroNovedades.Logic
             {
                 temporal = listaNovedades2.Find(x => x.IdlibrNov == item.IdlibrNov);
                 int idmaster = listaNovedades2.Where(x => x.IdLinea == item.IdLinea).First().IdMaster;
+                int TPM = listaNovedades2.Where(x => x.IdCtpm == item.IdCtpm).First().IdCtpm;
                 if (temporal != null)
                 {
                     if ((temporal.LnisPizUni != item.LnisPizUni) && (item.LnisPizUni == true) && (item.LnisResu == 0))
@@ -113,6 +116,13 @@ namespace LibroNovedades.Logic
                         registroNuevo.Rdcentro = maestra.Where(x => x.IdMaster == idmaster).First().Centro;
                         registroNuevo.Rddiv = maestra.Where(x => x.IdMaster == idmaster).First().División;
                         registroNuevo.Rdarea = maestra.Where(x => x.IdMaster == idmaster).First().Linea;
+                        if(TPM == 4) 
+                        {
+                            registroNuevo.IdCausaCal = 2;
+                        }else
+                        {
+                            registroNuevo.IdCausaCal = 1;
+                        }
                         listaPizarra.Add(registroNuevo);
 
                         //ChismosoCambioFecha.IdReuDiaNavigation = registroNuevo;
@@ -126,8 +136,14 @@ namespace LibroNovedades.Logic
                         ChismosoCambioEstado.Cbfecha = DateTime.Now;
                         //ChismosoCambioEstado.IdReuDiaNavigation = registroNuevo;
                         ListaChismosoCambioEstado.Add(ChismosoCambioEstado);
-                        registroNuevo.IdTipReu = 2;
+                        registroNuevo.IdTipReu = reunionTurno;
                         listaNovedadesFiltrada.Add(item);
+                        RegistroCambiosDTO  registroCambios = new RegistroCambiosDTO(ChismosoCambioFecha, ChismosoCambioEstado, registroNuevo);
+                        bool insercion = await avisadorData.InsertarRegistros(registroCambios);
+                        if (insercion == true)
+                        {
+                            validacion = true;
+                        }
                     }
                 }
                 else
@@ -135,11 +151,8 @@ namespace LibroNovedades.Logic
                     continue;
                 }
             }
-            if (listaPizarra.Count > 0)
+            if (listaPizarra.Count > 0 && validacion == true)
             {
-                //TODO: LOS VALORES SIGUEN VACIO
-                RegistroCambiosDTO  registroCambios = new RegistroCambiosDTO(ChismosoCambioFecha, ChismosoCambioEstado, registroNuevo);
-                avisadorData.InsertarRegistros(registroCambios);
                 return Tuple.Create(true, listaNovedadesFiltrada);
             }
             else

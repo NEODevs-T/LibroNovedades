@@ -1,7 +1,8 @@
 .fondo {
     display: flex;
     height: 100vh;
-    background-image: url("/img/fondologin.jpg");
+    background-image: url("../img/fondologin.jpg");
+    /* background-image: url("/img/fondologin.jpg"); */
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;

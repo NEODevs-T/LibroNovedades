@@ -108,6 +108,7 @@ namespace LibroNovedades.Logic
                         registroNuevo.Rddisc = temporal.Lndiscrepa;
                         registroNuevo.RdfecReu = DateTime.Now;
                         registroNuevo.RdfecTra = DateTime.Now;
+                        registroNuevo.RdfecCrea = DateTime.Now;
                         registroNuevo.Rdstatus = "Pendiente";
                         registroNuevo.IdResReu = 11;
                         registroNuevo.IdEmpresa = idEmpresa;

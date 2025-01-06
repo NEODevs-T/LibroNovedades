@@ -83,6 +83,7 @@ namespace LibroNovedades.Logic
                 temporal = listaNovedades2.Find(x => x.IdlibrNov == item.IdlibrNov);
                 int idmaster = listaNovedades2.Where(x => x.IdLinea == item.IdLinea).First().IdMaster;
                 int TPM = listaNovedades2.Where(x => x.IdCtpm == item.IdCtpm).First().IdCtpm;
+                int IdTipoNove = listaNovedades2.Where(x => x.IdTipoNove == item.IdTipoNove).First().IdTipoNove;
                 if (temporal != null)
                 {
                     if ((temporal.LnisPizUni != item.LnisPizUni) && (item.LnisPizUni == true) && (item.LnisResu == 0))

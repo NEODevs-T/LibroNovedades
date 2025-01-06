@@ -117,7 +117,7 @@ namespace LibroNovedades.Logic
                         registroNuevo.Rdcentro = maestra.Where(x => x.IdMaster == idmaster).First().Centro;
                         registroNuevo.Rddiv = maestra.Where(x => x.IdMaster == idmaster).First().División;
                         registroNuevo.Rdarea = maestra.Where(x => x.IdMaster == idmaster).First().Linea;
-                        if(TPM == 4) 
+                        if(TPM == 4 || IdTipoNove == 8)
                         {
                             registroNuevo.IdCausaCal = 2;
                         }else

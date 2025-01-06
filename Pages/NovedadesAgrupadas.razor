@@ -611,7 +611,10 @@
         {
             dataNove.Lnobserv = dataNove.Lnobserv.Trim();
             if((dataNove.LnisResu == 1 && dataNove.Lnobserv != "") || dataNove.LnisResu != 1){
-                
+                if(dataNove.IdTipoNove == 0)
+                {
+                    
+                }
                 dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
                 dataNove.IdEquipo = dataNove.IdEquipo.Trim().ToUpper();
                 dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();

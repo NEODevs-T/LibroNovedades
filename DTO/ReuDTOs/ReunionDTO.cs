@@ -8,7 +8,7 @@ public partial class ReunionDTO
 {
     public int IdReuDia { get; set; }
 
-    public int IdMaster { get; set; }
+    public int? IdMaster { get; set; }
 
     public int IdEmpresa { get; set; }
 
@@ -38,7 +38,7 @@ public partial class ReunionDTO
 
     public string? RdnumDis { get; set; }
 
-    public DateTime? RdfecReu { get; set; }
+    public DateTime RdfecReu { get; set; }
 
     public DateTime RdfecTra { get; set; }
 
@@ -48,7 +48,7 @@ public partial class ReunionDTO
 
     public int IdCausaCal { get; set; }
 
-    public int IdOrigen { get; set; }
+    public string? OrigenCal { get; set; } = null!;
 
     public int IdTipReu { get; set; }
 

@@ -105,6 +105,7 @@ namespace LibroNovedades.Logic
                         }
                         //TODO: Revisar cambio para poder ubicar al nombre del centro
                         registroNuevo.IdTipReu = 2;
+                        registroNuevo.OrigenCal = "N/A";
                         registroNuevo.RdcodEq = temporal.IdEquipo;
                         registroNuevo.Rddisc = temporal.Lndiscrepa;
                         registroNuevo.RdfecReu = DateTime.Now;

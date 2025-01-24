@@ -104,7 +104,6 @@ namespace LibroNovedades.Logic
                         }
                         //TODO: Revisar cambio para poder ubicar al nombre del centro
                         registroNuevo.IdTipReu = 2;
-                        registroNuevo.OrigenCal = "N/A";
                         registroNuevo.RdcodEq = temporal.IdEquipo;
                         registroNuevo.Rddisc = temporal.Lndiscrepa;
                         registroNuevo.RdfecReu = DateTime.Now;
@@ -121,10 +120,12 @@ namespace LibroNovedades.Logic
                         if (TPM == 4 || IdTipoNove == 8)
                         {
                             registroNuevo.IdCausaCal = 2;
+                            registroNuevo.OrigenCal = " ";
                         }
                         else
                         {
                             registroNuevo.IdCausaCal = 1;
+                            registroNuevo.OrigenCal = "N/A";
                         }
                         listaPizarra.Add(registroNuevo);
 

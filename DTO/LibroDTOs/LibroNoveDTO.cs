@@ -32,7 +32,7 @@ public class LibroNoveDTO
     public string? Lnobserv { get; set; }
     public string? IdParada { get; set; }
     public bool LnisPizUni { get; set; }
-    // [ValidDiferenteACero]
+    [ValidDiferenteACero]
     public int IdCtpm { get; set; }
 
     public int? LnisResu { get; set; }

@@ -44,8 +44,7 @@ namespace LibroNovedades.Logic
 
         public async Task<Tuple<bool, List<LibroNoveDTO>>> CambiosBDLibro(int idPais, int idEmpresa, int idCentro, int idDivision, List<LibroNoveDTO> listaNovedades, DateTime filtroFechaInicio, DateTime filtroFechaFinal, int filtroLinea, int filtroCLTPM, string nombre)
         {
-            
-            // TODO: arreglaar la pizarra
+
             ILibroNovData libroNovData = new LibroNovData(_clientFactory);
             IMaestraData maestraData = new MaestraData(_clientFactory);
             IDataPizarra pizarraData = new DataPizarra(_clientFactory);
@@ -67,7 +66,7 @@ namespace LibroNovedades.Logic
             if (filtroFechaInicio.Date == filtroFechaFinal.Date)
             {
                 listaNovedades2 = await libroNovData.ObtenerLibroNovedadesPorFiltro(idCentro, filtroFechaInicio, idDivision, filtroLinea, filtroCLTPM, 2);
-                
+
             }
             else if (filtroFechaInicio.Date < filtroFechaFinal.Date)
             {
@@ -119,10 +118,11 @@ namespace LibroNovedades.Logic
                         registroNuevo.Rdcentro = maestra.Where(x => x.IdMaster == idmaster).First().Centro;
                         registroNuevo.Rddiv = maestra.Where(x => x.IdMaster == idmaster).First().División;
                         registroNuevo.Rdarea = maestra.Where(x => x.IdMaster == idmaster).First().Linea;
-                        if(TPM == 4 || IdTipoNove == 8)
+                        if (TPM == 4 || IdTipoNove == 8)
                         {
                             registroNuevo.IdCausaCal = 2;
-                        }else
+                        }
+                        else
                         {
                             registroNuevo.IdCausaCal = 1;
                         }
@@ -141,7 +141,7 @@ namespace LibroNovedades.Logic
                         ListaChismosoCambioEstado.Add(ChismosoCambioEstado);
                         registroNuevo.IdTipReu = reunionTurno;
                         listaNovedadesFiltrada.Add(item);
-                        RegistroCambiosDTO  registroCambios = new RegistroCambiosDTO(ChismosoCambioFecha, ChismosoCambioEstado, registroNuevo);
+                        RegistroCambiosDTO registroCambios = new RegistroCambiosDTO(ChismosoCambioFecha, ChismosoCambioEstado, registroNuevo);
                         bool insercion = await avisadorData.InsertarRegistros(registroCambios);
                         if (insercion == true)
                         {

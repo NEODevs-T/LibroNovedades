@@ -23,11 +23,11 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>Historico</PageTitle>
+<PageTitle>Histórico</PageTitle>
 @if(IsCargado){
     <BSContainer PaddingBottom="Padding.Large">
         <BSRow>
-            <h1 class="titulo">Historico</h1>
+            <h1 class="titulo">Histórico</h1>
         </BSRow>
     </BSContainer>
 
@@ -48,19 +48,6 @@
                     </BSRow>
                     <br>
                     <BSRow>
-                        @* <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">Tipo de Novedad</BSLabel>
-                                <BSInput  InputType="InputType.Select" @onchange="CambioTN" @bind-Value="filtroTipoNovedad">
-                                    <option value="0">Todas</option>
-                                    @if (listaTiposNovedad != null)
-                                    {
-                                        @foreach (var item in listaTiposNovedad)
-                                        {
-                                            <option value="@item.IdTiParTp">@item.Tpnombre.ToUpper()</option>
-                                        }  
-                                    }
-                                </BSInput>
-                        </BSCol> *@
                         <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
                             <BSLabel class="labelFormulario">Estado</BSLabel>
                                 <BSInput  InputType="InputType.Select" @bind-Value="filtroIsResuelto">
@@ -71,7 +58,7 @@
                         </BSCol>
 
                         <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">Clasificacion TPM</BSLabel>
+                            <BSLabel class="labelFormulario">Clasificación TPM</BSLabel>
                                 <BSInput  InputType="InputType.Select" IsDisabled="@IsDisableFTPM" @bind-Value="filtroClasificacionTPM">
                                     <option value="0">Todas</option>
                                     @if (listaClasificacionTPM != null)
@@ -86,7 +73,7 @@
 
                         @if(isAccesoPais){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Pais</BSLabel>
+                                        <BSLabel class="labelFormulario">País</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
                                             <option value="0">Seleccione</option>
                                             @if(listaPais != null){
@@ -154,7 +141,7 @@
                             }
 
                             <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Linea</BSLabel>
+                                        <BSLabel class="labelFormulario">Línea</BSLabel>
                                         <BSInput InputType="InputType.Select" @bind-Value="filtroLinea">
                                             @if (idDivision != 0)
                                             {   
@@ -188,7 +175,7 @@
                             <BSTHead>
                                 <BSTR class="cabeceraTabla">
                                     <BSTD>#</BSTD>
-                                    <BSTD>Linea</BSTD>
+                                    <BSTD>Línea</BSTD>
                                     <BSTD>Fecha</BSTD>
                                     <BSTD>Codigo de Equipo</BSTD>
                                     <BSTD>Grupo</BSTD>
@@ -196,7 +183,7 @@
                                     <BSTD>Tiempo Perdido (min)</BSTD>
                                     <BSTD>Discrepancia</BSTD>
                                     <BSTD>Area cargador</BSTD>
-                                    <BSTD>Observacion</BSTD>
+                                    <BSTD>Observación</BSTD>
                                     <BSTD>Estado</BSTD>
                                     @if(IsAccesoCambioEstado){
                                         <BSTD>Cambio de estado</BSTD>

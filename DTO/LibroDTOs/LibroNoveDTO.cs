@@ -31,6 +31,7 @@ public class LibroNoveDTO
     public int IdAreaCar { get; set; }
     public string? Lnobserv { get; set; }
     public string? IdParada { get; set; }
+    public int? TipoReu { get; set; }
     public bool LnisPizUni { get; set; }
     [ValidDiferenteACero]
     public int IdCtpm { get; set; }

@@ -103,7 +103,7 @@ namespace LibroNovedades.Logic
                             registroNuevo.Idksf = 1;
                         }
                         //TODO: Revisar cambio para poder ubicar al nombre del centro
-                        registroNuevo.IdTipReu = 2;
+                        registroNuevo.IdTipReu = (int)item.TipoReu;
                         registroNuevo.RdcodEq = temporal.IdEquipo;
                         registroNuevo.Rddisc = temporal.Lndiscrepa;
                         registroNuevo.RdfecReu = DateTime.Now;

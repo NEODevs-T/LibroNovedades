@@ -103,7 +103,16 @@ namespace LibroNovedades.Logic
                             registroNuevo.Idksf = 1;
                         }
                         //TODO: Revisar cambio para poder ubicar al nombre del centro
-                        registroNuevo.IdTipReu = (int)item.TipoReu;
+                        if (item.TipoReu == null)
+                        {
+                            registroNuevo.IdTipReu = 2;
+
+                        }
+                        else
+                        {
+                            registroNuevo.IdTipReu = (int)item.TipoReu;
+
+                        }
                         registroNuevo.RdcodEq = temporal.IdEquipo;
                         registroNuevo.Rddisc = temporal.Lndiscrepa;
                         registroNuevo.RdfecReu = DateTime.Now;
@@ -140,7 +149,6 @@ namespace LibroNovedades.Logic
                         ChismosoCambioEstado.Cbfecha = DateTime.Now;
                         //ChismosoCambioEstado.IdReuDiaNavigation = registroNuevo;
                         ListaChismosoCambioEstado.Add(ChismosoCambioEstado);
-                        registroNuevo.IdTipReu = reunionTurno;
                         listaNovedadesFiltrada.Add(item);
                         RegistroCambiosDTO registroCambios = new RegistroCambiosDTO(ChismosoCambioFecha, ChismosoCambioEstado, registroNuevo);
                         bool insercion = await avisadorData.InsertarRegistros(registroCambios);

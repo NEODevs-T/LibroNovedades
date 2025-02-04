@@ -249,10 +249,10 @@
                                                 </div>
                                             </BSTD>
                                             <BSTD>
-                                                <select @bind="tipoReu" style="border-radius: 2px; box-shadow: 0 0 1px #000;">
+                                                <BSInput id="TPM" InputType="InputType.Select" @bind-Value="item.TipoReu" style="border-radius: 2px; box-shadow: 0 0 1px #000; width: auto;">
                                                     <option value="2">Reunion de Turno</option>
                                                     <option value="1">Reunion Diaria</option>
-                                                </select>
+                                                </BSInput>
                                             </BSTD>
                                         }
                                     </BSTR>
@@ -574,10 +574,7 @@
     protected async Task Guardar(){
         isDisabled = true;
         List<LibroNoveDTO> listaFiltrada = new List<LibroNoveDTO>();
-        foreach(var l in listaNovedades)
-        {
-            l.TipoReu = tipoReu;
-        }
+
 
         try{
             mensaje = "";

@@ -35,15 +35,11 @@ public class LibroNoveDTO
     public bool LnisPizUni { get; set; }
     [ValidDiferenteACero]
     public int IdCtpm { get; set; }
-
     public int? LnisResu { get; set; }
-
     public int IdMaster { get; set; } = 0;
-
+    public string? LnfichSupe { get; set; }
     public string? Linea { get; set; } = null!;
-
     public string? AreaCarga { get; set; } = null!;
-
     public void Deconstruct(out int idLinea, out string idEquipo, out DateTime lnfecha, out bool lnisPizUni)
     {
         idLinea = this.IdLinea;

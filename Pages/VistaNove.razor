@@ -184,6 +184,7 @@
                                     <BSTD>Discrepancia</BSTD>
                                     <BSTD>Area cargador</BSTD>
                                     <BSTD>Observación</BSTD>
+                                    <BSTD>Supervisor</BSTD>
                                     <BSTD>Estado</BSTD>
                                     @if(IsAccesoCambioEstado){
                                         <BSTD>Cambio de estado</BSTD>
@@ -214,6 +215,13 @@
                                         <BSTD>@item.Lndiscrepa</BSTD>
                                         <BSTD>@item.AreaCarga</BSTD>
                                         <BSTD>@item.Lnobserv</BSTD>
+                                            @if(item.LnfichSupe == null)
+                                            {
+                                                <BSTD> - </BSTD>
+                                            } else
+                                            {
+                                                <BSTD>@item.LnfichSupe</BSTD>
+                                            }
                                         
                                         <BSTD>
                                             @if(item.LnisResu == 1){
@@ -250,8 +258,8 @@
                                             </BSTD>
                                             <BSTD>
                                                 <BSInput id="TPM" InputType="InputType.Select" @bind-Value="item.TipoReu" style="border-radius: 2px; box-shadow: 0 0 1px #000; width: auto;">
-                                                    <option value="2">Reunion de Turno</option>
-                                                    <option value="1">Reunion Diaria</option>
+                                                    <option value="2">Turno</option>
+                                                    <option value="1">Diaria</option>
                                                 </BSInput>
                                             </BSTD>
                                         }

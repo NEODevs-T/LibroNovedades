@@ -288,6 +288,12 @@
                                 </BSCol>
                                 
                                 <BSCol Position="Position.Relative" Place ColumnMedium="3">
+                                        <BSLabel style="width: 200px;" class="labelFormulario">Ficha del Supervisor</BSLabel>
+                                        <BSInput InputType="InputType.Text" @bind-Value="dataNove.LnfichSupe">
+                                        </BSInput>
+                                        <BSFeedback For="@(() => dataNove.LnfichSupe)"/> 
+                                </BSCol> 
+                                <BSCol Position="Position.Relative" Place ColumnMedium="3">
                                         <BSLabel class="labelFormulario">Resuelto</BSLabel>
                                         <BSInput InputType="InputType.Select" @bind-Value="dataNove.LnisResu">
                                             <option value="0">No</option>

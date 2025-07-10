@@ -179,7 +179,10 @@
                 else
                 {
                     await LocalStorage.SetItemAsync("LibroDeNovedadesNew", validarToken);
-                    await AuthStateProvider.GetAuthenticationStateAsync();    
+                    var autenticador = await AuthStateProvider.GetAuthenticationStateAsync();
+                    if(autenticador == null){
+                        Notificacion("error","","Error al intentar autenticar el usuario, intentelo de nuevo");
+                    }
                     NavigationManager.NavigateTo("");
                     if (idioma == 1)
                     {

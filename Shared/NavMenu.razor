@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Neo</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -11,33 +13,58 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span class="oi oi-home" aria-hidden="true"></span> @labelHome
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="FormatoAgrupado">
-                <span class="oi oi-pencil" aria-hidden="true"></span> Formato
+                <span class="oi oi-pencil" aria-hidden="true"></span> @labelFormat
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="Historico">
-                <span class="oi oi-book" aria-hidden="true"></span> Histórico
+                <span class="oi oi-book" aria-hidden="true"></span> @labelHistorical
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="http://neo.paveca.com.ve/ReuniondeTurnoDesarrollo/">
-                <span class="oi oi-people" aria-hidden="true"></span> Reunión de Turno
-            </NavLink>
+            http://neo.paveca.com.ve/ReuniondeTurnoDesarrollo/
         </div>
     </nav>
 </div>
+
 @code {
     private bool collapseNavMenu = true;
-
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private string labelHome = "Inicio";
+    private string labelFormat = "Formato";
+    private string labelHistorical = "Histórico";
+    private string labelMeeting = "Reunión de Turno";
+
+    private const int TrinidadYTobago = 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            int.TryParse(user.FindFirst(c => c.Type == "IdPais")?.Value, out int idPais);
+
+            if (idPais == TrinidadYTobago)
+            {
+                labelHome = "Home";
+                labelFormat = "Format";
+                labelHistorical = "Historical";
+                labelMeeting = "Daily Meeting";
+            }
+        }
+    }
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
 }
+

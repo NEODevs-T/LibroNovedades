@@ -17,7 +17,7 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="FormatoAgrupado">
+            <NavLink class="nav-link" href="@FormatoAgrupadoHref">
                 <span class="oi oi-pencil" aria-hidden="true"></span> @labelFormat
             </NavLink>
         </div>
@@ -44,6 +44,7 @@
     private string labelHistorical = "Histórico";
     private string labelMeeting = "Reunión de Turno";
     private string historicalHref = "/es/Historico";
+    private string FormatoAgrupadoHref = "/es/FormatoAgrupado";
     private const int TrinidadYTobago = 5;
 
     protected override async Task OnInitializedAsync()
@@ -62,6 +63,7 @@
                 labelHistorical = "Historical";
                 labelMeeting = "Daily Meeting";
                 historicalHref = "/en/Historical";
+                FormatoAgrupadoHref = "/en/FormatGroup";
             }
         }
     }

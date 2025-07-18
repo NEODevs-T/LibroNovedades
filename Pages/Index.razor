@@ -1,5 +1,32 @@
 ﻿@page "/"
+@page "/es/inicio"
+@page "/en/home"
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
+@if (idPais == TrinidadYTobago)
+{
+    <PageTitle>Index</PageTitle>
+    <section id="cajaPadre">
+        <section id="cajaContenido">
+            <div id="cajaLogo">
+                <RadzenImage id="logoindex" Path="img/LogoGris.png" AlternateText="Neo" />
+            </div>
+            <div id="cajaInformacion">
+                <p id="tituloInfo">Information</p>
+                <ul id="Info">
+                    <li>Format Tab: It has the form for recording news throughout the shift.</li>
+                    <li>History Tab: History of the news uploaded to the system over time.</li>
+                </ul>
+            </div>
+        </section>
+        <section id="cajaImg">
+            <RadzenImage Path="img/Neo.png" AlternateText="Neo" />
+        </section>
+    </section>
+}
+else
+{
 <PageTitle>Index</PageTitle>
 
 <section id="cajaPadre">
@@ -19,3 +46,42 @@
         <RadzenImage Path="img/Neo.png" AlternateText="Neo"/>
     </section>
 </section>
+}
+
+@code {
+    private int idPais { get; set; }
+    private const int TrinidadYTobago = 5;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState.User;
+
+            if (user.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                idPais = GetIdPais(user);
+
+                // Redirigir si está en la raíz "/"
+                var currentUri = Navigation.Uri;
+                if (Navigation.ToBaseRelativePath(currentUri) == "")
+                {
+                    if (idPais == TrinidadYTobago)
+                        Navigation.NavigateTo("/en/home", forceLoad: true);
+                    else
+                        Navigation.NavigateTo("/es/inicio", forceLoad: true);
+                }
+            }
+        }
+    }
+
+    private int GetIdPais(ClaimsPrincipal user)
+    {
+        int.TryParse(user.FindFirst(c => c.Type == "IdPais")?.Value, out int _idPais);
+        return _idPais;
+    }
+}

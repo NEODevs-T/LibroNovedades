@@ -12,22 +12,19 @@
 @inject IDataTiParTP DataTiParTP;
 @inject IClasifiTPMData ClasifiTPMData;
 @inject ILogicLibroNov LogicLibroNov;
-
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorage
-
 @inject NotificationService notificationService
-
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>Histórico</PageTitle>
+<PageTitle>@labelHistorico</PageTitle>
 @if(IsCargado){
     <BSContainer PaddingBottom="Padding.Large">
         <BSRow>
-            <h1 class="titulo">Histórico</h1>
+            <h1 class="titulo">@labelHistorico</h1>
         </BSRow>
     </BSContainer>
 
@@ -38,34 +35,34 @@
                     
                     <BSRow>
                         <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                            <BSLabel class="labelFormulario">Desde</BSLabel>
+                            <BSLabel class="labelFormulario">@labelDesde</BSLabel>
                             <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaInicio"></BSInput>
                         </BSCol>
                         <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                            <BSLabel class="labelFormulario">Hasta</BSLabel>
+                            <BSLabel class="labelFormulario">@labelHasta</BSLabel>
                             <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaFinal"></BSInput>
                         </BSCol>
                     </BSRow>
                     <br>
                     <BSRow>
                         <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">Estado</BSLabel>
+                            <BSLabel class="labelFormulario">@labelEstado</BSLabel>
                                 <BSInput  InputType="InputType.Select" @bind-Value="filtroIsResuelto">
-                                    <option value="2">Todos</option>
-                                    <option value="0">Sin resolver</option>
-                                    <option value="1">Resueltos</option>
+                                    <option value="2">@labelTodos</option>
+                                    <option value="0">@labelSinResolver</option>
+                                    <option value="1">@labelResueltos</option>
                                 </BSInput>
                         </BSCol>
 
                         <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">Clasificación TPM</BSLabel>
+                            <BSLabel class="labelFormulario">@labelClasificacionTPM</BSLabel>
                                 <BSInput  InputType="InputType.Select" IsDisabled="@IsDisableFTPM" @bind-Value="filtroClasificacionTPM">
-                                    <option value="0">Todas</option>
+                                    <option value="0">@labelTodos</option>
                                     @if (listaClasificacionTPM != null)
                                     {
                                         @foreach (var item in listaClasificacionTPM)
                                         {
-                                            <option value="@item.IdCtpm">@item.Ctpmnom.ToUpper()</option>
+                                            <option value="@item.IdCtpm">@TraducirClasificacionTPM(item.Ctpmnom.ToUpper())</option>
                                         }  
                                     }
                                 </BSInput>
@@ -73,16 +70,16 @@
 
                         @if(isAccesoPais){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">País</BSLabel>
+                                        <BSLabel class="labelFormulario">@labelPais</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
-                                            <option value="0">Seleccione</option>
+                                            <option value="0">@labelSeleccione</option>
                                             @if(listaPais != null){
                                                 @foreach (var item in listaPais)
                                                 {
                                                     <option value="@item.IdPais">@item.Pnombre</option>
                                                 }
                                             }else{
-                                                <option value="0">Cargando...</option>
+                                                <option value="0">@labelCargando ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
@@ -90,16 +87,16 @@
 
                             @if(isAccesoEmpresa){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Empresas</BSLabel>
+                                        <BSLabel class="labelFormulario">@labelEmpresas</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
-                                            <option value="0">Seleccione</option>
+                                            <option value="0">@labelSeleccione</option>
                                             @if(listaEmpresa != null){
                                                 @foreach (var item in listaEmpresa)
                                                 {
                                                     <option value="@item.IdEmpresa">@item.Empresa</option>
                                                 }
                                             }else{
-                                                <option value="0">Cargando...</option>
+                                                <option value="0">@labelCargando ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
@@ -107,55 +104,54 @@
 
                             @if(isAccesoCentro){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Centro</BSLabel>
+                                        <BSLabel class="labelFormulario">@labelCentro</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
-                                            <option value="0">Seleccione</option>
+                                            <option value="0">@labelSeleccione</option>
                                             @if(listaCentro != null){
                                                 @foreach (var item in listaCentro)
                                                 {
                                                     <option value="@item.IdCentro">@item.Centro</option>
                                                 }
                                             }else{
-                                                <option value="0">Cargando...</option>
+                                                <option value="0">@labelCargando ...</option>
                                             }
                                         </BSInput>
-
                                 </BSCol>
                             }
 
                             @if(isAccesoDivision){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Divisiones</BSLabel>
+                                        <BSLabel class="labelFormulario">@labelDivisiones</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
                                             @if(listaDivision != null){
-                                                <option value="0">Todas</option>
+                                                <option value="0">@labelTodos</option>
                                                 @foreach (var item in listaDivision)
                                                 {
                                                     <option value="@item.IdDivision">@item.Ndivision</option>
                                                 }
                                             }else{
-                                                <option value="0">Cargando...</option>
+                                                <option value="0">@labelCargando ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
                             }
 
                             <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">Línea</BSLabel>
+                                        <BSLabel class="labelFormulario">@labelLinea</BSLabel>
                                         <BSInput InputType="InputType.Select" @bind-Value="filtroLinea">
                                             @if (idDivision != 0)
                                             {   
                                                 @if(listaLinea != null){
-                                                    <option value="0">Todas</option>
+                                                    <option value="0">@labelTodos</option>
                                                     @foreach (var item in listaLinea)
                                                     {
                                                         <option value="@item.IdLinea">@item.Linea</option>
                                                     }
                                                 }else{
-                                                    <option value="0">Cargando...</option>
+                                                    <option value="0">@labelCargando ...</option>
                                                 }
                                             }else{
-                                                <option value="0">Seleccione una División</option>
+                                                <option value="0">@labelSeleccioneDivision</option>
                                             }
                                         </BSInput>
                             </BSCol>
@@ -164,7 +160,7 @@
                     <br>
                     <BSRow>
                         <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">Buscar</BSButton>
+                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">@labelBuscar</BSButton>
                         </BSCol>
                     </BSRow>
                     @if (listaNovedades != null)
@@ -175,24 +171,24 @@
                             <BSTHead>
                                 <BSTR class="cabeceraTabla">
                                     <BSTD>#</BSTD>
-                                    <BSTD>Línea</BSTD>
-                                    <BSTD>Fecha</BSTD>
-                                    <BSTD>Codigo de Equipo</BSTD>
-                                    <BSTD>Grupo</BSTD>
-                                    <BSTD>Turno</BSTD>
-                                    <BSTD>Tiempo Perdido (min)</BSTD>
-                                    <BSTD>Discrepancia</BSTD>
-                                    <BSTD>Area cargador</BSTD>
-                                    <BSTD>Observación</BSTD>
-                                    <BSTD>Supervisor</BSTD>
-                                    <BSTD>Estado</BSTD>
+                                    <BSTD>@labelLinea</BSTD>
+                                    <BSTD>@labelFecha</BSTD>
+                                    <BSTD>@labelCodigoEquipo</BSTD>
+                                    <BSTD>@labelGrupo</BSTD>
+                                    <BSTD>@labelTurno</BSTD>
+                                    <BSTD>@labelTiempoPerdido</BSTD>
+                                    <BSTD>@labelDiscrepancia</BSTD>
+                                    <BSTD>@labelAreaCargador</BSTD>
+                                    <BSTD>@labelObservacion</BSTD>
+                                    <BSTD>@labelSupervisor</BSTD>
+                                    <BSTD>@labelEstado</BSTD>
                                     @if(IsAccesoCambioEstado){
-                                        <BSTD>Cambio de estado</BSTD>
+                                        <BSTD>@labelCambioDeEstado</BSTD>
                                     }
                             @* //TODO: ARREGLAR LA Pizarra *@
                                     @if(IsAccesoPizarra){
-                                        <BSTD>Pizarra Unificada</BSTD>
-                                        <BSTD>Tipo de Reunion</BSTD>
+                                        <BSTD>@labelPizarraUnificada</BSTD>
+                                        <BSTD>@labelTipoDeReunion</BSTD>
                                     }
                                 </BSTR>
                             </BSTHead>
@@ -225,9 +221,9 @@
                                         
                                         <BSTD>
                                             @if(item.LnisResu == 1){
-                                                <p>Resuelto</p>
+                                                <p>@labelResuelto</p>
                                             }else if(item.LnisResu == 0){
-                                                <p>Sin Resolver</p>
+                                                <p>@labelSinResolver</p>
                                             }else{
                                                 <p> - </p>
                                             }
@@ -258,8 +254,8 @@
                                             </BSTD>
                                             <BSTD>
                                                 <BSInput id="TPM" InputType="InputType.Select" @bind-Value="item.TipoReu" style="border-radius: 2px; box-shadow: 0 0 1px #000; width: auto;">
-                                                    <option value="2">Turno</option>
-                                                    <option value="1">Diaria</option>
+                                                    <option value="2">@labelTurno</option>
+                                                    <option value="1">@labelDiaria</option>
                                                 </BSInput>
                                             </BSTD>
                                         }
@@ -270,7 +266,7 @@
                         <BSRow>
                             <BSCol Column="12">
                                 @if(IsAccesoPizarra){
-                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">Registrar</BSButton>
+                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">@labelRegistrar</BSButton>
                                 }
                             </BSCol>
                         </BSRow>
@@ -332,6 +328,38 @@
     private BSAlert _alertRef { get; set;}
     private string nombre  { get; set;}
     private string apellido  { get; set;}
+    private string labelHistorico = "Histórico";
+    private string labelDesde = "Desde";
+    private string labelHasta = "Hasta";
+    private string labelEstado = "Estado";
+    private string labelTodos = "Todos";
+    private string labelSinResolver = "Sin resolver";
+    private string labelResueltos = "Resueltos";
+    private string labelClasificacionTPM = "Clasificación TPM";
+    private string labelPais = "País";
+    private string labelEmpresas = "Empresas";
+    private string labelCentro = "Centro";
+    private string labelDivisiones = "Divisiones";
+    private string labelLinea = "Línea";
+    private string labelBuscar = "Buscar";
+    private string labelDiscrepancia = "Discrepancia";
+    private string labelFecha = "Fecha";
+    private string labelGrupo = "Grupo";
+    private string labelTurno = "Turno";
+    private string labelTiempoPerdido = "Tiempo Perdido (min)"; 
+    private string labelCodigoEquipo = "Código Equipo";     
+    private string labelAreaCargador = "Área cargador"; 
+    private string labelObservacion = "Observación";        
+    private string labelSupervisor = "Supervisor";
+    private string labelCambioDeEstado = "Cambio de estado";
+    private string labelPizarraUnificada = "Pizarra Unificada";
+    private string labelTipoDeReunion = "Tipo de Reunión";
+    private string labelRegistrar = "Registrar";
+    private string labelCargando = "Cargando";
+    private string labelSeleccione = "Seleccione";
+    private string labelSeleccioneDivision = "Seleccione una división";
+    private string labelResuelto = "Resuelto";
+    private string labelDiaria = "Diaria";
     protected override async Task  OnInitializedAsync()
     {
         IsCargado = false;
@@ -351,7 +379,47 @@
                 IsDisableFTPM = true;
                 filtroFechaInicio = DateTime.Now.Date;
                 filtroFechaFinal = DateTime.Now.Date;
-
+            
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                idPais = int.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0") ;
+                if (idPais == 5)
+                {
+                    labelHistorico = "Historical";
+                    labelDesde = "From";
+                    labelHasta = "To";
+                    labelEstado = "Status";
+                    labelTodos = "All";
+                    labelSinResolver = "Unresolved";
+                    labelResueltos = "Resolved";
+                    labelClasificacionTPM = "TPM Classification";
+                    labelPais = "Country";
+                    labelEmpresas = "Companies";
+                    labelCentro = "Center";
+                    labelDivisiones = "Divisions";
+                    labelLinea = "Line";
+                    labelBuscar = "Search";
+                    labelDiscrepancia = "Discrepancy";
+                    labelFecha = "Date";
+                    labelGrupo = "Group";
+                    labelTurno = "Shift";
+                    labelTiempoPerdido = "Lost Time (min)";
+                    labelCodigoEquipo = "Equipment Code";
+                    labelAreaCargador = "Loader Area";
+                    labelObservacion = "Observation";
+                    labelSupervisor = "Supervisor";
+                    labelPizarraUnificada = "Unified Board";
+                    labelCambioDeEstado = "Change Status";
+                    labelTipoDeReunion = "Meeting Type";
+                    labelRegistrar = "Register";
+                    labelCargando = "Loading";
+                    labelSeleccione = "Select";
+                    labelSeleccioneDivision = "Select a division";
+                    labelResuelto = "Resolved";
+                    labelDiaria = "Daily";
+                    labelCargando = "Loading";
+                }
+            }
                 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
                 nombre = user.FindFirst(c => c.Type.Contains("givenname"))?.Value ?? "";
                 apellido = user.FindFirst(c => c.Type.Contains("surname"))?.Value ?? "";
@@ -472,6 +540,28 @@
             }
         }
         IsCargado = true;
+    }
+    private string TraducirClasificacionTPM(string nombre)
+    {
+    if (idPais == 5)
+    {
+        switch (nombre.ToUpper())
+        {
+            case "MANTENIMIENTO DE CALIDAD":
+                return "QUEALITY MAINTENANCE";
+            case "MANTENIMIENTO AUTONOMO":
+                return "AUTONOMOUS MAINTENANCE";
+            case "SEGURIDAD":
+                return "SAFETY";
+            case "MANTENIMIENTO ESPECIALIZADO":
+                return "SPECIALIZED MAINTENANCE";
+            case "NOVEDAD":
+                return "OBSERVATION";
+            default:
+                return nombre;
+        }
+    }
+    return nombre;
     }
 
     protected async Task BuscarEmpresas(ChangeEventArgs e){

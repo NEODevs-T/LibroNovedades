@@ -22,7 +22,7 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="Historico">
+            <NavLink class="nav-link" href="@historicalHref">
                 <span class="oi oi-book" aria-hidden="true"></span> @labelHistorical
             </NavLink>
         </div>
@@ -39,12 +39,11 @@
 @code {
     private bool collapseNavMenu = true;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
     private string labelHome = "Inicio";
     private string labelFormat = "Formato";
     private string labelHistorical = "Histórico";
     private string labelMeeting = "Reunión de Turno";
-
+    private string historicalHref = "/es/Historico";
     private const int TrinidadYTobago = 5;
 
     protected override async Task OnInitializedAsync()
@@ -62,6 +61,7 @@
                 labelFormat = "Format";
                 labelHistorical = "Historical";
                 labelMeeting = "Daily Meeting";
+                historicalHref = "/en/Historical";
             }
         }
     }

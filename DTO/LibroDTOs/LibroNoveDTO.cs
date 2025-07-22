@@ -25,6 +25,7 @@ public class LibroNoveDTO
     public string Lngrupo { get; set; } = null!;
     [ValidTurno, StringLength(1, ErrorMessage = "Se debe poner un único carácter")]
     public string Lnturno { get; set; } = null!;
+    public int IdPais { get; set; }
 
     public int IdTipoNove { get; set; }
     // [Required(ErrorMessage = "Coloque el area a la que pertenece.")]

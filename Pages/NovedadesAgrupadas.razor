@@ -1,6 +1,7 @@
 @page "/es/FormatoAgrupado/{id:int?}"
 @page "/en/FormatGroup/{id:int?}"
 
+@using System.Globalization
 @inject IPaisData DataPais;
 @inject IEmpresaData DataEmpresa;
 @inject IDivisionData DataDivision;
@@ -28,313 +29,297 @@
         </BSRow>
     </BSContainer>
     <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
-    
         <BSCard CardType="CardType.Body">
-                <BSCard CardType="CardType.Text">
-                    @if(!causaCargada){
-                        <BSRow> 
-
-                            @if(isAccesoPais){
-                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelPais</BSLabel>
-                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
-                                            @if(listaPais != null){
-                                                <option value="0">@labelSeleccioneUnPais</option>
-                                                @foreach (var item in listaPais)
-                                                {
-                                                    <option value="@item.IdPais">@item.Pnombre</option>
-                                                }
-                                            }else{
-                                                <option value="0">@labelCargando ...</option>
-                                            }
-                                        </BSInput>
-                                </BSCol>
-                            }
-
-                            @if(isAccesoEmpresa){
-                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelEmpresas</BSLabel>
-                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
-                                            @if(listaEmpresa != null){
-                                                <option value="0">@labelSeleccioneUnaEmpresa</option>
-                                                @foreach (var item in listaEmpresa)
-                                                {
-                                                    <option value="@item.IdEmpresa">@item.Empresa</option>
-                                                }
-                                            }else{
-                                                <option value="0">@labelCargando ...</option>
-                                            }
-                                        </BSInput>
-                                </BSCol>
-                            }
-
-                            @if(isAccesoCentro){
-                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelCentro</BSLabel>
-                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
-                                            @if(listaCentro != null){
-                                                <option value="0">@labelSeleccioneUnCentro</option>
-                                                @foreach (var item in listaCentro)
-                                                {
-                                                    <option value="@item.IdCentro">@item.Centro</option>
-                                                }
-                                            }else{
-                                                <option value="0">@labelCargando ...</option>
-                                            }
-                                        </BSInput>
-                                </BSCol>
-                            }
-
-                            @if(isAccesoDivision){
-                                <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelDivisiones</BSLabel>
-                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
-                                            @if(listaDivision != null){
-                                                <option value="0">@labelSeleccioneUnaDivision</option>
-                                                @foreach (var item in listaDivision)
-                                                {
-                                                    <option value="@item.IdDivision">@item.Ndivision</option>
-                                                }
-                                            }else{
-                                                <option value="0">@labelCargando ...</option>
-                                            }
-                                        </BSInput>
-                                </BSCol>
-                            }
-
+            <BSCard CardType="CardType.Text">
+                @if(!causaCargada){
+                    <BSRow>
+                        @if(isAccesoPais){
                             <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelLinea</BSLabel>
-                                        <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
-                                            @if (idDivision != 0)
-                                            {   
-                                                @if(listaLinea != null){
-                                                    <option value="0">@labelSeleccioneUnaLinea</option>
-                                                    @foreach (var item in listaLinea)
-                                                    {
-                                                        <option value="@item.IdLinea">@item.Linea</option>
-                                                    }
-                                                }else{
-                                                    <option value="0">@labelCargando ...</option>
-                                                }
-                                            }else{
-                                                <option value="0">@labelSeleccioneUnaDivision</option>
-                                            }
-                                        </BSInput>
-                            </BSCol>
-
-                            <BSCol class="item" Position="Position.Relative" Align="Align.End"  AlignRow="OTRAlignRow" Place ColumnMedium="4">
-                                @if(dataNove.IdLinea != 0){
-                                    <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>@labelSinPerdidaDeTiempo</BSButton>
-                                }
-                            </BSCol>
-                        </BSRow>  
-                        <br>
-                        <br>
-                        @if((paradasBandera) || (rol.Contains("Mantenimiento"))){
-                                        <BSRow>
-                                            <BSCol Position="Position.Relative" Place ColumnMedium="5">
-                                                @if(rol.Contains("Mantenimiento")){
-                                                    <BSLabel class="labelFormularioGrande">@labelTiempoEmpleado</BSLabel>
-                                                }else{
-                                                    <BSLabel class="labelFormularioGrande">@labelTiempoPerdido</BSLabel>
-                                                }
-                                                <BSInput InputType="InputType.Number" @bind-Value="tiempoPerdido" rows="1"></BSInput>
-                                            </BSCol>
-                                            <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                                <BSLabel class="labelFormulario">@labelCausa</BSLabel>
-                                                <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdTipoNove">
-                                                    @if(listaTiposNovedad != null){
-                                                        <option value="0">@labelSeleccione</option>
-                                                        @foreach (var item in listaTiposNovedad)
-                                                        {
-                                                            <option value="@item.IdTiParTp">@item.Tpnombre</option>
-                                                        }
-                                                    }else{
-                                                        <option value="0">@labelCargando ...</option>
-                                                    }
-                                                </BSInput>
-                                            </BSCol>
-                                            <BSCol Position="Position.Relative" Class="AbajoBoton" Place ColumnMedium="3">
-                                                <BSButton class="buttonFormularioOK" @onclick="eleccionSinGespline">@labelSeleccionar</BSButton>
-                                            </BSCol>
-                                        </BSRow>
-                        }else{
-                            <BSTable IsResponsive="true" IsStriped="true">
-                                <BSTHead>
-                                    <BSTR class="cabeceraTabla">
-                                        <BSTD>#</BSTD>
-                                        <BSTD>@thSeccion</BSTD>
-                                        <BSTD>@thDescripcion</BSTD>
-                                        <BSTD>@thTiempo</BSTD>
-                                        <BSTD>@thSeleccionar</BSTD>
-                                    </BSTR>
-                                </BSTHead>
-                                <BSTBody class="cuerpoTabla">
-                                    @if(paradas == null){
-                                        <BSTR>
-                                            <BSTD ColSpan="5">@tdColoqueLinea</BSTD>
-                                        </BSTR>
-                                    }else{
-                                        @foreach (var item in indexParadas)
+                                <BSLabel class="labelFormulario">@labelPais</BSLabel>
+                                <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
+                                    @if(listaPais != null){
+                                        <option value="0">@labelSeleccioneUnPais</option>
+                                        @foreach (var item in listaPais)
                                         {
-                                            <BSTR>
-                                                <BSTD>@(item + 1)</BSTD>
-                                                <BSTD>@paradas[4][item]</BSTD>
-                                                <BSTD>@paradas[3][item]</BSTD>
-                                                <BSTD>@Math.Round(double.Parse(paradas[5][item]),2)</BSTD>
-                                                @if(paradas[6][item] == "0"){
-                                                    <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">@labelSeleccionar</BSButton></BSTD>
-                                                }else if(paradas[6][item] == "1"){
-                                                    <BSTD><BSButton id="@item"  class="buttonFormularioCambio" @onclick="@(e => eleccion(item))">@labelActualizadoBoton</BSButton></BSTD>
-                                                }else{
-                                                    <BSTD><BSButton id="@item"  class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">@labelActualizadoBoton</BSButton></BSTD>
-                                                }
-                                            </BSTR>
+                                            <option value="@item.IdPais">@item.Pnombre</option>
                                         }
+                                    }else{
+                                        <option value="0">@labelCargando ...</option>
                                     }
-                                </BSTBody>
-                            </BSTable>
+                                </BSInput>
+                            </BSCol>
                         }
-                    }else{
-                        <BSForm Model="dataNove" IsRow="true" Gutters="Gutters.Medium" OnSubmit="OK">
-                            <DataAnnotationsValidator />
-                            @if(isAccesoCentro){
-                                <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelCentro</BSLabel>
-                                        <BSInput IsDisabled="true" InputType="InputType.Select" @bind-Value="idCentro"> 
-                                            @* @onchange="BuscarLinea" *@
-                                            @if(listaCentro != null){
-                                                <option value="0">@labelSeleccioneUnCentro</option>
-                                                @foreach (var item in listaCentro)
-                                                {
-                                                    <option value="@item.IdCentro">@item.Centro</option>
-                                                }
-                                            }else{
-                                                <option value="0">@labelCargando ...</option>
-                                            }
-                                        </BSInput>
-                                </BSCol>
-                            }
-                            <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                    <BSLabel class="labelFormulario">@labelLinea</BSLabel>
-                                    <BSInput InputType="InputType.Select" IsDisabled="true" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
-                                        @if (idCentro != 0)
-                                        {   
-                                            @if(listaLinea != null){
-                                                <option value="0">@labelSeleccioneUnaLinea</option>
-                                                @foreach (var item in listaLinea)
-                                                {
-                                                    <option value="@item.IdLinea">@item.Linea</option>
-                                                }
-                                            }else{
-                                                <option value="0">@labelCargando ...</option>
-                                            }
-                                        }else{
-                                            <option value="0">@labelSeleccioneUnCentro</option>
+                        @if(isAccesoEmpresa){
+                            <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                <BSLabel class="labelFormulario">@labelEmpresas</BSLabel>
+                                <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
+                                    @if(listaEmpresa != null){
+                                        <option value="0">@labelSeleccioneUnaEmpresa</option>
+                                        @foreach (var item in listaEmpresa)
+                                        {
+                                            <option value="@item.IdEmpresa">@item.Empresa</option>
                                         }
-                                    </BSInput>
-                                    <BSFeedback For="@(() => dataNove.IdLinea)"/> 
+                                    }else{
+                                        <option value="0">@labelCargando ...</option>
+                                    }
+                                </BSInput>
+                            </BSCol>
+                        }
+                        @if(isAccesoCentro){
+                            <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                <BSLabel class="labelFormulario">@labelCentro</BSLabel>
+                                <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
+                                    @if(listaCentro != null){
+                                        <option value="0">@labelSeleccioneUnCentro</option>
+                                        @foreach (var item in listaCentro)
+                                        {
+                                            <option value="@item.IdCentro">@item.Centro</option>
+                                        }
+                                    }else{
+                                        <option value="0">@labelCargando ...</option>
+                                    }
+                                </BSInput>
+                            </BSCol>
+                        }
+                        @if(isAccesoDivision){
+                            <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                                <BSLabel class="labelFormulario">@labelDivisiones</BSLabel>
+                                <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
+                                    @if(listaDivision != null){
+                                        <option value="0">@labelSeleccioneUnaDivision</option>
+                                        @foreach (var item in listaDivision)
+                                        {
+                                            <option value="@item.IdDivision">@item.Ndivision</option>
+                                        }
+                                    }else{
+                                        <option value="0">@labelCargando ...</option>
+                                    }
+                                </BSInput>
+                            </BSCol>
+                        }
+                        <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
+                            <BSLabel class="labelFormulario">@labelLinea</BSLabel>
+                            <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
+                                @if (idDivision != 0)
+                                {
+                                    @if(listaLinea != null){
+                                        <option value="0">@labelSeleccioneUnaLinea</option>
+                                        @foreach (var item in listaLinea)
+                                        {
+                                            <option value="@item.IdLinea">@item.Linea</option>
+                                        }
+                                    }else{
+                                        <option value="0">@labelCargando ...</option>
+                                    }
+                                }else{
+                                    <option value="0">@labelSeleccioneUnaDivision</option>
+                                }
+                            </BSInput>
+                        </BSCol>
+                        <BSCol class="item" Position="Position.Relative" Align="Align.End"  AlignRow="OTRAlignRow" Place ColumnMedium="4">
+                            @if(dataNove.IdLinea != 0){
+                                <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>@labelSinPerdidaDeTiempo</BSButton>
+                            }
+                        </BSCol>
+                    </BSRow>
+                    <br>
+                    <br>
+                    @if((paradasBandera) || (rol.Contains("Mantenimiento"))){
+                        <BSRow>
+                            <BSCol Position="Position.Relative" Place ColumnMedium="5">
+                                @if(rol.Contains("Mantenimiento")){
+                                    <BSLabel class="labelFormularioGrande">@labelTiempoEmpleado</BSLabel>
+                                }else{
+                                    <BSLabel class="labelFormularioGrande">@labelTiempoPerdido</BSLabel>
+                                }
+                                <BSInput InputType="InputType.Number" @bind-Value="tiempoPerdido" rows="1"></BSInput>
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                    <BSLabel class="labelFormulario">@labelGrupo</BSLabel>
-                                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                <BSLabel class="labelFormulario">@labelCausa</BSLabel>
+                                <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdTipoNove">
+                                    @if(listaTiposNovedad != null){
+                                        <option value="0">@labelSeleccione</option>
+                                        @foreach (var item in listaTiposNovedad)
+                                        {
+                                            <option value="@item.IdTiParTp">@item.Tpnombre</option>
+                                        }
+                                    }else{
+                                        <option value="0">@labelCargando ...</option>
+                                    }
+                                </BSInput>
+                            </BSCol>
+                            <BSCol Position="Position.Relative" Class="AbajoBoton" Place ColumnMedium="3">
+                                <BSButton class="buttonFormularioOK" @onclick="eleccionSinGespline">@labelSeleccionar</BSButton>
+                            </BSCol>
+                        </BSRow>
+                    }else{
+                        <BSTable IsResponsive="true" IsStriped="true">
+                            <BSTHead>
+                                <BSTR class="cabeceraTabla">
+                                    <BSTD>#</BSTD>
+                                    <BSTD>@thSeccion</BSTD>
+                                    <BSTD>@thDescripcion</BSTD>
+                                    <BSTD>@thTiempo</BSTD>
+                                    <BSTD>@thSeleccionar</BSTD>
+                                </BSTR>
+                            </BSTHead>
+                            <BSTBody class="cuerpoTabla">
+                                @if(paradas == null){
+                                    <BSTR>
+                                        <BSTD ColSpan="5">@tdColoqueLinea</BSTD>
+                                    </BSTR>
+                                }else{
+                                    @foreach (var item in indexParadas)
+                                    {
+                                        <BSTR>
+                                            <BSTD>@(item + 1)</BSTD>
+                                            <BSTD>@paradas[4][item]</BSTD>
+                                            <BSTD>@paradas[3][item]</BSTD>
+                                            <BSTD>@Math.Round(double.Parse(paradas[5][item]),2)</BSTD>
+                                            @if(paradas[6][item] == "0"){
+                                                <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">@labelSeleccionar</BSButton></BSTD>
+                                            }else if(paradas[6][item] == "1"){
+                                                <BSTD><BSButton id="@item"  class="buttonFormularioCambio" @onclick="@(e => eleccion(item))">@labelActualizadoBoton</BSButton></BSTD>
+                                            }else{
+                                                <BSTD><BSButton id="@item"  class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">@labelActualizadoBoton</BSButton></BSTD>
+                                            }
+                                        </BSTR>
+                                    }
+                                }
+                            </BSTBody>
+                        </BSTable>
+                    }
+                }else{
+                    <BSForm Model="dataNove" IsRow="true" Gutters="Gutters.Medium" OnSubmit="OK">
+                        <DataAnnotationsValidator />
+                        @if(isAccesoCentro){
+                            <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                <BSLabel class="labelFormulario">@labelCentro</BSLabel>
+                                <BSInput IsDisabled="true" InputType="InputType.Select" @bind-Value="idCentro">
+                                    @if(listaCentro != null){
+                                        <option value="0">@labelSeleccioneUnCentro</option>
+                                        @foreach (var item in listaCentro)
+                                        {
+                                            <option value="@item.IdCentro">@item.Centro</option>
+                                        }
+                                    }else{
+                                        <option value="0">@labelCargando ...</option>
+                                    }
+                                </BSInput>
+                            </BSCol>
+                        }
+                        <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                            <BSLabel class="labelFormulario">@labelLinea</BSLabel>
+                            <BSInput InputType="InputType.Select" IsDisabled="true" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
+                                @if (idCentro != 0)
+                                {
+                                    @if(listaLinea != null){
+                                        <option value="0">@labelSeleccioneUnaLinea</option>
+                                        @foreach (var item in listaLinea)
+                                        {
+                                            <option value="@item.IdLinea">@item.Linea</option>
+                                        }
+                                    }else{
+                                        <option value="0">@labelCargando ...</option>
+                                    }
+                                }else{
+                                    <option value="0">@labelSeleccioneUnCentro</option>
+                                }
+                            </BSInput>
+                            <BSFeedback For="@(() => dataNove.IdLinea)"/>
+                        </BSCol>
+                        <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                            <BSLabel class="labelFormulario">@labelGrupo</BSLabel>
+                            <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
                                             TValue="string" Data=@(grupos.Select(c => c.Value))  @bind-Value=dataNove.Lngrupo Style="width: 100%"
                                             Disabled="@isDisableManualGT">
-                                    </RadzenDropDown>
-                                    <BSFeedback For="@(() => dataNove.Lngrupo)"/> 
-                            </BSCol>
-                            <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                    <BSLabel class="labelFormulario">@labelTurno</BSLabel>
-                                    <BSInput name="Turno" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lnturno"></BSInput>
-                                    <BSFeedback For="@(() => dataNove.Lnturno)"/> 
-                            </BSCol>
-                            <BSCol Position="Position.Relative" Place ColumnMedium="6">
-                                    <BSLabel class="labelFormularioGrande">@labelCodigoEquipo</BSLabel>
-                                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
-                                        TValue="string" Data=listaEquiposEAM LoadData=@LoadData ValueProperty="EcodEquiEam" AllowClear="true" @bind-Value=@dataNove.IdEquipo Style="width: 100%">
-                                        <Template Context="item">
-                                            @item.EcodEquiEam - @item.EnombreEam -  @item.EdescriEam
-                                        </Template>
-                                    </RadzenDropDown>
-                                    
-                            </BSCol>
-                            @if(isTPM){
-                                @if(isFichaManual){
-                                    <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                            <BSLabel class="labelFormularioGrande">@labelFicha</BSLabel>
-                                            <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.LnfichaRes"></BSInput>
-                                            <BSFeedback For="@(() => dataNove.LnfichaRes)"/> 
-                                    </BSCol>
-                                }
-                                <BSCol Position="Position.Relative" Place ColumnMedium="5">
-                                    <BSLabel class="labelFormulario">@labelClasificacionTPM</BSLabel>
-                                    @* TODO: REVISION*@
-                                    <BSInput IsDisabled="@isDisableManualCTPM" id="TPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
-                                        @if(listaClasificacionTPM != null){
-                                            <option value="0">@labelSeleccione</option>
-                                            @foreach (var item in listaClasificacionTPM)
-                                            {
-                                                <option value="@item.IdCtpm">@TraducirClasificacionTPM(item.Ctpmnom.ToUpper())</option>
-                                            }
-                                        }else{
-                                            <option value="0">@labelCargando ...</option>
-                                        }
-                                    </BSInput>
-                                    <BSFeedback For="@(() => dataNove.IdCtpm)"/> 
+                            </RadzenDropDown>
+                            <BSFeedback For="@(() => dataNove.Lngrupo)"/>
+                        </BSCol>
+                        <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                            <BSLabel class="labelFormulario">@labelTurno</BSLabel>
+                            <BSInput name="Turno" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lnturno"></BSInput>
+                            <BSFeedback For="@(() => dataNove.Lnturno)"/>
+                        </BSCol>
+                        <BSCol Position="Position.Relative" Place ColumnMedium="6">
+                            <BSLabel class="labelFormularioGrande">@labelCodigoEquipo</BSLabel>
+                            <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
+                                TValue="string" Data=listaEquiposEAM LoadData=@LoadData ValueProperty="EcodEquiEam" AllowClear="true" @bind-Value=@dataNove.IdEquipo Style="width: 100%">
+                                <Template Context="item">
+                                    @item.EcodEquiEam - @item.EnombreEam -  @item.EdescriEam
+                                </Template>
+                            </RadzenDropDown>
+                        </BSCol>
+                        @if(isTPM){
+                            @if(isFichaManual){
+                                <BSCol Position="Position.Relative" Place ColumnMedium="4">
+                                    <BSLabel class="labelFormularioGrande">@labelFicha</BSLabel>
+                                    <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.LnfichaRes"></BSInput>
+                                    <BSFeedback For="@(() => dataNove.LnfichaRes)"/>
                                 </BSCol>
-                                
-                                <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                                        <BSLabel style="width: 200px;" class="labelFormulario">@labelFichaSupervisor</BSLabel>
-                                        <BSInput InputType="InputType.Text" @bind-Value="dataNove.LnfichSupe">
-                                        </BSInput>
-                                        <BSFeedback For="@(() => dataNove.LnfichSupe)"/> 
-                                </BSCol> 
-                                <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                                        <BSLabel class="labelFormulario">@labelResuelto</BSLabel>
-                                        <BSInput InputType="InputType.Select" @bind-Value="dataNove.LnisResu">
-                                            <option value="0">@labelNo</option>
-                                            <option value="1">@labelSi</option>
-                                        </BSInput>
-                                        <BSFeedback For="@(() => dataNove.LnisResu)"/> 
-                                </BSCol> 
-                                
                             }
-                            
-
-                            <BSCol Position="Position.Relative" Place ColumnMedium="12">
-                                    <BSLabel class="labelFormulario">@labelDiscrepancia</BSLabel>
-                                    <BSInput class="TextAreaMediano" placeholder="@nota" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
-                                    <BSFeedback For="@(() => dataNove.Lndiscrepa)"/> 
-                            </BSCol>
-                            <BSCol Position="Position.Relative" Place ColumnMedium="12">
-                                    @if(dataNove.LnisResu == 1){
-                                        <BSLabel class="labelFormulario">@labelAccion</BSLabel>
+                            <BSCol Position="Position.Relative" Place ColumnMedium="5">
+                                <BSLabel class="labelFormulario">@labelClasificacionTPM</BSLabel>
+                                <BSInput IsDisabled="@isDisableManualCTPM" id="TPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
+                                    @if(listaClasificacionTPM != null){
+                                        <option value="0">@labelSeleccione</option>
+                                        @foreach (var item in listaClasificacionTPM)
+                                        {
+                                            <option value="@item.IdCtpm">@TraducirClasificacionTPM(item.Ctpmnom.ToUpper())</option>
+                                        }
                                     }else{
-                                        <BSLabel class="labelFormulario">@labelObservacion</BSLabel>
+                                        <option value="0">@labelCargando ...</option>
                                     }
-                    
-                                    <BSInput class="TextAreaMediano" InputType="InputType.TextArea"  rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
-                                    <BSFeedback For="@(() => dataNove.Lnobserv)"/> 
+                                </BSInput>
+                                <BSFeedback For="@(() => dataNove.IdCtpm)"/>
                             </BSCol>
-                            <BSCol Column="12">
-                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabledButton" IsSubmit="true">@labelRegistrar</BSButton>
-                                    <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabledButton" @onclick=atras IsReset="true" >@labelAtras</BSButton> 
+                            <BSCol Position="Position.Relative" Place ColumnMedium="3">
+                                <BSLabel style="width: 200px;" class="labelFormulario">@labelFichaSupervisor</BSLabel>
+                                <BSInput InputType="InputType.Text" @bind-Value="dataNove.LnfichSupe">
+                                </BSInput>
+                                <BSFeedback For="@(() => dataNove.LnfichSupe)"/>
                             </BSCol>
-                        </BSForm>
-                    }
-                </BSCard>
-            
+                            <BSCol Position="Position.Relative" Place ColumnMedium="3">
+                                <BSLabel class="labelFormulario">@labelResuelto</BSLabel>
+                                <BSInput InputType="InputType.Select" @bind-Value="dataNove.LnisResu">
+                                    <option value="0">@labelNo</option>
+                                    <option value="1">@labelSi</option>
+                                </BSInput>
+                                <BSFeedback For="@(() => dataNove.LnisResu)"/>
+                            </BSCol>
+                        }
+                        <BSCol Position="Position.Relative" Place ColumnMedium="12">
+                            <BSLabel class="labelFormulario">@labelDiscrepancia</BSLabel>
+                            <BSInput class="TextAreaMediano" placeholder="@nota" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
+                            <BSFeedback For="@(() => dataNove.Lndiscrepa)"/>
+                        </BSCol>
+                        <BSCol Position="Position.Relative" Place ColumnMedium="12">
+                            @if(dataNove.LnisResu == 1){
+                                <BSLabel class="labelFormulario">@labelAccion</BSLabel>
+                            }else{
+                                <BSLabel class="labelFormulario">@labelObservacion</BSLabel>
+                            }
+                            <BSInput class="TextAreaMediano" InputType="InputType.TextArea"  rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
+                            <BSFeedback For="@(() => dataNove.Lnobserv)"/>
+                        </BSCol>
+                        <BSCol Column="12">
+                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabledButton" IsSubmit="true">@labelRegistrar</BSButton>
+                            <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabledButton" @onclick=atras IsReset="true" >@labelAtras</BSButton>
+                        </BSCol>
+                    </BSForm>
+                }
+            </BSCard>
         </BSCard>
     </BSCard>
 }else{
     <BSRow class="carga" Justify="Justify.Center">
         <BSCol Column="3">
-        <div class="loader"></div>
-        </BSCol>  
+            <div class="loader"></div>
+        </BSCol>
     </BSRow>
 }
-@code{
 
+@code{
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationState { get; set; }
     [Parameter]
@@ -456,7 +441,6 @@
                 return "Enter a time greater than 0 and a specific cause";
             case "Error al consultar al gespline.":
                 return "Error querying gespline.";
-            // Agrega más traducciones según tus necesidades
             default:
                 return mensaje;
         }
@@ -464,17 +448,29 @@
     return mensaje;
 }
     
-    protected override async Task  OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-
         if (authenticationState is not null)
         {
             AuthenticationState? authState = await authenticationState;
             ClaimsPrincipal? user = authState?.User;
 
-            if (user?.Identity is not null && user.Identity.IsAuthenticated)
-            {
-                idPais = int.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0") ;
+    if (user?.Identity is not null && user.Identity.IsAuthenticated)
+    {
+        idPais = int.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0");
+        if (idPais == 5)
+        {
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en");
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en");
+        }
+        else
+        {
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("es");
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("es");
+        }
+
+        dataNove = new LibroNoveDTO();
+        dataNove.IdPais = idPais;
                 if (idPais == 5)
                 {
                     labelFormato = "Format Group";
@@ -520,7 +516,7 @@
                     labelPorActualizarBoton = "To Update";
                 }
             }
-
+    
 
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
@@ -538,6 +534,7 @@
 
                 if(id == id){
                     dataNove = new LibroNoveDTO();
+                    dataNove.IdPais = idPais;
                     dataNove.Lnobserv = "";
                     dataNove.Lndiscrepa = "";
                     dataNove.LnisResu = 0;
@@ -791,6 +788,7 @@
                         }
                             
                         dataNove = new LibroNoveDTO();
+                        dataNove.IdPais = idPais;
                         listaDataNove = new List<LibroNoveDTO>();
                         listaEquiposEAM = listaAllEquiposEAM.ToList();
                         InvokeAsync(StateHasChanged);

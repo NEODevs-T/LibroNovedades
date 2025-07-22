@@ -163,16 +163,16 @@
                                 <BSTHead>
                                     <BSTR class="cabeceraTabla">
                                         <BSTD>#</BSTD>
-                                        <BSTD>Sección</BSTD>
-                                        <BSTD>Descripción</BSTD>
-                                        <BSTD>Tiempo (min)</BSTD>
-                                        <BSTD>Seleccionar</BSTD>
+                                        <BSTD>@thSeccion</BSTD>
+                                        <BSTD>@thDescripcion</BSTD>
+                                        <BSTD>@thTiempo</BSTD>
+                                        <BSTD>@thSeleccionar</BSTD>
                                     </BSTR>
                                 </BSTHead>
                                 <BSTBody class="cuerpoTabla">
                                     @if(paradas == null){
                                         <BSTR>
-                                            <BSTD ColSpan="5">Coloque una Línea</BSTD>
+                                            <BSTD ColSpan="5">@tdColoqueLinea</BSTD>
                                         </BSTR>
                                     }else{
                                         @foreach (var item in indexParadas)
@@ -183,11 +183,11 @@
                                                 <BSTD>@paradas[3][item]</BSTD>
                                                 <BSTD>@Math.Round(double.Parse(paradas[5][item]),2)</BSTD>
                                                 @if(paradas[6][item] == "0"){
-                                                    <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">Seleccionar</BSButton></BSTD>
+                                                    <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">@labelSeleccionar</BSButton></BSTD>
                                                 }else if(paradas[6][item] == "1"){
-                                                    <BSTD><BSButton id="@item"  class="buttonFormularioCambio" @onclick="@(e => eleccion(item))">Actulizado</BSButton></BSTD>
+                                                    <BSTD><BSButton id="@item"  class="buttonFormularioCambio" @onclick="@(e => eleccion(item))">@labelActualizadoBoton</BSButton></BSTD>
                                                 }else{
-                                                    <BSTD><BSButton id="@item"  class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">Por Actualizar</BSButton></BSTD>
+                                                    <BSTD><BSButton id="@item"  class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">@labelActualizadoBoton</BSButton></BSTD>
                                                 }
                                             </BSTR>
                                         }
@@ -425,6 +425,44 @@
     private string labelAccion = "Acción";
     private string labelRegistrar = "Registrar";
     private string labelAtras = "Atrás";
+    private string thSeccion = "Sección";
+    private string thDescripcion = "Descripción";
+    private string thTiempo = "Tiempo (min)";
+    private string thSeleccionar = "Seleccionar";
+    private string tdColoqueLinea = "Coloque una Línea";
+
+    private string labelActualizadoBoton = "Actualizado";
+    private string labelPorActualizarBoton = "Por Actualizar";
+
+    private string TraducirMensaje(string mensaje)
+{
+    if (idPais == 5)
+    {
+        switch (mensaje)
+        {
+            case "Registre una Novedad":
+                return "Register a new Observation";
+            case "Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua":
+                return "There was an error, please log in again. If the error persists, contact continuous improvement.";
+            case "Guardado Exitosamente":
+                return "Saved Successfully";
+            case "Error. Intente de nuevo":
+                return "Error. Please try again";
+            case "La descripción de la acción tomada es obligatoria":
+                return "The description of the action taken is required";
+            case "Campo vacío, por favor revisa todo el formulario":
+                return "Empty field, please check the entire form";
+            case "Coloque un tiempo mayor a 0 y una causa especifica":
+                return "Enter a time greater than 0 and a specific cause";
+            case "Error al consultar al gespline.":
+                return "Error querying gespline.";
+            // Agrega más traducciones según tus necesidades
+            default:
+                return mensaje;
+        }
+    }
+    return mensaje;
+}
     
     protected override async Task  OnInitializedAsync()
     {
@@ -473,6 +511,13 @@
                     labelAccion = "Action";
                     labelRegistrar = "Register";
                     labelAtras = "Back";
+                    thSeccion = "Section";
+                    thDescripcion = "Description";
+                    thTiempo = "Time (min)";
+                    thSeleccionar = "Select";
+                    tdColoqueLinea = "Select a Line";
+                    labelActualizadoBoton = "Updated";
+                    labelPorActualizarBoton = "To Update";
                 }
             }
 
@@ -947,6 +992,8 @@
 
     public void Notificacion(string tipo,string mensaje,string detalle)
     {
+        mensaje = TraducirMensaje(mensaje);
+        detalle = TraducirMensaje(detalle);
 
         NotificationMessage notificacion;
         if(tipo == "error"){

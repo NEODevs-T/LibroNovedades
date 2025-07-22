@@ -12,18 +12,18 @@ public class LibroNoveDTO
     public int IdlibrNov { get; set; }
     // [ValidDiferenteACero]
     public int IdLinea { get; set; }
-    [Required(ErrorMessage = "Coloque el id de equipo afectado.")]
+    [Required(ErrorMessage = "Coloque el id de equipo afectado. / Enter the ID of the affected equipment.")]
     public string IdEquipo { get; set; } = null!;
-    [Required(ErrorMessage = "Coloque la novedad."), StringLength(150, ErrorMessage = "Alcanzo el limite de caracteres. Favor poner los detalles en las observacion")]
+    [Required(ErrorMessage = "Coloque la novedad. / Put the observation."), StringLength(150, ErrorMessage = "Alcanzo el limite de caracteres. Favor poner los detalles en las observación / Character limit reached. Please include the details in the observations.")]
     public string Lndiscrepa { get; set; } = null!;
     // [ValidMayorACero]
     public double LntiePerMi { get; set; }
-    [Required(ErrorMessage = "Coloque su ficha.")]
+    [Required(ErrorMessage = "Coloque su ficha. / Put your sheet.")]
     public string LnfichaRes { get; set; } = null!;
     public DateTime Lnfecha { get; set; }
-    [ValidDiferenteACero, StringLength(1, ErrorMessage = "Se debe poner un único carácter")]
+    [ValidDiferenteACero, StringLength(1, ErrorMessage = "Se debe poner un único carácter. / Only a single character must be entered.")]
     public string Lngrupo { get; set; } = null!;
-    [ValidTurno, StringLength(1, ErrorMessage = "Se debe poner un único carácter")]
+    [ValidTurno, StringLength(1, ErrorMessage = "Se debe poner un único carácter. / Only a single character must be entered.")]
     public string Lnturno { get; set; } = null!;
     public int IdPais { get; set; }
 

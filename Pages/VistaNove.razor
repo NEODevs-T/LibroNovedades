@@ -71,7 +71,7 @@
                         @if(isAccesoPais){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
                                         <BSLabel class="labelFormulario">@labelPais</BSLabel>
-                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
+                                        <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPaisFiltro" @onchange="BuscarEmpresas">
                                             <option value="0">@labelSeleccione</option>
                                             @if(listaPais != null){
                                                 @foreach (var item in listaPais)
@@ -360,29 +360,49 @@
     private string labelSeleccioneDivision = "Seleccione una división";
     private string labelResuelto = "Resuelto";
     private string labelDiaria = "Diaria";
+    private int idPaisFiltro { get; set; }
+
+    private string TraducirMensaje(string mensaje)
+    {
+        if (idPais == 5)
+        {
+            switch (mensaje)
+            {
+                case "Historico de registro de las novedades":
+                    return "Historical record of observations";
+                case "Sin Acceso":
+                    return "No Access";
+                case "Se realizo de manera exitosa":
+                    return "Completed successfully";
+                case "Falla en la actualizacion en el libro de novedades, la data fue registrada en la pizarra unificada":
+                    return "Update failed in the logbook, data was registered on the unified board";
+                case "No se encontró ningún dato valido para registrar al libro de novedades. Recuerde que las actividades resueltas no pueden ser enviadas a la Pizarra, además no podrá enviar actividades que ya se cargaron anteriormente.":
+                    return "No valid data found to register in the logbook. Remember that resolved activities cannot be sent to the Board, and you cannot send activities that have already been loaded previously.";
+                case "Error al consultar al gespline.":
+                    return "Error querying gespline.";
+                case "El cambio fue exitoso":
+                    return "The change was successful";
+                case "Intente de Nuevo. Si el problema persiste enviar un correo a Mejora Continua":
+                    return "Try again. If the problem persists, send an email to Continuous Improvement";
+                case "La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad":
+                    return "The discrepancy of the observations has already reached 24 hours, the status of this observation cannot be changed";
+                default:
+                    return mensaje;
+            }
+        }
+        return mensaje;
+    }
+    
     protected override async Task  OnInitializedAsync()
     {
         IsCargado = false;
         if (authenticationState is not null){
-
             AuthenticationState? authState = await authenticationState;
             ClaimsPrincipal? user = authState?.User;
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
-                mensaje = "Historico de registro de las novedades";
-                Notificacion("info","",mensaje);
-
-                isDisabled = false;
-                idAreCargada = 0;
-                IsAccesoPizarra = false;
-                IsAccesoCambioEstado = false;
-                IsDisableFTPM = true;
-                filtroFechaInicio = DateTime.Now.Date;
-                filtroFechaFinal = DateTime.Now.Date;
-            
-            if (user?.Identity is not null && user.Identity.IsAuthenticated)
-            {
                 idPais = int.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0") ;
+                idPaisFiltro = idPais;
                 if (idPais == 5)
                 {
                     labelHistorico = "Historical";
@@ -419,7 +439,15 @@
                     labelDiaria = "Daily";
                     labelCargando = "Loading";
                 }
-            }
+                mensaje = "Historico de registro de las novedades";
+                Notificacion("info","",mensaje);
+                isDisabled = false;
+                idAreCargada = 0;
+                IsAccesoPizarra = false;
+                IsAccesoCambioEstado = false;
+                IsDisableFTPM = true;
+                filtroFechaInicio = DateTime.Now.Date;
+                filtroFechaFinal = DateTime.Now.Date;
                 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
                 nombre = user.FindFirst(c => c.Type.Contains("givenname"))?.Value ?? "";
                 apellido = user.FindFirst(c => c.Type.Contains("surname"))?.Value ?? "";
@@ -516,8 +544,6 @@
 
                     listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
                 }
-
-
                 if(rol.Contains("Calidad")){
                     idAreCargada = 2;
                     filtroClasificacionTPM = 4;
@@ -541,6 +567,7 @@
         }
         IsCargado = true;
     }
+
     private string TraducirClasificacionTPM(string nombre)
     {
     if (idPais == 5)
@@ -565,14 +592,14 @@
     }
 
     protected async Task BuscarEmpresas(ChangeEventArgs e){
-        idPais = int.Parse(e.Value.ToString());
+        idPaisFiltro = int.Parse(e.Value.ToString());
         idEmpresa = 0;
         idCentro = 0;
         idDivision = 0;
         idLinea = 0;
         try{
-            if(idPais != 0){
-                listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
+            if(idPaisFiltro != 0){
+                listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPaisFiltro);
             }
         }catch(Exception ex){
             mensaje = "Error: " + ex.Message;
@@ -623,8 +650,6 @@
         }
     }
 
-
-
     protected async Task buscar(){
         //try{
             if(filtroFechaInicio.Date == filtroFechaFinal.Date) {
@@ -637,7 +662,7 @@
                 listaNovedades = null;
                 listaNovedades = await LibroNovData.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
             }
-           /* }catch(Exception ex){
+            /* }catch(Exception ex){
                 mensaje = "Error: " + ex.Message;
                 Notificacion("error","",mensaje);
         } */
@@ -668,12 +693,9 @@
             Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad");
         }
     }
-
     protected async Task Guardar(){
         isDisabled = true;
         List<LibroNoveDTO> listaFiltrada = new List<LibroNoveDTO>();
-
-
         try{
             mensaje = "";
             (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idEmpresa,idCentro,idDivision,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroClasificacionTPM,nombre + " " + apellido);
@@ -697,20 +719,28 @@
         isDisabled = false;
     }
 
-    public void Notificacion(string tipo,string mensaje,string detalle)
+    public void Notificacion(string tipo, string mensaje, string detalle)
     {
-
+        mensaje = TraducirMensaje(mensaje);
+        detalle = TraducirMensaje(detalle);
         NotificationMessage notificacion;
-        if(tipo == "error"){
+        if (tipo == "error")
+        {
             notificacion = new NotificationMessage { Severity = NotificationSeverity.Error, Summary = mensaje, Detail = detalle, Duration = 8000 };
             notificationService.Notify(notificacion);
-        }else if(tipo == "info"){
+        }
+        else if (tipo == "info")
+        {
             notificacion = new NotificationMessage { Severity = NotificationSeverity.Info, Summary = mensaje, Detail = detalle, Duration = 8000 };
             notificationService.Notify(notificacion);
-        }else if(tipo == "exito"){
+        }
+        else if (tipo == "exito")
+        {
             notificacion = new NotificationMessage { Severity = NotificationSeverity.Success, Summary = mensaje, Detail = detalle, Duration = 8000 };
             notificationService.Notify(notificacion);
-        }else if(tipo == "advertencia"){
+        }
+        else if (tipo == "advertencia")
+        {
             notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
             notificationService.Notify(notificacion);
         }

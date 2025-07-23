@@ -137,13 +137,17 @@
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                 <BSLabel class="labelFormulario">@labelCausa</BSLabel>
                                 <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdTipoNove">
-                                    @if(listaTiposNovedad != null){
+                                    @if (listaTiposNovedad != null)
+                                    {
                                         <option value="0">@labelSeleccione</option>
                                         @foreach (var item in listaTiposNovedad)
                                         {
-                                            <option value="@item.IdTiParTp">@item.Tpnombre</option>
+                                            var texto = idPais == 5 ? item.Tpenglish : item.Tpnombre;
+                                            <option value="@item.IdTiParTp">@texto</option>
                                         }
-                                    }else{
+                                    }
+                                    else
+                                    {
                                         <option value="0">@labelCargando ...</option>
                                     }
                                 </BSInput>

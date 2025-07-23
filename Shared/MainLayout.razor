@@ -2,11 +2,9 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
-
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IDataAPI DataAPI
-
 @inject NotificationService NotificationService
 
 
@@ -32,12 +30,17 @@
                 </article>
             </main>
         </Authorized>
-
         <NotAuthorized>
             <main>
-                <div class="text-center fondo">
+                <div class="caja-idioma">
+                    <select class="idioma"  @bind="idioma">
+                        <option value=1>Español</option>
+                        <option value=2>English</option>
+                    </select>
+                </div>
+                @if(idioma == 1){
+                    <div class="text-center fondo">
                     <RadzenTemplateForm Context="radzen" Data="@userDto" class="form-signin w-25 m-auto loginform ">
-
                         <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                         <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
 
@@ -50,7 +53,23 @@
                         <RadzenButton class="mt-4" ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Disabled="@isDisabled" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=login/>
                     </RadzenTemplateForm>
                 </div>
-            
+                } else if(idioma == 2){
+                <div class="text-center fondo">
+                    <RadzenTemplateForm Context="radzen" Data="@userDto" class="form-signin w-25 m-auto loginform ">
+
+                        <img class="mb-4" id="logoLogin" src="./img/Neo.png">
+                        <h1 class="h3 mb-3 fw-normal">Login</h1>
+
+                        <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">User</RadzenText>
+                        <RadzenTextBox Placeholder="User" Name="usuario" id="usuario"  @bind-Value="usuario" class="w-100" />
+                        
+                        <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">Password</RadzenText>
+                        <RadzenPassword @bind-Value=@contrasena Name="contraseña" id="contraseña" Placeholder="Password..."  class="w-100"/>
+
+                        <RadzenButton class="mt-4" ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Disabled="@isDisabled" Text="Login" ButtonStyle="ButtonStyle.Success" Click=login/>
+                    </RadzenTemplateForm>
+                </div>
+            }
             </main>
         </NotAuthorized>
     </AuthorizeView> 
@@ -67,6 +86,7 @@
     private UserLoginDto userDto {get; set;}
     private HttpResponseMessage result {get; set;}
     private string validarToken  {get; set;}
+     private int idioma  {get; set;} = 1;
 
     protected override async Task  OnInitializedAsync()
     {
@@ -82,7 +102,11 @@
 
     protected async Task login(){
         isDisabled = true;
-        mensaje = "Cargando...";
+        if (idioma == 1){
+            mensaje = "Cargando...";
+        }else if(idioma == 2){
+            mensaje = "Loading...";
+        }
         Notificacion("info","",mensaje);
         if (usuario.Trim() != "" && contrasena.Trim() != "")
         {
@@ -95,17 +119,35 @@
             {
                 if (validarToken == "NotFoundUser")
                 {
-                    mensaje = "Verifique el usuario";
+                    if(idioma == 1)
+                    {
+                        mensaje = "Verifique el usuario";
+                    } else if(idioma == 2)
+                    {
+                        mensaje = "Check the user";
+                    }
                     Notificacion("error","",mensaje);
                 }
                 else if (validarToken == "WrongPassword")
                 {
+                    if(idioma == 1)
+                    {
                     mensaje = "Verifique la contraseña";
+                    } else if(idioma == 2)
+                    {
+                        mensaje = "Check the password";
+                    }
                     Notificacion("error","",mensaje);
                 }
                 else if (validarToken == "null")
                 {
-                    mensaje = "Verifique el usuario";
+                    if(idioma == 1)
+                    {
+                        mensaje = "Verifique el usuario";
+                    } else if(idioma == 2)
+                    {
+                        mensaje = "Check the user";
+                    }
                     Notificacion("error","",mensaje);
                 }
                 else
@@ -113,15 +155,33 @@
                     await LocalStorage.SetItemAsync("LibroDeNovedadesNew", validarToken);
                     await AuthStateProvider.GetAuthenticationStateAsync();    
                     NavigationManager.NavigateTo("");
-                    mensaje = "Bienvenido";
+                    if(idioma == 1)
+                    {
+                        mensaje = "Bienvenido";
+                    } else if(idioma == 2)
+                    {
+                        mensaje = "Welcome";
+                    }
                     Notificacion("exito","",mensaje);
                 }
             }else{
-                mensaje = "Hubo un error. Por favor intende de nuevo";
+                if(idioma == 1)
+                {
+                    mensaje = "Hubo un error. Por favor intente de nuevo";
+                } else if(idioma == 2)
+                {
+                    mensaje = "There was an error. Please try again";
+                }
                 Notificacion("error","",mensaje);
             }
         }else{
-            mensaje = "Ingrese un usuario, contraseña valida y ficha valida";
+            if(idioma == 1)
+            {
+                mensaje = "Ingrese un usuario, contraseña valida y ficha valida";
+            } else if(idioma == 2)
+            {
+                mensaje = "Enter a valid user, password and token";
+            }
             Notificacion("error","",mensaje);
         }
         isDisabled = false;

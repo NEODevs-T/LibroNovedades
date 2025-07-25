@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" /><resheader name="resmimetype"><value text="text/microsoft-resx" />
+</resheader><resheader name="version"><value text="2.0" />
+</resheader><resheader name="reader"><value text="System.Resources.ResXResourceReader, System.Windows.Forms, ..." />
+</resheader><resheader name="writer"><value text="System.Resources.ResXResourceWriter, System.Windows.Forms, ..." />
+</resheader><data name="RequiredUserName" xml:space="preserve">
+<value>Por favor ingrese el usuario.</value>
+</data><data name="RequiredPassword" xml:space="preserve">
+<value>Por favor ingrese la contraseña.</value>
+</data>
+<data name="RequiredEquipment" xml:space="preserve">
+<value>Coloque el id de equipo afectado.</value>
+</data>
+<data name="RequiredObservation" xml:space="preserve">
+<value>Coloque la novedad.</value>
+</data>
+<data name="RequiredSheet" xml:space="preserve">
+<value>Coloque su ficha.</value>
+</data>
+</root>

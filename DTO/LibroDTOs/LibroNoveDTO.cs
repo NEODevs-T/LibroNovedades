@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using LibroNovedades.Validate;
+using LibroNovedades.Resources;
 
 namespace LibroNovedades.DTOs;
 
@@ -12,13 +13,19 @@ public class LibroNoveDTO
     public int IdlibrNov { get; set; }
     // [ValidDiferenteACero]
     public int IdLinea { get; set; }
-    [Required(ErrorMessage = "Coloque el id de equipo afectado. / Enter the ID of the affected equipment.")]
+    [Required(
+        ErrorMessageResourceType = typeof(ValidationMessages),
+        ErrorMessageResourceName = "RequiredEquipment")]
     public string IdEquipo { get; set; } = null!;
-    [Required(ErrorMessage = "Coloque la novedad. / Put the observation."), StringLength(150, ErrorMessage = "Alcanzo el limite de caracteres. Favor poner los detalles en las observación / Character limit reached. Please include the details in the observations.")]
+    [Required(
+        ErrorMessageResourceType = typeof(ValidationMessages),
+        ErrorMessageResourceName = "RequiredObservation")]
     public string Lndiscrepa { get; set; } = null!;
     // [ValidMayorACero]
     public double LntiePerMi { get; set; }
-    [Required(ErrorMessage = "Coloque su ficha. / Put your sheet.")]
+    [Required(
+        ErrorMessageResourceType = typeof(ValidationMessages),
+        ErrorMessageResourceName = "RequiredSheet")]
     public string LnfichaRes { get; set; } = null!;
     public DateTime Lnfecha { get; set; }
     [ValidDiferenteACero, StringLength(1, ErrorMessage = "Se debe poner un único carácter. / Only a single character must be entered.")]

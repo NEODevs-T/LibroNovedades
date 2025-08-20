@@ -35,6 +35,14 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
 
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
+
+
 builder.Services.AddScoped<NotificationService>();
 
 builder.Services.AddBlazoredSessionStorage(config =>
@@ -92,6 +100,16 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
 }
+
+
+var supportedCultures = new[] { "es", "en" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("es")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+
 
 
 app.UseStaticFiles();

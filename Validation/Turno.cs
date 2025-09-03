@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace LibroNovedades.Validate
 {
     public class ValidTurno : ValidationAttribute

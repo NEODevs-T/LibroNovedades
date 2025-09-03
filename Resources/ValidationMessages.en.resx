@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root>
-<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" />
 <resheader name="resmimetype">
-<value text="text/microsoft-resx" />
-</resheader><resheader name="version">
-<value text="2.0" />
+<value>text/microsoft-resx</value>
+</resheader>
+<resheader name="version">
+<value>2.0</value>
 </resheader><resheader name="reader">
-<value text="System.Resources.ResXResourceReader, System.Windows.Forms, ..." />
-</resheader><resheader name="writer">
-<value text="System.Resources.ResXResourceWriter, System.Windows.Forms, ..." /></resheader>
+<value>System.Resources.ResXResourceReader, System.Windows.Forms, ...</value>
+</resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, ...</value>
+</resheader>
 <data name="RequiredUserName" xml:space="preserve"><value>Please enter your username.</value></data>
 <data name="RequiredPassword" xml:space="preserve"><value>Please enter your password.</value></data>
 <data name="RequiredEquipment" xml:space="preserve"><value>Enter the ID of the affected equipment.</value></data>
@@ -55,4 +55,41 @@
 <data name="Tiempo" xml:space="preserve"><value>Time (min)</value></data>
 <data name="Actualizado" xml:space="preserve"><value>Updated</value></data>
 <data name="PorActualizar" xml:space="preserve"><value>To Update</value></data>
+<data name="Mtto_Calidad" xml:space="preserve"><value>QUALITY MAINTENANCE</value></data>
+<data name="Mtto_Autonomo" xml:space="preserve"><value>AUTONOMOUS MAINTENANCE</value></data>
+<data name="Seguridad" xml:space="preserve"><value>SAFETY</value></data>
+<data name="Mtto_Especializado" xml:space="preserve"><value>SPECIALIZED MAINTENANCE</value></data>
+<data name="Novedad" xml:space="preserve"><value>OBSERVATION</value></data>
+<data name="Historico" xml:space="preserve"><value>Historical</value></data>
+<data name="Desde" xml:space="preserve"><value>From</value></data>
+<data name="Hasta" xml:space="preserve"><value>To</value></data>
+<data name="Estado" xml:space="preserve"><value>Status</value></data>
+<data name="Todos" xml:space="preserve"><value>All</value></data>
+<data name="SinResolver" xml:space="preserve"><value>Unresolved</value></data>
+<data name="Resueltos" xml:space="preserve"><value>Resolved</value></data>
+<data name="Seleccione" xml:space="preserve"><value>Select</value></data>
+<data name="Fecha" xml:space="preserve"><value>Data</value></data>
+<data name="AreaCargador" xml:space="preserve"><value>Loader Area</value></data>
+<data name="Supervisor" xml:space="preserve"><value>Supervisor</value></data>
+<data name="CambioDeEstado" xml:space="preserve"><value>Change Status</value></data>
+<data name="PizarraUnificada" xml:space="preserve"><value>Unified Board</value></data>
+<data name="TipoDeReunion" xml:space="preserve"><value>Meeting Type</value></data>
+<data name="Diaria" xml:space="preserve"><value>Daily</value></data>
+<data name="Buscar" xml:space="preserve"><value>Search</value></data>
+<data name="HistoricoRegistro" xml:space="preserve"><value>Historical record of observations</value></data>
+<data name="SinAcceso" xml:space="preserve"><value>No Access</value></data>
+<data name="Exitosa" xml:space="preserve"><value>Completed successfully</value></data>
+<data name="FallaLibroNovedades" xml:space="preserve"><value>Update failed in the logbook, data was registered on the unified board</value></data>
+<data name="DatosValidos" xml:space="preserve"><value>No valid data found to register in the logbook. Remember that resolved activities cannot be sent to the Board, and you cannot send activities that have already been loaded previously.</value></data>
+<data name="Gespline" xml:space="preserve"><value>Error querying gespline.</value></data>
+<data name="Cambio" xml:space="preserve"><value>The change was successful</value></data>
+<data name="IntenteDeNuevo" xml:space="preserve"><value>Try again. If the problem persists, send an email to Mejora Continua</value></data>
+<data name="Discrepancia2" xml:space="preserve"><value>The discrepancy of the observations has already reached 24 hours, the status of this observation cannot be changed</value></data>
+<data name="Registre" xml:space="preserve"><value>Register a New Incident</value></data>
+<data name="GuardadoExitoso" xml:space="preserve"><value>Successfully Saved</value></data>
+<data name="IntenteNuevo" xml:space="preserve"><value>Error. Please try again</value></data>
+<data name="Obligatoria" xml:space="preserve"><value>The description of the action taken is required</value></data>
+<data name="CampoVacio" xml:space="preserve"><value>Empty field, please check the entire form</value></data>
+<data name="TiempoMayor" xml:space="preserve"><value>Enter a time greater than 0 and a specific cause</value></data>
+<data name="InicieSesion" xml:space="preserve"><value>An error occurred. Please log in again. If the issue persists, contact Mejora Continua.</value></data>
 </root>

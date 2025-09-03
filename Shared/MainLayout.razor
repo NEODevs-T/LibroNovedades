@@ -6,6 +6,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IDataAPI DataAPI
 @inject NotificationService NotificationService
+@using System.Globalization
 
 
 <PageTitle>LibroNovedades</PageTitle>
@@ -32,12 +33,12 @@
         </Authorized>
         <NotAuthorized>
             <main>
-                <div class="caja-idioma">
-                    <select class="idioma"  @bind="idioma">
-                        <option value=1>Español</option>
-                        <option value=2>English</option>
-                    </select>
-                </div>
+            <div class="caja-idioma">
+                <select class="idioma" @onchange="CambiarIdioma">
+                    <option value="1">Español</option>
+                    <option value="2">English</option>
+                </select>
+            </div>
                 @if(idioma == 1){
                     <div class="text-center fondo">
                     <RadzenTemplateForm Context="radzen" Data="@userDto" class="form-signin w-25 m-auto loginform ">
@@ -92,6 +93,15 @@
     {
         proyecto = "LibroDeNovedades";
         userDto = new UserLoginDto() ;
+
+
+    var cultureName = await LocalStorage.GetItemAsync<string>("userCulture") ?? "es";
+    idioma = cultureName == "es" ? 1 : 2;
+
+    var culture = new CultureInfo(cultureName);
+    CultureInfo.DefaultThreadCurrentCulture = culture;
+    CultureInfo.DefaultThreadCurrentUICulture = culture;
+
     }
     protected async Task logout(){
         usuario = "";
@@ -99,6 +109,27 @@
         await LocalStorage.RemoveItemAsync("LibroDeNovedadesNew");
         await AuthStateProvider.GetAuthenticationStateAsync();
     }
+    private async Task CambiarIdioma(ChangeEventArgs e)
+    {
+        var valor = e.Value?.ToString();
+        idioma = int.Parse(valor);
+
+        // Opcional: guardar en LocalStorage
+        await LocalStorage.SetItemAsync("userCulture", idioma == 1 ? "es" : "en");
+
+        // Redirigir si es necesario
+        if (idioma == 1)
+        {
+            NavigationManager.NavigateTo("/libroDESARROLLO/es/inicio");
+        }
+        else if (idioma == 2)
+        {
+            NavigationManager.NavigateTo("/libroDESARROLLO/en/home");
+        }
+
+        StateHasChanged();
+    }
+
 
     protected async Task login(){
         isDisabled = true;

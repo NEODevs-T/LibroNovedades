@@ -272,7 +272,9 @@
                                         <option value="0">@ValidationMessages.Seleccionar</option>
                                         @foreach (var item in listaClasificacionTPM)
                                         {
-                                            <option value="@item.IdCtpm">@TraducirClasificacionTPM(item.Ctpmnom.ToUpper())</option>
+                                            <option value="@item.IdCtpm">@ValidationMessages.ResourceManager.GetString(ValidationMessages
+                                                .MapTPMKey(item.Ctpmnom),CultureInfo.CurrentUICulture)
+                                            </option>
                                         }
                                     }else{
                                         <option value="0">@ValidationMessages.Cargando ...</option>
@@ -351,7 +353,9 @@ private List<int> indexParadas { get; set; } = new List<int>();
 
 private IEnumerable<Claim> claims { get; set; } = Enumerable.Empty<Claim>();
 
+
 private int idPais { get; set; }
+
 private int idEmpresa { get; set; }
 private int idCentro { get; set; } = 0;
 private int idDivision { get; set; }
@@ -415,67 +419,43 @@ public readonly Dictionary<string, string> grupoPAPISA = new()
 
 public Dictionary<string, string> grupos { get; set; } = new();
 
-
-    private string TraducirMensaje(string mensaje)
-{
-    if (idPais == 5)
+    protected override async Task OnParametersSetAsync()
     {
-        switch (mensaje)
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        claims = user.Claims.ToList();
+        var idPaisClaim = claims.FirstOrDefault(c => c.Type == "IdPais")?.Value;
+        if (int.TryParse(idPaisClaim, out int paisTemp))
         {
-            case "Registre una Novedad":
-                return "Register a new Observation";
-            case "Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua":
-                return "There was an error, please log in again. If the error persists, contact continuous improvement.";
-            case "Guardado Exitosamente":
-                return "Saved Successfully";
-            case "Error. Intente de nuevo":
-                return "Error. Please try again";
-            case "La descripción de la acción tomada es obligatoria":
-                return "The description of the action taken is required";
-            case "Campo vacío, por favor revisa todo el formulario":
-                return "Empty field, please check the entire form";
-            case "Coloque un tiempo mayor a 0 y una causa especifica":
-                return "Enter a time greater than 0 and a specific cause";
-            case "Error al consultar al gespline.":
-                return "Error querying gespline.";
-            default:
-                return mensaje;
+            idPais = paisTemp;
+            var culture = new CultureInfo(paisTemp == 5 ? "en" : "es");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            await LocalStorage.SetItemAsync("userCulture", culture.Name);
         }
     }
-    return mensaje;
-}
-    
-    protected override async Task OnInitializedAsync()
+
+    private string TraducirMensaje(string clave)
     {
+        var traduccion = ValidationMessages.ResourceManager.GetString(clave, CultureInfo.CurrentUICulture);
+        return string.IsNullOrEmpty(traduccion) ? clave : traduccion;
+    }
+
+
+
+    protected override async Task  OnInitializedAsync()
+    {
+
         if (authenticationState is not null)
         {
             AuthenticationState? authState = await authenticationState;
             ClaimsPrincipal? user = authState?.User;
 
-    if (user?.Identity is not null && user.Identity.IsAuthenticated)
-    {
-        idPais = int.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0");
-        if (idPais == 5)
-        {
-            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en");
-            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en");
-        }
-        else
-        {
-            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("es");
-            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("es");
-        }
-
-        dataNove = new LibroNoveDTO();
-        listaLinea = new List<LineaVDTO>();
-    }
-    
-
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
                 IsCargado = false;
                 tiempoPerdido = 0;
-                mensaje = "Registre una Novedad";
+                mensaje = TraducirMensaje("Registre");
                 Notificacion("info","",mensaje);
 
                 isDisableManualGT = false;
@@ -487,7 +467,6 @@ public Dictionary<string, string> grupos { get; set; } = new();
 
                 if(id == id){
                     dataNove = new LibroNoveDTO();
-                    dataNove.IdPais = idPais;
                     dataNove.Lnobserv = "";
                     dataNove.Lndiscrepa = "";
                     dataNove.LnisResu = 0;
@@ -500,6 +479,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
                 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
                 idCentro = int.Parse(user.FindFirst(c => c.Type == "IdCentro")?.Value ?? "0");
                 idPais = int.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0") ;
+                dataNove.IdPais = idPais;
                 idDivision = int.Parse(user.FindFirst(c => c.Type == "IdDivision")?.Value ?? "0") ;
                 idEmpresa = int.Parse(user.FindFirst(c => c.Type == "IdEmpresa")?.Value ?? "0") ;
                 ficha = user.FindFirst(c => c.Type == "Ficha")?.Value ?? "" ;
@@ -608,35 +588,12 @@ public Dictionary<string, string> grupos { get; set; } = new();
                 }else if(rol.Contains("Super") || rol.Contains("Admin")){
                     
                 }else{
-                    mensaje = "Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua";
+                    mensaje = TraducirMensaje("InicieSesion");
                     Notificacion("error","",mensaje);
                 }
             }
         }
         IsCargado = true;
-    }
-
-    private string TraducirClasificacionTPM(string nombre)
-    {
-    if (idPais == 5)
-    {
-        switch (nombre.ToUpper())
-        {
-            case "MANTENIMIENTO DE CALIDAD":
-                return "QUEALITY MAINTENANCE";
-            case "MANTENIMIENTO AUTONOMO":
-                return "AUTONOMOUS MAINTENANCE";
-            case "SEGURIDAD":
-                return "SAFETY";
-            case "MANTENIMIENTO ESPECIALIZADO":
-                return "SPECIALIZED MAINTENANCE";
-            case "NOVEDAD":
-                return "OBSERVATION";
-            default:
-                return nombre;
-        }
-    }
-    return nombre;
     }
 
     protected async Task BuscarEmpresas(ChangeEventArgs e){
@@ -741,7 +698,6 @@ public Dictionary<string, string> grupos { get; set; } = new();
                         }
                             
                         dataNove = new LibroNoveDTO();
-                        dataNove.IdPais = idPais;
                         listaDataNove = new List<LibroNoveDTO>();
                         listaEquiposEAM = listaAllEquiposEAM.ToList();
                         InvokeAsync(StateHasChanged);
@@ -774,89 +730,77 @@ public Dictionary<string, string> grupos { get; set; } = new();
                     Notificacion("error","",mensaje);
                 } 
             }else{
-                mensaje = "La descripción de la acción tomada es obligatoria";
+                mensaje = TraducirMensaje("Obligatoria");
                 Notificacion("error","",mensaje);
             }
         }else{
-            mensaje = "Campo vacío, por favor revisa todo el formulario";
+            mensaje = TraducirMensaje("CampoVacio");
             Notificacion("error","",mensaje);
         }
         isDisabledButton = false;
         _showTooltip = true;
     }
 
-    protected async Task BuscarTiempoPerdido(ChangeEventArgs e)
-    {
-        try
-        {
-            if (e?.Value == null)
-            {
-                Notificacion("error", "", "No se ha seleccionado una línea válida.");
-                return;
-            }
-            if (!int.TryParse(e.Value.ToString(), out int idLineaSeleccionada))
-            {
-                Notificacion("error", "", "El valor seleccionado no es un número válido.");
-                return;
-            }
-            dataNove.IdLinea = idLineaSeleccionada;
-            listaEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(idLineaSeleccionada);
-            listaAllEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(idLineaSeleccionada);
-            var linea = listaLinea.FirstOrDefault(l => l.IdLinea == idLineaSeleccionada);
-            if (linea == null)
-            {
-                Notificacion("error", "", "No se encontró la línea seleccionada.");
-                return;
-            }
-            listaNove = await LibroNovData.RegistroDeHoyPorLinea(idLineaSeleccionada);
+    protected async Task BuscarTiempoPerdido(ChangeEventArgs e){
+        try{
+            LineaVDTO linea;
+            string temporal;
+            List<string> listaDeEstado;
+            LibroNoveDTO? dataNov;
+            double parada;
+
+            dataNove.IdLinea = int.Parse(e.Value.ToString());
+            listaEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
+            listaAllEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
+            linea =  listaLinea.Where(l => l.IdLinea == int.Parse(e.Value.ToString())).FirstOrDefault();
+    
+            listaNove = await LibroNovData.RegistroDeHoyPorLinea(dataNove.IdLinea);
+            //listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
             paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
-            if (paradas == null || paradas.Count < 6 || paradas[0].Count == 0)
-            {
-                paradasBandera = true;
-                indexParadas = new List<int>();
-                return;
-            }
-            var listaDeEstado = new List<string>();
+            listaDeEstado = new List<string>();
+            
             for (int i = 0; i < paradas[0].Count; i++)
             {
-                string temporal = $"{paradas[0][i]}-{paradas[1][i]}-{paradas[2][i]}-{DateTime.Now:ddMMyyyy}-{listaTurnoYGrupo[0]}{listaTurnoYGrupo[1]}";
-                var dataNov = listaNove.FirstOrDefault(n => n.IdParada == temporal);
-                if (dataNov == null)
-                {
+                temporal = paradas[0][i] + "-" + paradas[1][i] + "-" + paradas[2][i] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
+                dataNov = listaNove.Where(n => n.IdParada == temporal).FirstOrDefault();
+                if(dataNov == null){
                     listaDeEstado.Add("0");
-                }
-                else
-                {
-                    if (double.TryParse(paradas[5][i], out double parada))
-                    {
-                        parada = Math.Round(parada, 5);
-                        listaDeEstado.Add(dataNov.LntiePerMi == parada ? "1" : "2");
-                    }
-                    else
-                    {
-                        listaDeEstado.Add("0"); // o "error" si prefieres marcarlo distinto
+                    continue;
+                }else{
+                    parada = Math.Round(double.Parse(paradas[5][i]),5);
+                    if(dataNov.LntiePerMi == parada){
+                        listaDeEstado.Add("1");
+                    }else{
+                        listaDeEstado.Add("2");
                     }
                 }
             }
             paradas.Add(listaDeEstado);
-            paradasBandera = paradas[0].Count == 0;
-            indexParadas = paradasBandera ? new List<int>() : Enumerable.Range(0, paradas[0].Count).ToList();
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message.Contains("Response status code does not indicate success: 500"))
-            {
-                mensaje = "Error al consultar al gespline.";
+
+            if(paradas.Count != 0){
+                if(paradas[0].Count == 0){
+                    paradasBandera = true;
+                    indexParadas = new List<int>();
+                }else{
+                    paradasBandera = false;
+                    indexParadas = new List<int>(paradas[0].Count());
+                    for (int i = 0; i < indexParadas.Capacity; i++){  indexParadas.Add(i); }
+                }
+            }else{
+                paradasBandera = true;
+                indexParadas = new List<int>();
             }
-            else
-            {
+        }catch(Exception ex){
+            if(ex.Message.Contains("Response status code does not indicate success: 500 (Internal Server Error).")){
+                mensaje = TraducirMensaje("Gespline");
+                Notificacion("error","",mensaje);
+                paradasBandera = true;
+            }else{
                 mensaje = "Error: " + ex.Message;
+                Notificacion("error","",mensaje);
             }
-            Notificacion("error", "", mensaje);
-            paradasBandera = true;
         }
     }
-
     public async Task eleccion(int item){
         try{
             string temporal;
@@ -918,7 +862,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
                 tiempoPerdido = 0;
                 mensaje = "";
             }else{
-                mensaje = "Coloque un tiempo mayor a 0 y una causa especifica";
+                mensaje = TraducirMensaje("TiempoMayor");
                 Notificacion("error","",mensaje);
             }
         }catch(Exception ex){
@@ -955,8 +899,6 @@ public Dictionary<string, string> grupos { get; set; } = new();
 
     public void Notificacion(string tipo,string mensaje,string detalle)
     {
-        mensaje = TraducirMensaje(mensaje);
-        detalle = TraducirMensaje(detalle);
 
         NotificationMessage notificacion;
         if(tipo == "error"){

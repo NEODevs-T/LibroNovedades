@@ -19,12 +19,14 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@using LibroNovedades.Resources
+@using System.Globalization
 
-<PageTitle>@labelHistorico</PageTitle>
+<PageTitle>@ValidationMessages.Historico</PageTitle>
 @if(IsCargado){
     <BSContainer PaddingBottom="Padding.Large">
         <BSRow>
-            <h1 class="titulo">@labelHistorico</h1>
+            <h1 class="titulo">@ValidationMessages.Historico</h1>
         </BSRow>
     </BSContainer>
 
@@ -35,34 +37,36 @@
                     
                     <BSRow>
                         <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                            <BSLabel class="labelFormulario">@labelDesde</BSLabel>
+                            <BSLabel class="labelFormulario">@ValidationMessages.Desde</BSLabel>
                             <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaInicio"></BSInput>
                         </BSCol>
                         <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                            <BSLabel class="labelFormulario">@labelHasta</BSLabel>
+                            <BSLabel class="labelFormulario">@ValidationMessages.Hasta</BSLabel>
                             <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaFinal"></BSInput>
                         </BSCol>
                     </BSRow>
                     <br>
                     <BSRow>
                         <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">@labelEstado</BSLabel>
+                            <BSLabel class="labelFormulario">@ValidationMessages.Estado</BSLabel>
                                 <BSInput  InputType="InputType.Select" @bind-Value="filtroIsResuelto">
-                                    <option value="2">@labelTodos</option>
-                                    <option value="0">@labelSinResolver</option>
-                                    <option value="1">@labelResueltos</option>
+                                    <option value="2">@ValidationMessages.Todos</option>
+                                    <option value="0">@ValidationMessages.SinResolver</option>
+                                    <option value="1">@ValidationMessages.Resueltos</option>
                                 </BSInput>
                         </BSCol>
 
                         <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">@labelClasificacionTPM</BSLabel>
+                            <BSLabel class="labelFormulario">@ValidationMessages.ClasificacionTPM</BSLabel>
                                 <BSInput  InputType="InputType.Select" IsDisabled="@IsDisableFTPM" @bind-Value="filtroClasificacionTPM">
-                                    <option value="0">@labelTodos</option>
+                                    <option value="0">@ValidationMessages.Todos</option>
                                     @if (listaClasificacionTPM != null)
                                     {
                                         @foreach (var item in listaClasificacionTPM)
                                         {
-                                            <option value="@item.IdCtpm">@TraducirClasificacionTPM(item.Ctpmnom.ToUpper())</option>
+                                            <option value="@item.IdCtpm">@ValidationMessages.ResourceManager.GetString(ValidationMessages
+                                                .MapTPMKey(item.Ctpmnom),CultureInfo.CurrentUICulture)
+                                            </option>
                                         }  
                                     }
                                 </BSInput>
@@ -70,16 +74,16 @@
 
                         @if(isAccesoPais){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelPais</BSLabel>
+                                        <BSLabel class="labelFormulario">@ValidationMessages.Pais</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPaisFiltro" @onchange="BuscarEmpresas">
-                                            <option value="0">@labelSeleccione</option>
+                                            <option value="0">@ValidationMessages.Seleccione</option>
                                             @if(listaPais != null){
                                                 @foreach (var item in listaPais)
                                                 {
                                                     <option value="@item.IdPais">@item.Pnombre</option>
                                                 }
                                             }else{
-                                                <option value="0">@labelCargando ...</option>
+                                                <option value="0">@ValidationMessages.Cargando ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
@@ -87,16 +91,16 @@
 
                             @if(isAccesoEmpresa){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelEmpresas</BSLabel>
+                                        <BSLabel class="labelFormulario">@ValidationMessages.Empresas</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
-                                            <option value="0">@labelSeleccione</option>
+                                            <option value="0">@ValidationMessages.Seleccione</option>
                                             @if(listaEmpresa != null){
                                                 @foreach (var item in listaEmpresa)
                                                 {
                                                     <option value="@item.IdEmpresa">@item.Empresa</option>
                                                 }
                                             }else{
-                                                <option value="0">@labelCargando ...</option>
+                                                <option value="0">@ValidationMessages.Cargando ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
@@ -104,16 +108,16 @@
 
                             @if(isAccesoCentro){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelCentro</BSLabel>
+                                        <BSLabel class="labelFormulario">@ValidationMessages.Centro</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
-                                            <option value="0">@labelSeleccione</option>
+                                            <option value="0">@ValidationMessages.Seleccione</option>
                                             @if(listaCentro != null){
                                                 @foreach (var item in listaCentro)
                                                 {
                                                     <option value="@item.IdCentro">@item.Centro</option>
                                                 }
                                             }else{
-                                                <option value="0">@labelCargando ...</option>
+                                                <option value="0">@ValidationMessages.Cargando ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
@@ -121,37 +125,37 @@
 
                             @if(isAccesoDivision){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelDivisiones</BSLabel>
+                                        <BSLabel class="labelFormulario">@ValidationMessages.Divisiones</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
                                             @if(listaDivision != null){
-                                                <option value="0">@labelTodos</option>
+                                                <option value="0">@ValidationMessages.Todos</option>
                                                 @foreach (var item in listaDivision)
                                                 {
                                                     <option value="@item.IdDivision">@item.Ndivision</option>
                                                 }
                                             }else{
-                                                <option value="0">@labelCargando ...</option>
+                                                <option value="0">@ValidationMessages.Cargando ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
                             }
 
                             <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@labelLinea</BSLabel>
+                                        <BSLabel class="labelFormulario">@ValidationMessages.Linea</BSLabel>
                                         <BSInput InputType="InputType.Select" @bind-Value="filtroLinea">
                                             @if (idDivision != 0)
                                             {   
                                                 @if(listaLinea != null){
-                                                    <option value="0">@labelTodos</option>
+                                                    <option value="0">@ValidationMessages.Todos</option>
                                                     @foreach (var item in listaLinea)
                                                     {
                                                         <option value="@item.IdLinea">@item.Linea</option>
                                                     }
                                                 }else{
-                                                    <option value="0">@labelCargando ...</option>
+                                                    <option value="0">@ValidationMessages.Cargando ...</option>
                                                 }
                                             }else{
-                                                <option value="0">@labelSeleccioneDivision</option>
+                                                <option value="0">@ValidationMessages.SeleccioneUnaDivision</option>
                                             }
                                         </BSInput>
                             </BSCol>
@@ -160,7 +164,7 @@
                     <br>
                     <BSRow>
                         <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">@labelBuscar</BSButton>
+                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">@ValidationMessages.Buscar</BSButton>
                         </BSCol>
                     </BSRow>
                     @if (listaNovedades != null)
@@ -171,24 +175,24 @@
                             <BSTHead>
                                 <BSTR class="cabeceraTabla">
                                     <BSTD>#</BSTD>
-                                    <BSTD>@labelLinea</BSTD>
-                                    <BSTD>@labelFecha</BSTD>
-                                    <BSTD>@labelCodigoEquipo</BSTD>
-                                    <BSTD>@labelGrupo</BSTD>
-                                    <BSTD>@labelTurno</BSTD>
-                                    <BSTD>@labelTiempoPerdido</BSTD>
-                                    <BSTD>@labelDiscrepancia</BSTD>
-                                    <BSTD>@labelAreaCargador</BSTD>
-                                    <BSTD>@labelObservacion</BSTD>
-                                    <BSTD>@labelSupervisor</BSTD>
-                                    <BSTD>@labelEstado</BSTD>
+                                    <BSTD>@ValidationMessages.Linea</BSTD>
+                                    <BSTD>@ValidationMessages.Fecha</BSTD>
+                                    <BSTD>@ValidationMessages.CodigoEquipo</BSTD>
+                                    <BSTD>@ValidationMessages.Grupo</BSTD>
+                                    <BSTD>@ValidationMessages.Turno</BSTD>
+                                    <BSTD>@ValidationMessages.TiempoPerdido</BSTD>
+                                    <BSTD>@ValidationMessages.Discrepancia</BSTD>
+                                    <BSTD>@ValidationMessages.AreaCargador</BSTD>
+                                    <BSTD>@ValidationMessages.Observacion</BSTD>
+                                    <BSTD>@ValidationMessages.Supervisor</BSTD>
+                                    <BSTD>@ValidationMessages.Estado</BSTD>
                                     @if(IsAccesoCambioEstado){
-                                        <BSTD>@labelCambioDeEstado</BSTD>
+                                        <BSTD>@ValidationMessages.CambioDeEstado</BSTD>
                                     }
                             @* //TODO: ARREGLAR LA Pizarra *@
                                     @if(IsAccesoPizarra){
-                                        <BSTD>@labelPizarraUnificada</BSTD>
-                                        <BSTD>@labelTipoDeReunion</BSTD>
+                                        <BSTD>@ValidationMessages.PizarraUnificada</BSTD>
+                                        <BSTD>@ValidationMessages.TipoDeReunion</BSTD>
                                     }
                                 </BSTR>
                             </BSTHead>
@@ -221,9 +225,9 @@
                                         
                                         <BSTD>
                                             @if(item.LnisResu == 1){
-                                                <p>@labelResuelto</p>
+                                                <p>@ValidationMessages.Resuelto</p>
                                             }else if(item.LnisResu == 0){
-                                                <p>@labelSinResolver</p>
+                                                <p>@ValidationMessages.SinResolver</p>
                                             }else{
                                                 <p> - </p>
                                             }
@@ -254,8 +258,8 @@
                                             </BSTD>
                                             <BSTD>
                                                 <BSInput id="TPM" InputType="InputType.Select" @bind-Value="item.TipoReu" style="border-radius: 2px; box-shadow: 0 0 1px #000; width: auto;">
-                                                    <option value="2">@labelTurno</option>
-                                                    <option value="1">@labelDiaria</option>
+                                                    <option value="2">@ValidationMessages.Turno</option>
+                                                    <option value="1">@ValidationMessages.Diaria</option>
                                                 </BSInput>
                                             </BSTD>
                                         }
@@ -266,7 +270,7 @@
                         <BSRow>
                             <BSCol Column="12">
                                 @if(IsAccesoPizarra){
-                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">@labelRegistrar</BSButton>
+                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">@ValidationMessages.Registrar</BSButton>
                                 }
                             </BSCol>
                         </BSRow>
@@ -328,70 +332,32 @@
     private BSAlert _alertRef { get; set;}
     private string nombre  { get; set;}
     private string apellido  { get; set;}
-    private string labelHistorico = "Histórico";
-    private string labelDesde = "Desde";
-    private string labelHasta = "Hasta";
-    private string labelEstado = "Estado";
-    private string labelTodos = "Todos";
-    private string labelSinResolver = "Sin resolver";
-    private string labelResueltos = "Resueltos";
-    private string labelClasificacionTPM = "Clasificación TPM";
-    private string labelPais = "País";
-    private string labelEmpresas = "Empresas";
-    private string labelCentro = "Centro";
-    private string labelDivisiones = "Divisiones";
-    private string labelLinea = "Línea";
-    private string labelBuscar = "Buscar";
-    private string labelDiscrepancia = "Discrepancia";
-    private string labelFecha = "Fecha";
-    private string labelGrupo = "Grupo";
-    private string labelTurno = "Turno";
-    private string labelTiempoPerdido = "Tiempo Perdido (min)"; 
-    private string labelCodigoEquipo = "Código Equipo";     
-    private string labelAreaCargador = "Área cargador"; 
-    private string labelObservacion = "Observación";        
-    private string labelSupervisor = "Supervisor";
-    private string labelCambioDeEstado = "Cambio de estado";
-    private string labelPizarraUnificada = "Pizarra Unificada";
-    private string labelTipoDeReunion = "Tipo de Reunión";
-    private string labelRegistrar = "Registrar";
-    private string labelCargando = "Cargando";
-    private string labelSeleccione = "Seleccione";
-    private string labelSeleccioneDivision = "Seleccione una división";
-    private string labelResuelto = "Resuelto";
-    private string labelDiaria = "Diaria";
     private int idPaisFiltro { get; set; }
+    private IEnumerable<Claim> claims { get; set; } = Enumerable.Empty<Claim>();
 
-    private string TraducirMensaje(string mensaje)
+        protected override async Task OnParametersSetAsync()
     {
-        if (idPais == 5)
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        claims = user.Claims.ToList();
+        var idPaisClaim = claims.FirstOrDefault(c => c.Type == "IdPais")?.Value;
+        if (int.TryParse(idPaisClaim, out int paisTemp))
         {
-            switch (mensaje)
-            {
-                case "Historico de registro de las novedades":
-                    return "Historical record of observations";
-                case "Sin Acceso":
-                    return "No Access";
-                case "Se realizo de manera exitosa":
-                    return "Completed successfully";
-                case "Falla en la actualizacion en el libro de novedades, la data fue registrada en la pizarra unificada":
-                    return "Update failed in the logbook, data was registered on the unified board";
-                case "No se encontró ningún dato valido para registrar al libro de novedades. Recuerde que las actividades resueltas no pueden ser enviadas a la Pizarra, además no podrá enviar actividades que ya se cargaron anteriormente.":
-                    return "No valid data found to register in the logbook. Remember that resolved activities cannot be sent to the Board, and you cannot send activities that have already been loaded previously.";
-                case "Error al consultar al gespline.":
-                    return "Error querying gespline.";
-                case "El cambio fue exitoso":
-                    return "The change was successful";
-                case "Intente de Nuevo. Si el problema persiste enviar un correo a Mejora Continua":
-                    return "Try again. If the problem persists, send an email to Continuous Improvement";
-                case "La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad":
-                    return "The discrepancy of the observations has already reached 24 hours, the status of this observation cannot be changed";
-                default:
-                    return mensaje;
-            }
+            idPais = paisTemp;
+            var culture = new CultureInfo(paisTemp == 5 ? "en" : "es");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            await LocalStorage.SetItemAsync("userCulture", culture.Name);
         }
-        return mensaje;
+
     }
+
+    private string TraducirMensaje(string clave)
+    {
+        var traduccion = ValidationMessages.ResourceManager.GetString(clave, CultureInfo.CurrentUICulture);
+        return string.IsNullOrEmpty(traduccion) ? clave : traduccion;
+    }
+
     
     protected override async Task  OnInitializedAsync()
     {
@@ -401,45 +367,7 @@
             ClaimsPrincipal? user = authState?.User;
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
-                idPais = int.Parse(user.FindFirst(c => c.Type == "IdPais")?.Value ?? "0") ;
-                idPaisFiltro = idPais;
-                if (idPais == 5)
-                {
-                    labelHistorico = "Historical";
-                    labelDesde = "From";
-                    labelHasta = "To";
-                    labelEstado = "Status";
-                    labelTodos = "All";
-                    labelSinResolver = "Unresolved";
-                    labelResueltos = "Resolved";
-                    labelClasificacionTPM = "TPM Classification";
-                    labelPais = "Country";
-                    labelEmpresas = "Companies";
-                    labelCentro = "Center";
-                    labelDivisiones = "Divisions";
-                    labelLinea = "Line";
-                    labelBuscar = "Search";
-                    labelDiscrepancia = "Discrepancy";
-                    labelFecha = "Date";
-                    labelGrupo = "Group";
-                    labelTurno = "Shift";
-                    labelTiempoPerdido = "Lost Time (min)";
-                    labelCodigoEquipo = "Equipment Code";
-                    labelAreaCargador = "Loader Area";
-                    labelObservacion = "Observation";
-                    labelSupervisor = "Supervisor";
-                    labelPizarraUnificada = "Unified Board";
-                    labelCambioDeEstado = "Change Status";
-                    labelTipoDeReunion = "Meeting Type";
-                    labelRegistrar = "Register";
-                    labelCargando = "Loading";
-                    labelSeleccione = "Select";
-                    labelSeleccioneDivision = "Select a division";
-                    labelResuelto = "Resolved";
-                    labelDiaria = "Daily";
-                    labelCargando = "Loading";
-                }
-                mensaje = "Historico de registro de las novedades";
+                mensaje = TraducirMensaje("HistoricoRegistro");
                 Notificacion("info","",mensaje);
                 isDisabled = false;
                 idAreCargada = 0;
@@ -561,34 +489,11 @@
                     idAreCargada = 10;
                 }
             }else{
-                mensaje = "Sin Acceso";
+                mensaje = TraducirMensaje("SinAcceso");
                 Notificacion("info","",mensaje);
             }
         }
         IsCargado = true;
-    }
-
-    private string TraducirClasificacionTPM(string nombre)
-    {
-    if (idPais == 5)
-    {
-        switch (nombre)
-        {
-            case "MANTENIMIENTO DE CALIDAD":
-                return "QUEALITY MAINTENANCE";
-            case "MANTENIMIENTO AUTONOMO":
-                return "AUTONOMOUS MAINTENANCE";
-            case "SEGURIDAD":
-                return "SAFETY";
-            case "MANTENIMIENTO ESPECIALIZADO":
-                return "SPECIALIZED MAINTENANCE";
-            case "NOVEDAD":
-                return "OBSERVATION";
-            default:
-                return nombre;
-        }
-    }
-    return nombre;
     }
 
     protected async Task BuscarEmpresas(ChangeEventArgs e){
@@ -682,17 +587,17 @@
                 if(band){
                     indexLista = listaNovedades.IndexOf(dataNove);
                     listaNovedades[indexLista] = dataNove;
-                    Notificacion("exito","","El cambio fue exitoso");
+                    Notificacion("exito", "", TraducirMensaje("Cambio"));
                 }else{
-                    Notificacion("error","Error: ","Intente de Nuevo. Si el problema persiste enviar un correo a Mejora Continua");
-                }
+                    Notificacion("error", "Error", TraducirMensaje("IntenteDeNuevo"));                }
             }else{
-                Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad");
+                Notificacion("info", "Error", TraducirMensaje("Discrepancia2"));
             }
         }catch(Exception e){
-            Notificacion("info","Error: ","La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad");
+            Notificacion("info", "Error", TraducirMensaje("Discrepancia2"));
         }
     }
+
     protected async Task Guardar(){
         isDisabled = true;
         List<LibroNoveDTO> listaFiltrada = new List<LibroNoveDTO>();
@@ -702,14 +607,14 @@
             if(band1){
                 band2 = await LibroNovData.UpdateRegistros(listaFiltrada);
                 if(band2){
-                    mensaje = "Se realizo de manera exitosa";
+                    mensaje = TraducirMensaje("Exitosa");
                     Notificacion("exito","",mensaje);
                 }else{
-                    mensaje = "Falla en la actualizacion en el libro de novedades, la data fue registrada en la pizarra unificada";
+                    mensaje = TraducirMensaje("FallaLibroNovedades");
                     Notificacion("info","",mensaje);
                 }
             }else{
-                mensaje = "No se encontró ningún dato valido para registrar al libro de novedades. Recuerde que las actividades resueltas no pueden ser enviadas a la Pizarra, además no podrá enviar actividades que ya se cargaron anteriormente.";
+                mensaje = TraducirMensaje("DatosValidos");
                 Notificacion("info","",mensaje);
             }
         }catch(Exception ex){

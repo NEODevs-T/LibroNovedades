@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+<resheader name="resmimetype">
+<value>text/microsoft-resx</value>
+</resheader>
+<resheader name="version">
+<value>2.0</value>
+</resheader><resheader name="reader">
+<value>System.Resources.ResXResourceReader, System.Windows.Forms, ...</value>
+</resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, ...</value>
+</resheader>
+<data name="RequiredUserName" xml:space="preserve"><value>Por favor ingrese el usuario.</value></data>
+<data name="RequiredPassword" xml:space="preserve"><value>Por favor ingrese la contraseña.</value></data>
+<data name="RequiredEquipment" xml:space="preserve"><value>Coloque el id de equipo afectado.</value></data>
+<data name="RequiredObservation" xml:space="preserve"><value>Coloque la novedad.</value></data>
+<data name="RequiredSheet" xml:space="preserve"><value>Coloque su ficha.</value></data>
+<data name="ErrorGeneral" xml:space="preserve"><value>Se ha producido un error. Por favor recargue</value></data>
+<data name="ErrorDesarrollo" xml:space="preserve"><value>Se ha producido una excepción no controlada. Comunique a Mejora Continua y recargue la pagina</value></data>
+<data name="Recargar" xml:space="preserve"><value>Recargar</value></data>
+<data name="Formato" xml:space="preserve"><value>Formato</value></data>
+<data name="LibroDeNovedades" xml:space="preserve"><value>Libro Novedades</value></data>
+<data name="Pais" xml:space="preserve"><value>País</value></data>
+<data name="Cargado" xml:space="preserve"><value>Loading</value></data>
+<data name="SeleccioneUnPais" xml:space="preserve"><value>Seleccionar País</value></data>
+<data name="Empresas" xml:space="preserve"><value>Empresas</value></data>
+<data name="SeleccioneUnaEmpresa" xml:space="preserve"><value>Seleccionar Empresa</value></data>
+<data name="Centro" xml:space="preserve"><value>Centro</value></data>
+<data name="SeleccioneUnCentro" xml:space="preserve"><value>Seleccionar Centro</value></data>
+<data name="Divisiones" xml:space="preserve"><value>Divisiones</value></data>
+<data name="SeleccioneUnaDivision" xml:space="preserve"><value>Seleccionar División</value></data>
+<data name="Linea" xml:space="preserve"><value>Línea</value></data>
+<data name="SeleccioneUnaLinea" xml:space="preserve"><value>Seleccionar Línea</value></data>
+<data name="TiempoPerdido" xml:space="preserve"><value>Tiempo Perdido (min)</value></data>
+<data name="TiempoEmpleado" xml:space="preserve"><value>Tiempo Empleado (min)</value></data>
+<data name="Causa" xml:space="preserve"><value>Causa</value></data>
+<data name="Seleccionar" xml:space="preserve"><value>Seleccionar</value></data>
+<data name="SinPerdidaDeTiempo" xml:space="preserve"><value>Sin Perdida de Tiempo</value></data>
+<data name="SeleccionarGrupo" xml:space="preserve"><value>Seleccionar Grupo</value></data>
+<data name="Grupo" xml:space="preserve"><value>Grupo</value></data>
+<data name="Turno" xml:space="preserve"><value>Turno</value></data>
+<data name="CodigoEquipo" xml:space="preserve"><value>Codigo Equipo</value></data>
+<data name="Ficha" xml:space="preserve"><value>Ficha</value></data>
+<data name="FichaSupervisor" xml:space="preserve"><value>Ficha Supervisor</value></data>
+<data name="ClasificacionTPM" xml:space="preserve"><value>Clasificación TPM</value></data>
+<data name="Resuelto" xml:space="preserve"><value>Resuelto</value></data>
+<data name="No" xml:space="preserve"><value>No</value></data>
+<data name="Si" xml:space="preserve"><value>Si</value></data>
+<data name="Discrepancia" xml:space="preserve"><value>Discrepancia</value></data>
+<data name="Observacion" xml:space="preserve"><value>Observación</value></data>
+<data name="Accion" xml:space="preserve"><value>Acción</value></data>
+<data name="Registrar" xml:space="preserve"><value>Registrar</value></data>
+<data name="Atras" xml:Space="preserve"><value>Atras</value></data>
+<data name="Seccion" xml:space="preserve"><value>Seccion</value></data>
+<data name="Descripcion" xml:space="preserve"><value>Descripcion</value></data>
+<data name="Tiempo" xml:space="preserve"><value>Tiempo (min)</value></data>
+<data name="Actualizado" xml:space="preserve"><value>Actualizado</value></data>
+<data name="PorActualizar" xml:space="preserve"><value>Por Actualizar</value></data>
+<data name="Mtto_Calidad" xml:space="preserve"><value>MANTENIMIENTO DE CALIDAD</value></data>
+<data name="Mtto_Autonomo" xml:space="preserve"><value>MANTENIMIENTO AUTONOMO</value></data>
+<data name="Seguridad" xml:space="preserve"><value>SEGURIDAD</value></data>
+<data name="Mtto_Especializado" xml:space="preserve"><value>MANTENIMIENTO ESPECIALIZADO</value></data>
+<data name="Novedad" xml:space="preserve"><value>NOVEDAD</value></data>
+<data name="Historico" xml:space="preserve"><value>Historico</value></data>
+<data name="Desde" xml:space="preserve"><value>Desde</value></data>
+<data name="Hasta" xml:space="preserve"><value>Hasta</value></data>
+<data name="Estado" xml:space="preserve"><value>Estado</value></data>
+<data name="Todos" xml:space="preserve"><value>Todos</value></data>
+<data name="SinResolver" xml:space="preserve"><value>Sin Resolver</value></data>
+<data name="Resueltos" xml:space="preserve"><value>Resueltos</value></data>
+<data name="Seleccione" xml:space="preserve"><value>Seleccione</value></data>
+<data name="Fecha" xml:space="preserve"><value>Fecha</value></data>
+<data name="AreaCargador" xml:space="preserve"><value>Area Cargador</value></data>
+<data name="Supervisor" xml:space="preserve"><value>Supervisor</value></data>
+<data name="CambioDeEstado" xml:space="preserve"><value>Cambio de Estado</value></data>
+<data name="PizarraUnificada" xml:space="preserve"><value>Pizarra Unificada</value></data>
+<data name="TipoDeReunion" xml:space="preserve"><value>Tipo de Reunion</value></data>
+<data name="Diaria" xml:space="preserve"><value>Diaria</value></data>
+<data name="Buscar" xml:space="preserve"><value>Buscar</value></data>
+<data name="HistoricoRegistro" xml:space="preserve"><value>Historico de registro de las novedades</value></data>
+<data name="SinAcceso" xml:space="preserve"><value>Sin Acceso</value></data>
+<data name="Exitosa" xml:space="preserve"><value>Se realizo de manera exitosa</value></data>
+<data name="FallaLibroNovedades" xml:space="preserve"><value>Falla en la actualizacion en el libro de novedades, la data fue registrada en la pizarra unificada"</value></data>
+<data name="DatosValidos" xml:space="preserve"><value>No se encontró ningún dato valido para registrar al libro de novedades. Recuerde que las actividades resueltas no pueden ser enviadas a la Pizarra, además no podrá enviar actividades que ya se cargaron anteriormente.</value></data>
+<data name="Gespline" xml:space="preserve"><value>Error al consultar al gespline.</value></data>
+<data name="Cambio" xml:space="preserve"><value>El cambio fue exitoso</value></data>
+<data name="IntenteDeNuevo" xml:space="preserve"><value>Intente de Nuevo. Si el problema persiste enviar un correo a Mejora Continua</value></data>
+<data name="Discrepancia2" xml:space="preserve"><value>La discrepancia de las novedades ya cumplió 24 horas, no se puede cambiar el estado de esta novedad</value></data>
+<data name="Registre" xml:space="preserve"><value>Registre una Novedad</value></data>
+<data name="GuardadoExitoso" xml:space="preserve"><value>Guardado Exitosamente</value></data>
+<data name="IntenteNuevo" xml:space="preserve"><value>Error. Intente de nuevo</value></data>
+<data name="Obligatoria" xml:space="preserve"><value>La descripción de la acción tomada es obligatoria</value></data>
+<data name="CampoVacio" xml:space="preserve"><value>Campo vacío, por favor revisa todo el formulario</value></data>
+<data name="TiempoMayor" xml:space="preserve"><value>Coloque un tiempo mayor a 0 y una causa especifica</value></data>
+<data name="InicieSesion" xml:space="preserve"><value>Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua</value></data>
+</root>
+

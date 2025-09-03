@@ -101,22 +101,16 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 
-
-var supportedCultures = new[] { "es", "en" };
-var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture("es")
-    .AddSupportedCultures(supportedCultures)
-    .AddSupportedUICultures(supportedCultures);
-
-app.UseRequestLocalization(localizationOptions);
-
-
-
+app.UsePathBase("/libroDESARROLLO");
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
-
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/libroDESARROLLO/es/inicio");
+    return Task.CompletedTask;
+});
 app.Run();

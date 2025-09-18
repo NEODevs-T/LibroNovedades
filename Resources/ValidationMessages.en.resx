@@ -45,7 +45,7 @@
 <data name="Resuelto" xml:space="preserve"><value>Resolved</value></data>
 <data name="No" xml:space="preserve"><value>No</value></data>
 <data name="Si" xml:space="preserve"><value>Yes</value></data>
-<data name="Discrepancia" xml:space="preserve"><value>Discrepancy</value></data>
+<data name="Discrepancia" xml:space="preserve"><value>Issue</value></data>
 <data name="Observacion" xml:space="preserve"><value>Observation</value></data>
 <data name="Accion" xml:space="preserve"><value>Action</value></data>
 <data name="Registrar" xml:space="preserve"><value>Register</value></data>
@@ -84,7 +84,7 @@
 <data name="Gespline" xml:space="preserve"><value>Error querying gespline.</value></data>
 <data name="Cambio" xml:space="preserve"><value>The change was successful</value></data>
 <data name="IntenteDeNuevo" xml:space="preserve"><value>Try again. If the problem persists, send an email to Mejora Continua</value></data>
-<data name="Discrepancia2" xml:space="preserve"><value>The discrepancy of the observations has already reached 24 hours, the status of this observation cannot be changed</value></data>
+<data name="Discrepancia2" xml:space="preserve"><value>The issue of the observations has already reached 24 hours, the status of this observation cannot be changed</value></data>
 <data name="Registre" xml:space="preserve"><value>Register a New Incident</value></data>
 <data name="GuardadoExitoso" xml:space="preserve"><value>Successfully Saved</value></data>
 <data name="IntenteNuevo" xml:space="preserve"><value>Error. Please try again</value></data>

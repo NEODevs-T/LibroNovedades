@@ -1,5 +1,6 @@
 using System.Text.Json;
 
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ using BlazorStrap;
 using Blazored.SessionStorage;
 using Blazored.LocalStorage;
 
+using LibroNovedades.Services;
+using LibroNovedades.Service.Autenticacion;
 using LibroNovedades.Data.API;
 using LibroNovedades.Data.Maestra;
 using LibroNovedades.Data.LibroNov;
@@ -25,6 +28,8 @@ using LibroNovedades.Interface;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<CultureService>();
+builder.Services.AddScoped<UsuarioContexto>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorStrap();
@@ -67,7 +72,8 @@ builder.Services.AddDbContext<DOC_IngIContext>(options =>
 // builder.Services.AddDbContext<DOC_IngIContext>(options =>
 //     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
-builder.Services.AddScoped<global::Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider, global::LibroNovedades.Service.Autenticacion.CustomAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<CustomAuthStateProvider>();
 
 
 
@@ -108,9 +114,5 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
-app.MapGet("/", context =>
-{
-    context.Response.Redirect("/libroDESARROLLO/es/inicio");
-    return Task.CompletedTask;
-});
+
 app.Run();

@@ -424,15 +424,6 @@ public Dictionary<string, string> grupos { get; set; } = new();
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         claims = user.Claims.ToList();
-        var idPaisClaim = claims.FirstOrDefault(c => c.Type == "IdPais")?.Value;
-        if (int.TryParse(idPaisClaim, out int paisTemp))
-        {
-            idPais = paisTemp;
-            var culture = new CultureInfo(paisTemp == 5 ? "en" : "es");
-            CultureInfo.DefaultThreadCurrentCulture = culture;
-            CultureInfo.DefaultThreadCurrentUICulture = culture;
-            await LocalStorage.SetItemAsync("userCulture", culture.Name);
-        }
     }
 
     private string TraducirMensaje(string clave)

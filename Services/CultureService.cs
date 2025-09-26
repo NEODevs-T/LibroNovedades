@@ -1,42 +1,48 @@
 using System.Globalization;
-using LibroNovedades;
-using LibroNovedades.Service.Autenticacion;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace LibroNovedades.Services
 {
     public class CultureService
     {
-        private readonly UsuarioContexto _usuarioContexto;
 
-        public CultureInfo UserCulture { get; private set; } = new CultureInfo("es");
+        private readonly UsuarioContexto usuarioContexto;
+        private CultureInfo? userCulture;
 
         public CultureService(UsuarioContexto usuarioContexto)
         {
-            _usuarioContexto = usuarioContexto;
-        }
-
-        public void SetCulture(string cultureName)
-        {
-            if (!string.IsNullOrWhiteSpace(cultureName))
-            {
-                UserCulture = new CultureInfo(cultureName);
-                CultureInfo.DefaultThreadCurrentCulture = UserCulture;
-                CultureInfo.DefaultThreadCurrentUICulture = UserCulture;
-            }
-        }
-
-        public string GetCultureName()
-        {
-            return UserCulture.Name;
+            this.usuarioContexto = usuarioContexto;
         }
 
         public async Task EstablecerCulturaDesdeUsuarioAsync()
         {
-            var usuario = await _usuarioContexto.ObtenerUsuarioActualAsync();
-            if (usuario != null)
-            {
-                SetCulture(usuario.CultureName);
-            }
+            var usuario = await usuarioContexto.ObtenerUsuarioActualAsync();
+            var cultureName = usuario?.CultureName ?? "es";
+            userCulture = new CultureInfo(cultureName);
+
+            // ✅ Aplicar cultura correctamente al hilo
+            CultureInfo.DefaultThreadCurrentCulture = userCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = userCulture;
+
+            Console.WriteLine($"✅ Cultura aplicada desde usuario: {userCulture.Name}");
+
+
         }
+
+
+        public string GetCultureName()
+        {
+            return userCulture?.Name ?? CultureInfo.CurrentCulture.Name;
+        }
+
+        public CultureInfo GetCultureInfo()
+        {
+            return userCulture ?? CultureInfo.CurrentCulture;
+        }
+        
+        
     }
+
+    
 }

@@ -93,15 +93,6 @@
     {
         proyecto = "LibroDeNovedades";
         userDto = new UserLoginDto() ;
-
-
-    var cultureName = await LocalStorage.GetItemAsync<string>("userCulture") ?? "es";
-    idioma = cultureName == "es" ? 1 : 2;
-
-    var culture = new CultureInfo(cultureName);
-    CultureInfo.DefaultThreadCurrentCulture = culture;
-    CultureInfo.DefaultThreadCurrentUICulture = culture;
-
     }
     protected async Task logout(){
         usuario = "";

@@ -1,7 +1,9 @@
-@page "/es/FormatoAgrupado/{id:int?}"
 @page "/en/FormatGroup/{id:int?}"
 
+@inject LocalizationService LocalizationService
 @using System.Globalization
+@using LibroNovedades.Services
+@inject ITranslationService Translator
 @inject IPaisData DataPais;
 @inject IEmpresaData DataEmpresa;
 @inject IDivisionData DataDivision;
@@ -21,14 +23,21 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @using LibroNovedades.Resources
-@using System.Globalization
 
-<PageTitle>@ValidationMessages.Formato</PageTitle>
+@if(idPais == 5){
+    <PageTitle>Format</PageTitle>
+}else{
+<PageTitle>Formato</PageTitle>
+}
+
+
+
 
 @if(IsCargado){
+    
     <BSContainer PaddingBottom="Padding.Large">
         <BSRow>
-            <h1 class="titulo">@ValidationMessages.LibroDeNovedades</h1>
+            <h1 class="titulo">@Traducciones["LibroDeNovedades"]</h1>
         </BSRow>
     </BSContainer>
     <BSCard CardType="CardType.Card" style="width: 90%;" MarginBottom="Margins.Large">
@@ -38,90 +47,90 @@
                     <BSRow>
                         @if(isAccesoPais){
                             <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                <BSLabel class="labelFormulario">@ValidationMessages.Pais</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["Pais"]</BSLabel>
                                 <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPais" @onchange="BuscarEmpresas">
                                     @if(listaPais != null){
-                                        <option value="0">@ValidationMessages.SeleccioneUnPais</option>
+                                        <option value="0">@Traducciones["SeleccioneUnPais"]</option>
                                         @foreach (var item in listaPais)
                                         {
                                             <option value="@item.IdPais">@item.Pnombre</option>
                                         }
                                     }else{
-                                        <option value="0">@ValidationMessages.Cargando ...</option>
+                                        <option value="0">@Traducciones["Cargando"] ...</option>
                                     }
                                 </BSInput>
                             </BSCol>
                         }
                         @if(isAccesoEmpresa){
                             <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                <BSLabel class="labelFormulario">@ValidationMessages.Empresas</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["Empresas"]</BSLabel>
                                 <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
                                     @if(listaEmpresa != null){
-                                        <option value="0">@ValidationMessages.SeleccioneUnaEmpresa</option>
+                                        <option value="0">@Traducciones["SeleccioneUnaEmpresa"]</option>
                                         @foreach (var item in listaEmpresa)
                                         {
                                             <option value="@item.IdEmpresa">@item.Empresa</option>
                                         }
                                     }else{
-                                        <option value="0">@ValidationMessages.Cargando ...</option>
+                                        <option value="0">@Traducciones["Cargando"] ...</option>
                                     }
                                 </BSInput>
                             </BSCol>
                         }
                         @if(isAccesoCentro){
                             <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                <BSLabel class="labelFormulario">@ValidationMessages.Centro</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["Centro"]</BSLabel>
                                 <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
                                     @if(listaCentro != null){
-                                        <option value="0">@ValidationMessages.SeleccioneUnCentro</option>
+                                        <option value="0">@Traducciones["SeleccioneUnCentro"]</option>
                                         @foreach (var item in listaCentro)
                                         {
                                             <option value="@item.IdCentro">@item.Centro</option>
                                         }
                                     }else{
-                                        <option value="0">@ValidationMessages.Cargando ...</option>
+                                        <option value="0">@Traducciones["Cargando"] ...</option>
                                     }
                                 </BSInput>
                             </BSCol>
                         }
                         @if(isAccesoDivision){
                             <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                <BSLabel class="labelFormulario">@ValidationMessages.Divisiones</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["Divisiones"]</BSLabel>
                                 <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
                                     @if(listaDivision != null){
-                                        <option value="0">@ValidationMessages.SeleccioneUnaDivision</option>
+                                        <option value="0">@Traducciones["SeleccioneUnaDivision"]</option>
                                         @foreach (var item in listaDivision)
                                         {
                                             <option value="@item.IdDivision">@item.Ndivision</option>
                                         }
                                     }else{
-                                        <option value="0">@ValidationMessages.Cargando ...</option>
+                                        <option value="0">@Traducciones["Cargando"] ...</option>
                                     }
                                 </BSInput>
                             </BSCol>
                         }
                         <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                            <BSLabel class="labelFormulario">@ValidationMessages.Linea</BSLabel>
+                            <BSLabel class="labelFormulario">@Traducciones["Linea"]</BSLabel>
                             <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
                                 @if (idDivision != 0)
                                 {
                                     @if(listaLinea != null){
-                                        <option value="0">@ValidationMessages.SeleccioneUnaLinea</option>
+                                        <option value="0">@Traducciones["SeleccioneUnaLinea"]</option>
                                         @foreach (var item in listaLinea)
                                         {
                                             <option value="@item.IdLinea">@item.Linea</option>
                                         }
                                     }else{
-                                        <option value="0">@ValidationMessages.Cargando ...</option>
+                                        <option value="0">@Traducciones["Cargando"] ...</option>
                                     }
                                 }else{
-                                    <option value="0">@ValidationMessages.SeleccioneUnaDivision</option>
+                                    <option value="0">@Traducciones["SeleccioneUnaDivision"]</option>
                                 }
                             </BSInput>
                         </BSCol>
                         <BSCol class="item" Position="Position.Relative" Align="Align.End"  AlignRow="OTRAlignRow" Place ColumnMedium="4">
                             @if(dataNove.IdLinea != 0){
-                                <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>@ValidationMessages.SinPerdidaDeTiempo</BSButton>
+                                <BSButton class="buttonFormularioOK" style="margin-right: 10px;"  @onclick=SinPerdida>@Traducciones["SinPerdidaDeTiempo"]</BSButton>
                             }
                         </BSCol>
                     </BSRow>
@@ -131,18 +140,18 @@
                         <BSRow>
                             <BSCol Position="Position.Relative" Place ColumnMedium="5">
                                 @if(rol.Contains("Mantenimiento")){
-                                    <BSLabel class="labelFormularioGrande">@ValidationMessages.TiempoEmpleado</BSLabel>
+                                    <BSLabel class="labelFormularioGrande">@Traducciones["TiempoEmpleado"]</BSLabel>
                                 }else{
-                                    <BSLabel class="labelFormularioGrande">@ValidationMessages.TiempoPerdido</BSLabel>
+                                    <BSLabel class="labelFormularioGrande">@Traducciones["TiempoPerdido"]</BSLabel>
                                 }
                                 <BSInput InputType="InputType.Number" @bind-Value="tiempoPerdido" rows="1"></BSInput>
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                <BSLabel class="labelFormulario">@ValidationMessages.Causa</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["Causa"]</BSLabel>
                                 <BSInput InputType="InputType.Select" @bind-Value="dataNove.IdTipoNove">
                                     @if (listaTiposNovedad != null)
                                     {
-                                        <option value="0">@ValidationMessages.Seleccionar</option>
+                                        <option value="0">@Traducciones["Seleccionar"]</option>
                                         @foreach (var item in listaTiposNovedad)
                                         {
                                             var texto = idPais == 5 ? item.Tpenglish : item.Tpnombre;
@@ -151,12 +160,12 @@
                                     }
                                     else
                                     {
-                                        <option value="0">@ValidationMessages.Cargando ...</option>
+                                        <option value="0">@Traducciones["Cargando"] ...</option>
                                     }
                                 </BSInput>
                             </BSCol>
                             <BSCol Position="Position.Relative" Class="AbajoBoton" Place ColumnMedium="3">
-                                <BSButton class="buttonFormularioOK" @onclick="eleccionSinGespline">@ValidationMessages.Seleccionar</BSButton>
+                                <BSButton class="buttonFormularioOK" @onclick="eleccionSinGespline">@Traducciones["Seleccionar"]</BSButton>
                             </BSCol>
                         </BSRow>
                     }else{
@@ -164,16 +173,16 @@
                             <BSTHead>
                                 <BSTR class="cabeceraTabla">
                                     <BSTD>#</BSTD>
-                                    <BSTD>@ValidationMessages.Seccion</BSTD>
-                                    <BSTD>@ValidationMessages.Descripcion</BSTD>
-                                    <BSTD>@ValidationMessages.Tiempo</BSTD>
-                                    <BSTD>@ValidationMessages.Seleccionar</BSTD>
+                                    <BSTD>@Traducciones["Seccion"]</BSTD>
+                                    <BSTD>@Traducciones["Descripcion"]</BSTD>
+                                    <BSTD>@Traducciones["Tiempo"]</BSTD>
+                                    <BSTD>@Traducciones["Seleccionar"]</BSTD>
                                 </BSTR>
                             </BSTHead>
                             <BSTBody class="cuerpoTabla">
                                 @if(paradas == null){
                                     <BSTR>
-                                        <BSTD ColSpan="5">@ValidationMessages.SeleccioneUnaLinea</BSTD>
+                                        <BSTD ColSpan="5">@Traducciones["SeleccioneUnaLinea"]</BSTD>
                                     </BSTR>
                                 }else{
                                     @foreach (var item in indexParadas)
@@ -184,11 +193,11 @@
                                             <BSTD>@paradas[3][item]</BSTD>
                                             <BSTD>@Math.Round(double.Parse(paradas[5][item]),2)</BSTD>
                                             @if(paradas[6][item] == "0"){
-                                                <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">@ValidationMessages.Seleccionar</BSButton></BSTD>
+                                                <BSTD><BSButton id="@item"  class="buttonFormularioOK" @onclick="@(e => eleccion(item))">@Traducciones["Seleccionar"]</BSButton></BSTD>
                                             }else if(paradas[6][item] == "1"){
-                                                <BSTD><BSButton id="@item"  class="buttonFormularioCambio" @onclick="@(e => eleccion(item))">@ValidationMessages.Actualizado</BSButton></BSTD>
+                                                <BSTD><BSButton id="@item"  class="buttonFormularioCambio" @onclick="@(e => eleccion(item))">@Traducciones["Actualizado"]</BSButton></BSTD>
                                             }else{
-                                                <BSTD><BSButton id="@item"  class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">@ValidationMessages.PorActualizar</BSButton></BSTD>
+                                                <BSTD><BSButton id="@item"  class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">@Traducciones["PorActualizar"]</BSButton></BSTD>
                                             }
                                         </BSTR>
                                     }
@@ -201,42 +210,42 @@
                         <DataAnnotationsValidator />
                         @if(isAccesoCentro){
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                <BSLabel class="labelFormulario">@ValidationMessages.Centro</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["Centro"]</BSLabel>
                                 <BSInput IsDisabled="true" InputType="InputType.Select" @bind-Value="idCentro">
                                     @if(listaCentro != null){
-                                        <option value="0">@ValidationMessages.SeleccioneUnCentro</option>
+                                        <option value="0">@Traducciones["SeleccioneUnCentro"]</option>
                                         @foreach (var item in listaCentro)
                                         {
                                             <option value="@item.IdCentro">@item.Centro</option>
                                         }
                                     }else{
-                                        <option value="0">@ValidationMessages.Cargando ...</option>
+                                        <option value="0">@Traducciones["Cargando"] ...</option>
                                     }
                                 </BSInput>
                             </BSCol>
                         }
                         <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                            <BSLabel class="labelFormulario">@ValidationMessages.Linea</BSLabel>
+                            <BSLabel class="labelFormulario">@Traducciones["Linea"]</BSLabel>
                             <BSInput InputType="InputType.Select" IsDisabled="true" @bind-Value="dataNove.IdLinea" @onchange="BuscarTiempoPerdido">
                                 @if (idCentro != 0)
                                 {
                                     @if(listaLinea != null){
-                                        <option value="0">@ValidationMessages.SeleccioneUnaLinea</option>
+                                        <option value="0">@Traducciones["SeleccioneUnaLinea"]</option>
                                         @foreach (var item in listaLinea)
                                         {
                                             <option value="@item.IdLinea">@item.Linea</option>
                                         }
                                     }else{
-                                        <option value="0">@ValidationMessages.Cargando ...</option>
+                                        <option value="0">@Traducciones["Cargando"] ...</option>
                                     }
                                 }else{
-                                    <option value="0">@ValidationMessages.SeleccioneUnCentro</option>
+                                    <option value="0">@Traducciones["SeleccioneUnCentro"]</option>
                                 }
                             </BSInput>
                             <BSFeedback For="@(() => dataNove.IdLinea)"/>
                         </BSCol>
                         <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                            <BSLabel class="labelFormulario">@ValidationMessages.Grupo</BSLabel>
+                            <BSLabel class="labelFormulario">@Traducciones["Grupo"]</BSLabel>
                             <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
                                             TValue="string" Data=@(grupos.Select(c => c.Value))  @bind-Value=dataNove.Lngrupo Style="width: 100%"
                                             Disabled="@isDisableManualGT">
@@ -244,12 +253,12 @@
                             <BSFeedback For="@(() => dataNove.Lngrupo)"/>
                         </BSCol>
                         <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                            <BSLabel class="labelFormulario">@ValidationMessages.Turno</BSLabel>
+                            <BSLabel class="labelFormulario">@Traducciones["Turno"]</BSLabel>
                             <BSInput name="Turno" IsDisabled="@isDisableManualGT"  InputType="InputType.Text" rows="5" @bind-Value="dataNove.Lnturno"></BSInput>
                             <BSFeedback For="@(() => dataNove.Lnturno)"/>
                         </BSCol>
                         <BSCol Position="Position.Relative" Place ColumnMedium="6">
-                            <BSLabel class="labelFormularioGrande">@ValidationMessages.CodigoEquipo</BSLabel>
+                            <BSLabel class="labelFormularioGrande">@Traducciones["CodigoEquipo"]</BSLabel>
                             <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true"
                                 TValue="string" Data=listaEquiposEAM LoadData=@LoadData ValueProperty="EcodEquiEam" AllowClear="true" @bind-Value=@dataNove.IdEquipo Style="width: 100%">
                                 <Template Context="item">
@@ -260,16 +269,16 @@
                         @if(isTPM){
                             @if(isFichaManual){
                                 <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                                    <BSLabel class="labelFormularioGrande">@ValidationMessages.Ficha</BSLabel>
+                                    <BSLabel class="labelFormularioGrande">@Traducciones["Ficha"]</BSLabel>
                                     <BSInput InputType="InputType.Text" rows="1" @bind-Value="dataNove.LnfichaRes"></BSInput>
                                     <BSFeedback For="@(() => dataNove.LnfichaRes)"/>
                                 </BSCol>
                             }
                             <BSCol Position="Position.Relative" Place ColumnMedium="5">
-                                <BSLabel class="labelFormulario">@ValidationMessages.ClasificacionTPM</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["ClasificacionTPM"]</BSLabel>
                                 <BSInput IsDisabled="@isDisableManualCTPM" id="TPM" InputType="InputType.Select" @bind-Value="dataNove.IdCtpm">
                                     @if(listaClasificacionTPM != null){
-                                        <option value="0">@ValidationMessages.Seleccionar</option>
+                                        <option value="0">@Traducciones["Seleccionar"]</option>
                                         @foreach (var item in listaClasificacionTPM)
                                         {
                                             <option value="@item.IdCtpm">@ValidationMessages.ResourceManager.GetString(ValidationMessages
@@ -277,43 +286,43 @@
                                             </option>
                                         }
                                     }else{
-                                        <option value="0">@ValidationMessages.Cargando ...</option>
+                                        <option value="0">@Traducciones["Cargando"] ...</option>
                                     }
                                 </BSInput>
                                 <BSFeedback For="@(() => dataNove.IdCtpm)"/>
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                                <BSLabel style="width: 200px;" class="labelFormulario">@ValidationMessages.FichaSupervisor</BSLabel>
+                                <BSLabel style="width: 200px;" class="labelFormulario">@Traducciones["FichaSupervisor"]</BSLabel>
                                 <BSInput InputType="InputType.Text" @bind-Value="dataNove.LnfichSupe">
                                 </BSInput>
                                 <BSFeedback For="@(() => dataNove.LnfichSupe)"/>
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                                <BSLabel class="labelFormulario">@ValidationMessages.Resuelto</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["Resuelto"]</BSLabel>
                                 <BSInput InputType="InputType.Select" @bind-Value="dataNove.LnisResu">
-                                    <option value="0">@ValidationMessages.No</option>
-                                    <option value="1">@ValidationMessages.Si</option>
+                                    <option value="0">@Traducciones["No"]</option>
+                                    <option value="1">@Traducciones["Si"]</option>
                                 </BSInput>
                                 <BSFeedback For="@(() => dataNove.LnisResu)"/>
                             </BSCol>
                         }
                         <BSCol Position="Position.Relative" Place ColumnMedium="12">
-                            <BSLabel class="labelFormulario">@ValidationMessages.Discrepancia</BSLabel>
+                            <BSLabel class="labelFormulario">@Traducciones["Discrepancia"]</BSLabel>
                             <BSInput class="TextAreaMediano" placeholder="@nota" InputType="InputType.TextArea" rows="5" @bind-Value="dataNove.Lndiscrepa"></BSInput>
                             <BSFeedback For="@(() => dataNove.Lndiscrepa)"/>
                         </BSCol>
                         <BSCol Position="Position.Relative" Place ColumnMedium="12">
                             @if(dataNove.LnisResu == 1){
-                                <BSLabel class="labelFormulario">@ValidationMessages.Accion</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["Accion"]</BSLabel>
                             }else{
-                                <BSLabel class="labelFormulario">@ValidationMessages.Observacion</BSLabel>
+                                <BSLabel class="labelFormulario">@Traducciones["Observacion"]</BSLabel>
                             }
                             <BSInput class="TextAreaMediano" InputType="InputType.TextArea"  rows="5" @bind-Value="dataNove.Lnobserv"></BSInput>
                             <BSFeedback For="@(() => dataNove.Lnobserv)"/>
                         </BSCol>
                         <BSCol Column="12">
-                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabledButton" IsSubmit="true">@ValidationMessages.Registrar</BSButton>
-                            <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabledButton" @onclick=atras IsReset="true" >@ValidationMessages.Atras</BSButton>
+                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabledButton" IsSubmit="true">@Traducciones["Registrar"]</BSButton>
+                            <BSButton class="buttonFormularioDLT"  IsDisabled="@isDisabledButton" @onclick=atras IsReset="true" >@Traducciones["Atras"]</BSButton>
                         </BSCol>
                     </BSForm>
                 }
@@ -342,7 +351,7 @@ private string? mensaje { get; set; }
 private string? nota { get; set; }   
 private string? rol { get; set; } 
 private string? ficha { get; set; } 
-
+public Dictionary<string, string> Traducciones { get; set; } = new();
 private LibroNoveDTO dataNove { get; set; } = new LibroNoveDTO();
 private List<LibroNoveDTO> listaDataNove { get; set; } = new List<LibroNoveDTO>();
 private List<LibroNoveDTO> listaNove { get; set; } = new List<LibroNoveDTO>();
@@ -419,23 +428,29 @@ public readonly Dictionary<string, string> grupoPAPISA = new()
 
 public Dictionary<string, string> grupos { get; set; } = new();
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        claims = user.Claims.ToList();
-    }
+        await LocalizationService.EstablecerCulturaDesdeTokenAsync();
+        CultureInfo.CurrentCulture = CultureInfo.DefaultThreadCurrentCulture;
+        CultureInfo.CurrentUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+        var claves = new[]
+        {
+            "Accion", "Actualizado", "Atras", "CampoVacio", "Cargando", "Causa", "Centro", "ClasificacionTPM", 
+            "CodigoEquipo", "Descripcion", "Discrepancia", "Divisiones", "Empresas", "Ficha", "FichaSupervisor", 
+            "Formato", "Gespline", "Grupo", "GuardadoExitoso", "InicieSesion", "LibroDeNovedades", "Linea", "No", 
+            "Obligatoria", "Observacion", "Pais", "PorActualizar", "Registrar", "Registre", "Resuelto", "Seccion", 
+            "Seleccionar", "SeleccioneUnCentro", "SeleccioneUnPais", "SeleccioneUnaDivision", "SeleccioneUnaEmpresa", 
+            "SeleccioneUnaLinea", "Si", "SinPerdidaDeTiempo", "Tiempo", "TiempoEmpleado", "TiempoMayor", "TiempoPerdido", 
+            "Turno"
+        };
 
-    private string TraducirMensaje(string clave)
-    {
-        var traduccion = ValidationMessages.ResourceManager.GetString(clave, CultureInfo.CurrentUICulture);
-        return string.IsNullOrEmpty(traduccion) ? clave : traduccion;
-    }
+        foreach (var clave in claves)
+        {
+            Traducciones[clave] = Translator.Traducir(clave);
+        }
+    
 
 
-
-    protected override async Task  OnInitializedAsync()
-    {
 
         if (authenticationState is not null)
         {
@@ -446,7 +461,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
             {
                 IsCargado = false;
                 tiempoPerdido = 0;
-                mensaje = TraducirMensaje("Registre");
+                mensaje = @Traducciones["Registre"];
                 Notificacion("info","",mensaje);
 
                 isDisableManualGT = false;
@@ -579,7 +594,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
                 }else if(rol.Contains("Super") || rol.Contains("Admin")){
                     
                 }else{
-                    mensaje = TraducirMensaje("InicieSesion");
+                    mensaje = @Traducciones["InicieSesion"];
                     Notificacion("error","",mensaje);
                 }
             }
@@ -677,7 +692,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
                     }
 
                     if(bandera){
-                        mensaje = TraducirMensaje("GuardadoExitoso");
+                        mensaje = @Traducciones["GuardadoExitoso"];
                         Notificacion("exito","",mensaje);
                         nota = "";
                         int d1 = dataNove.IdAreaCar;
@@ -721,11 +736,11 @@ public Dictionary<string, string> grupos { get; set; } = new();
                     Notificacion("error","",mensaje);
                 } 
             }else{
-                mensaje = TraducirMensaje("Obligatoria");
+                mensaje = @Traducciones["Obligatoria"];
                 Notificacion("error","",mensaje);
             }
         }else{
-            mensaje = TraducirMensaje("CampoVacio");
+            mensaje = @Traducciones["CampoVacio"];
             Notificacion("error","",mensaje);
         }
         isDisabledButton = false;
@@ -783,7 +798,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
             }
         }catch(Exception ex){
             if(ex.Message.Contains("Response status code does not indicate success: 500 (Internal Server Error).")){
-                mensaje = TraducirMensaje("Gespline");
+                mensaje = @Traducciones["Gespline"];
                 Notificacion("error","",mensaje);
                 paradasBandera = true;
             }else{
@@ -853,7 +868,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
                 tiempoPerdido = 0;
                 mensaje = "";
             }else{
-                mensaje = TraducirMensaje("TiempoMayor");
+                mensaje = @Traducciones["TiempoMayor"];
                 Notificacion("error","",mensaje);
             }
         }catch(Exception ex){
@@ -947,6 +962,3 @@ public Dictionary<string, string> grupos { get; set; } = new();
         }
     }
 }
-
-
-

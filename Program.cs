@@ -1,4 +1,6 @@
 using System.Text.Json;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization; // si no lo tienes ya
 
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
@@ -28,8 +30,6 @@ using LibroNovedades.Interface;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<CultureService>();
-builder.Services.AddScoped<UsuarioContexto>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorStrap();
@@ -75,8 +75,8 @@ builder.Services.AddDbContext<DOC_IngIContext>(options =>
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddScoped<CustomAuthStateProvider>();
 
-
-
+builder.Services.AddScoped<ITranslationService, TranslationService>();
+builder.Services.AddScoped<LocalizationService>();
 builder.Services.AddScoped<IPaisData, PaisData>();
 builder.Services.AddScoped<IEmpresaData, EmpresaData>();
 builder.Services.AddScoped<ICentroData, CentroData>();
@@ -100,6 +100,16 @@ builder.Services.AddScoped<ILogicLibroNov, LogicLibroNov>();
 
 
 var app = builder.Build();
+
+var supportedCultures = new[] { "es", "en" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("es")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+localizationOptions.RequestCultureProviders.Insert(0, new TokenCultureProvider());
+
+app.UseRequestLocalization(localizationOptions);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -5,9 +5,11 @@
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IDataAPI DataAPI
+@inject LocalizationService LocalizationService
 @inject NotificationService NotificationService
 @using System.Globalization
-
+@using LibroNovedades.Services
+@inject IJSRuntime JSRuntime
 
 <PageTitle>LibroNovedades</PageTitle>
 
@@ -87,7 +89,7 @@
     private UserLoginDto userDto {get; set;}
     private HttpResponseMessage result {get; set;}
     private string validarToken  {get; set;}
-     private int idioma  {get; set;} = 1;
+    private int idioma  {get; set;} = 1;
 
     protected override async Task  OnInitializedAsync()
     {

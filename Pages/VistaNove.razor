@@ -1,6 +1,9 @@
 @page "/es/Historico"
 @page "/en/Historical"
-
+@inject LocalizationService LocalizationService
+@using System.Globalization
+@using LibroNovedades.Services
+@inject ITranslationService Translator
 @inject IPaisData DataPais;
 @inject IEmpresaData DataEmpresa;
 @inject ICentroData DataCentro;
@@ -20,13 +23,13 @@
 @inject IAuthorizationService AuthorizationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @using LibroNovedades.Resources
-@using System.Globalization
 
-<PageTitle>@ValidationMessages.Historico</PageTitle>
+
 @if(IsCargado){
+    <PageTitle>@Traducciones["Historico"]</PageTitle>
     <BSContainer PaddingBottom="Padding.Large">
         <BSRow>
-            <h1 class="titulo">@ValidationMessages.Historico</h1>
+            <h1 class="titulo">@Traducciones["Historico"]</h1>
         </BSRow>
     </BSContainer>
 
@@ -37,29 +40,29 @@
                     
                     <BSRow>
                         <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                            <BSLabel class="labelFormulario">@ValidationMessages.Desde</BSLabel>
+                            <BSLabel class="labelFormulario">@Traducciones["Desde"]</BSLabel>
                             <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaInicio"></BSInput>
                         </BSCol>
                         <BSCol Position="Position.Relative" Place ColumnMedium="3">
-                            <BSLabel class="labelFormulario">@ValidationMessages.Hasta</BSLabel>
+                            <BSLabel class="labelFormulario">@Traducciones["Hasta"]</BSLabel>
                             <BSInput BSInput InputType="InputType.Date" rows="1" @bind-Value="filtroFechaFinal"></BSInput>
                         </BSCol>
                     </BSRow>
                     <br>
                     <BSRow>
                         <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">@ValidationMessages.Estado</BSLabel>
+                            <BSLabel class="labelFormulario">@Traducciones["Estado"]</BSLabel>
                                 <BSInput  InputType="InputType.Select" @bind-Value="filtroIsResuelto">
-                                    <option value="2">@ValidationMessages.Todos</option>
-                                    <option value="0">@ValidationMessages.SinResolver</option>
-                                    <option value="1">@ValidationMessages.Resueltos</option>
+                                    <option value="2">@Traducciones["Todos"]</option>
+                                    <option value="0">@Traducciones["SinResolver"]</option>
+                                    <option value="1">@Traducciones["Resueltos"]</option>
                                 </BSInput>
                         </BSCol>
 
                         <BSCol class="item" Position="Position.Relative" Place ColumnMedium="5">
-                            <BSLabel class="labelFormulario">@ValidationMessages.ClasificacionTPM</BSLabel>
+                            <BSLabel class="labelFormulario">@Traducciones["ClasificacionTPM"]</BSLabel>
                                 <BSInput  InputType="InputType.Select" IsDisabled="@IsDisableFTPM" @bind-Value="filtroClasificacionTPM">
-                                    <option value="0">@ValidationMessages.Todos</option>
+                                    <option value="0">@Traducciones["Todos"]</option>
                                     @if (listaClasificacionTPM != null)
                                     {
                                         @foreach (var item in listaClasificacionTPM)
@@ -74,16 +77,16 @@
 
                         @if(isAccesoPais){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@ValidationMessages.Pais</BSLabel>
+                                        <BSLabel class="labelFormulario">@Traducciones["Pais"]</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idPaisFiltro" @onchange="BuscarEmpresas">
-                                            <option value="0">@ValidationMessages.Seleccione</option>
+                                            <option value="0">@Traducciones["Seleccione"]</option>
                                             @if(listaPais != null){
                                                 @foreach (var item in listaPais)
                                                 {
                                                     <option value="@item.IdPais">@item.Pnombre</option>
                                                 }
                                             }else{
-                                                <option value="0">@ValidationMessages.Cargando ...</option>
+                                                <option value="0">@Traducciones["Cargando"] ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
@@ -91,16 +94,16 @@
 
                             @if(isAccesoEmpresa){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@ValidationMessages.Empresas</BSLabel>
+                                        <BSLabel class="labelFormulario">@Traducciones["Empresas"]</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idEmpresa" @onchange="BuscarCentros">
-                                            <option value="0">@ValidationMessages.Seleccione</option>
+                                            <option value="0">@Traducciones["Seleccione"]</option>
                                             @if(listaEmpresa != null){
                                                 @foreach (var item in listaEmpresa)
                                                 {
                                                     <option value="@item.IdEmpresa">@item.Empresa</option>
                                                 }
                                             }else{
-                                                <option value="0">@ValidationMessages.Cargando ...</option>
+                                                <option value="0">@Traducciones["Cargando"] ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
@@ -108,16 +111,16 @@
 
                             @if(isAccesoCentro){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@ValidationMessages.Centro</BSLabel>
+                                        <BSLabel class="labelFormulario">@Traducciones["Centro"]</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idCentro" @onchange="BuscarDivisiones">
-                                            <option value="0">@ValidationMessages.Seleccione</option>
+                                            <option value="0">@Traducciones["Seleccione"]</option>
                                             @if(listaCentro != null){
                                                 @foreach (var item in listaCentro)
                                                 {
                                                     <option value="@item.IdCentro">@item.Centro</option>
                                                 }
                                             }else{
-                                                <option value="0">@ValidationMessages.Cargando ...</option>
+                                                <option value="0">@Traducciones["Cargando"] ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
@@ -125,37 +128,37 @@
 
                             @if(isAccesoDivision){
                                 <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@ValidationMessages.Divisiones</BSLabel>
+                                        <BSLabel class="labelFormulario">@Traducciones["Divisiones"]</BSLabel>
                                         <BSInput IsDisabled="false" InputType="InputType.Select" @bind-Value="idDivision" @onchange="BuscarLinea">
                                             @if(listaDivision != null){
-                                                <option value="0">@ValidationMessages.Todos</option>
+                                                <option value="0">@Traducciones["Todos"]</option>
                                                 @foreach (var item in listaDivision)
                                                 {
                                                     <option value="@item.IdDivision">@item.Ndivision</option>
                                                 }
                                             }else{
-                                                <option value="0">@ValidationMessages.Cargando ...</option>
+                                                <option value="0">@Traducciones["Cargando"] ...</option>
                                             }
                                         </BSInput>
                                 </BSCol>
                             }
 
                             <BSCol class="item" Position="Position.Relative" Place ColumnMedium="4">
-                                        <BSLabel class="labelFormulario">@ValidationMessages.Linea</BSLabel>
+                                        <BSLabel class="labelFormulario">@Traducciones["Linea"]</BSLabel>
                                         <BSInput InputType="InputType.Select" @bind-Value="filtroLinea">
                                             @if (idDivision != 0)
                                             {   
                                                 @if(listaLinea != null){
-                                                    <option value="0">@ValidationMessages.Todos</option>
+                                                    <option value="0">@Traducciones["Todos"]</option>
                                                     @foreach (var item in listaLinea)
                                                     {
                                                         <option value="@item.IdLinea">@item.Linea</option>
                                                     }
                                                 }else{
-                                                    <option value="0">@ValidationMessages.Cargando ...</option>
+                                                    <option value="0">@Traducciones["Cargando"] ...</option>
                                                 }
                                             }else{
-                                                <option value="0">@ValidationMessages.SeleccioneUnaDivision</option>
+                                                <option value="0">@Traducciones["SeleccioneUnaDivision"]</option>
                                             }
                                         </BSInput>
                             </BSCol>
@@ -164,7 +167,7 @@
                     <br>
                     <BSRow>
                         <BSCol Position="Position.Relative" Place ColumnMedium="4">
-                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">@ValidationMessages.Buscar</BSButton>
+                            <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled"  @onclick="buscar">@Traducciones["Buscar"]</BSButton>
                         </BSCol>
                     </BSRow>
                     @if (listaNovedades != null)
@@ -175,24 +178,24 @@
                             <BSTHead>
                                 <BSTR class="cabeceraTabla">
                                     <BSTD>#</BSTD>
-                                    <BSTD>@ValidationMessages.Linea</BSTD>
-                                    <BSTD>@ValidationMessages.Fecha</BSTD>
-                                    <BSTD>@ValidationMessages.CodigoEquipo</BSTD>
-                                    <BSTD>@ValidationMessages.Grupo</BSTD>
-                                    <BSTD>@ValidationMessages.Turno</BSTD>
-                                    <BSTD>@ValidationMessages.TiempoPerdido</BSTD>
-                                    <BSTD>@ValidationMessages.Discrepancia</BSTD>
-                                    <BSTD>@ValidationMessages.AreaCargador</BSTD>
-                                    <BSTD>@ValidationMessages.Observacion</BSTD>
-                                    <BSTD>@ValidationMessages.Supervisor</BSTD>
-                                    <BSTD>@ValidationMessages.Estado</BSTD>
+                                    <BSTD>@Traducciones["Linea"]</BSTD>
+                                    <BSTD>@Traducciones["Fecha"]</BSTD>
+                                    <BSTD>@Traducciones["CodigoEquipo"]</BSTD>
+                                    <BSTD>@Traducciones["Grupo"]</BSTD>
+                                    <BSTD>@Traducciones["Turno"]</BSTD>
+                                    <BSTD>@Traducciones["TiempoPerdido"]</BSTD>
+                                    <BSTD>@Traducciones["Discrepancia"]</BSTD>
+                                    <BSTD>@Traducciones["AreaCargador"]</BSTD>
+                                    <BSTD>@Traducciones["Observacion"]</BSTD>
+                                    <BSTD>@Traducciones["Supervisor"]</BSTD>
+                                    <BSTD>@Traducciones["Estado"]</BSTD>
                                     @if(IsAccesoCambioEstado){
-                                        <BSTD>@ValidationMessages.CambioDeEstado</BSTD>
+                                        <BSTD>@Traducciones["CambioDeEstado"]</BSTD>
                                     }
                             @* //TODO: ARREGLAR LA Pizarra *@
                                     @if(IsAccesoPizarra){
-                                        <BSTD>@ValidationMessages.PizarraUnificada</BSTD>
-                                        <BSTD>@ValidationMessages.TipoDeReunion</BSTD>
+                                        <BSTD>@Traducciones["PizarraUnificada"]</BSTD>
+                                        <BSTD>@Traducciones["TipoDeReunion"]</BSTD>
                                     }
                                 </BSTR>
                             </BSTHead>
@@ -225,9 +228,9 @@
                                         
                                         <BSTD>
                                             @if(item.LnisResu == 1){
-                                                <p>@ValidationMessages.Resuelto</p>
+                                                <p>@Traducciones["Resuelto"]</p>
                                             }else if(item.LnisResu == 0){
-                                                <p>@ValidationMessages.SinResolver</p>
+                                                <p>@Traducciones["SinResolver"]</p>
                                             }else{
                                                 <p> - </p>
                                             }
@@ -258,8 +261,8 @@
                                             </BSTD>
                                             <BSTD>
                                                 <BSInput id="TPM" InputType="InputType.Select" @bind-Value="item.TipoReu" style="border-radius: 2px; box-shadow: 0 0 1px #000; width: auto;">
-                                                    <option value="2">@ValidationMessages.Turno</option>
-                                                    <option value="1">@ValidationMessages.Diaria</option>
+                                                    <option value="2">@Traducciones["Turno"]</option>
+                                                    <option value="1">@Traducciones["Diaria"]</option>
                                                 </BSInput>
                                             </BSTD>
                                         }
@@ -270,7 +273,7 @@
                         <BSRow>
                             <BSCol Column="12">
                                 @if(IsAccesoPizarra){
-                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">@ValidationMessages.Registrar</BSButton>
+                                    <BSButton class="buttonFormularioOK" IsDisabled="@isDisabled" @onclick=Guardar IsSubmit="true">@Traducciones["Registrar"]</BSButton>
                                 }
                             </BSCol>
                         </BSRow>
@@ -333,6 +336,7 @@
     private string nombre  { get; set;}
     private string apellido  { get; set;}
     private int idPaisFiltro { get; set; }
+    public Dictionary<string, string> Traducciones { get; set; } = new();
     private IEnumerable<Claim> claims { get; set; } = Enumerable.Empty<Claim>();
 
         protected override async Task OnParametersSetAsync()
@@ -351,6 +355,21 @@
     
     protected override async Task  OnInitializedAsync()
     {
+        await LocalizationService.EstablecerCulturaDesdeTokenAsync();
+        CultureInfo.CurrentCulture = CultureInfo.DefaultThreadCurrentCulture;
+        CultureInfo.CurrentUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+        var claves = new[]
+        {
+            "AreaCargador", "Buscar", "CambioDeEstado", "Cargando", "Centro", "ClasificacionTPM", "CodigoEquipo", 
+            "Desde", "Diaria", "Discrepancia", "Divisiones", "Empresas", "Estado", "Fecha", "Grupo", "Hasta", "Historico", 
+            "Linea", "Observacion", "Pais", "PizarraUnificada", "Registrar", "ResourceManager", "Resuelto", "Resueltos", "Seleccione", 
+            "SeleccioneUnaDivision", "SinResolver", "Supervisor", "TiempoPerdido", "TipoDeReunion", "Todos", "Turno"
+        };
+
+        foreach (var clave in claves)
+        {
+            Traducciones[clave] = Translator.Traducir(clave);
+        }
         IsCargado = false;
         if (authenticationState is not null){
             AuthenticationState? authState = await authenticationState;

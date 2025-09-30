@@ -1,4 +1,5 @@
 @page "/en/FormatGroup/{id:int?}"
+@page "/es/FormatoAgrupado/{id:int?}"
 
 @inject LocalizationService LocalizationService
 @using System.Globalization
@@ -24,16 +25,8 @@
 
 @using LibroNovedades.Resources
 
-@if(idPais == 5){
-    <PageTitle>Format</PageTitle>
-}else{
-<PageTitle>Formato</PageTitle>
-}
-
-
-
-
 @if(IsCargado){
+    <PageTitle>@Traducciones["Formato"]</PageTitle>
     
     <BSContainer PaddingBottom="Padding.Large">
         <BSRow>

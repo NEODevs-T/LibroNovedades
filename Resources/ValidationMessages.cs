@@ -90,6 +90,7 @@ namespace LibroNovedades.Resources
         public static string CampoVacio => _resourceManager.GetString("CampoVacio", CultureInfo.CurrentUICulture);
         public static string TiempoMayor => _resourceManager.GetString("TiempoMayor", CultureInfo.CurrentUICulture);
         public static string InicieSesion => _resourceManager.GetString("InicieSesion", CultureInfo.CurrentUICulture);
+        public static string Operaciones => _resourceManager.GetString("Operaciones", CultureInfo.CurrentUICulture);
         public static string MapTPMKey(string nombre)
         {
             return nombre switch

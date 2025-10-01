@@ -92,5 +92,6 @@
 <data name="CampoVacio" xml:space="preserve"><value>Campo vacío, por favor revisa todo el formulario</value></data>
 <data name="TiempoMayor" xml:space="preserve"><value>Coloque un tiempo mayor a 0 y una causa especifica</value></data>
 <data name="InicieSesion" xml:space="preserve"><value>Hubo un error por favor inicié sesión nuevamente. Si sigue el error contacte a mejora continua</value></data>
+<data name="Operaciones" xml:space="preserve"><value>Operaciones</value></data>
 </root>
 

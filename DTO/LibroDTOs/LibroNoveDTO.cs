@@ -17,10 +17,8 @@ public class LibroNoveDTO
         ErrorMessageResourceType = typeof(ValidationMessages),
         ErrorMessageResourceName = "RequiredEquipment")]
     public string IdEquipo { get; set; } = null!;
-    [Required(
-        ErrorMessageResourceType = typeof(ValidationMessages),
-        ErrorMessageResourceName = "RequiredObservation")]
-    public string Lndiscrepa { get; set; } = null!;
+    [ValidDiscrepancia]
+    public string Lndiscrepa { get; set; }
     // [ValidMayorACero]
     public double LntiePerMi { get; set; }
     [Required(

@@ -92,4 +92,5 @@
 <data name="CampoVacio" xml:space="preserve"><value>Empty field, please check the entire form</value></data>
 <data name="TiempoMayor" xml:space="preserve"><value>Enter a time greater than 0 and a specific cause</value></data>
 <data name="InicieSesion" xml:space="preserve"><value>An error occurred. Please log in again. If the issue persists, contact Mejora Continua.</value></data>
+<data name="Operaciones" xml:space="preserve"><value>Operations</value></data>
 </root>

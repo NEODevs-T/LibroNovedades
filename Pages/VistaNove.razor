@@ -67,8 +67,8 @@
                                     {
                                         @foreach (var item in listaClasificacionTPM)
                                         {
-                                            <option value="@item.IdCtpm">@ValidationMessages.ResourceManager.GetString(ValidationMessages
-                                                .MapTPMKey(item.Ctpmnom),CultureInfo.CurrentUICulture)
+                                            <option value="@item.IdCtpm">
+                                                @Traducciones[ValidationMessages.MapTPMKey(item.Ctpmnom)]
                                             </option>
                                         }  
                                     }
@@ -365,11 +365,31 @@
             "Linea", "Observacion", "Pais", "PizarraUnificada", "Registrar", "ResourceManager", "Resuelto", "Resueltos", "Seleccione", 
             "SeleccioneUnaDivision", "SinResolver", "Supervisor", "TiempoPerdido", "TipoDeReunion", "Todos", "Turno"
         };
+        
+        foreach (var clave in claves)
+        {
+            Traducciones[clave] = Translator.Traducir(clave);
+        }
+
+        listaClasificacionTPM = await ClasifiTPMData.ObtenerClasificacion();
+
+        if (listaClasificacionTPM != null)
+        {
+            foreach (var item in listaClasificacionTPM)
+            {
+                var claveTPM = ValidationMessages.MapTPMKey(item.Ctpmnom);
+                if (!Traducciones.ContainsKey(claveTPM))
+                {
+                    Traducciones[claveTPM] = Translator.Traducir(claveTPM);
+                }
+            }
+        }
 
         foreach (var clave in claves)
         {
             Traducciones[clave] = Translator.Traducir(clave);
         }
+
         IsCargado = false;
         if (authenticationState is not null){
             AuthenticationState? authState = await authenticationState;
@@ -503,6 +523,8 @@
             }
         }
         IsCargado = true;
+
+        
     }
 
     protected async Task BuscarEmpresas(ChangeEventArgs e){

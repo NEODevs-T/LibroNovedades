@@ -137,7 +137,7 @@
                                 }else{
                                     <BSLabel class="labelFormularioGrande">@Traducciones["TiempoPerdido"]</BSLabel>
                                 }
-                                <BSInput InputType="InputType.Number" @bind-Value="tiempoPerdido" rows="1"></BSInput>
+                                <BSInput InputType="InputType.Number" @bind-Value="tiempoPerdido" min="0" rows="1"></BSInput>
                             </BSCol>
                             <BSCol Position="Position.Relative" Place ColumnMedium="4">
                                 <BSLabel class="labelFormulario">@Traducciones["Causa"]</BSLabel>
@@ -274,8 +274,8 @@
                                         <option value="0">@Traducciones["Seleccionar"]</option>
                                         @foreach (var item in listaClasificacionTPM)
                                         {
-                                            <option value="@item.IdCtpm">@ValidationMessages.ResourceManager.GetString(ValidationMessages
-                                                .MapTPMKey(item.Ctpmnom),CultureInfo.CurrentUICulture)
+                                            <option value="@item.IdCtpm">
+                                                @Traducciones[ValidationMessages.MapTPMKey(item.Ctpmnom)]
                                             </option>
                                         }
                                     }else{
@@ -426,6 +426,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
         await LocalizationService.EstablecerCulturaDesdeTokenAsync();
         CultureInfo.CurrentCulture = CultureInfo.DefaultThreadCurrentCulture;
         CultureInfo.CurrentUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+
         var claves = new[]
         {
             "Accion", "Actualizado", "Atras", "CampoVacio", "Cargando", "Causa", "Centro", "ClasificacionTPM", 
@@ -436,6 +437,25 @@ public Dictionary<string, string> grupos { get; set; } = new();
             "SeleccioneUnaLinea", "Si", "SinPerdidaDeTiempo", "Tiempo", "TiempoEmpleado", "TiempoMayor", "TiempoPerdido", 
             "Turno"
         };
+
+        foreach (var clave in claves)
+        {
+            Traducciones[clave] = Translator.Traducir(clave);
+        }
+
+        listaClasificacionTPM = await ClasifiTPMData.ObtenerClasificacion();
+
+        if (listaClasificacionTPM != null)
+        {
+            foreach (var item in listaClasificacionTPM)
+            {
+                var claveTPM = ValidationMessages.MapTPMKey(item.Ctpmnom);
+                if (!Traducciones.ContainsKey(claveTPM))
+                {
+                    Traducciones[claveTPM] = Translator.Traducir(claveTPM);
+                }
+            }
+        }
 
         foreach (var clave in claves)
         {

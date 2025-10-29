@@ -240,12 +240,12 @@
                                             <BSTD>
                                                 @if(item.LnisResu == 1){
                                                     <div>
-                                                        <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
+                                                        <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Icon="refresh" ButtonStyle="ButtonStyle.Light" />
                                                         @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
                                                     </div>
                                                 }else if(item.LnisResu == 0){
                                                     <div>
-                                                        <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Image="./icon/Sync.png" ButtonStyle="ButtonStyle.Light" />
+                                                        <RadzenButton Disabled="@isDisabled" Click=@(() => Edicion(item.IdlibrNov)) class="rz-background-color-white" Icon="refresh" ButtonStyle="ButtonStyle.Light" />
                                                         @* <BSButton class="buttonFormularioCambio" IsDisabled="@isDisabled" @onclick=@(() => Edicion(item.IdlibrNov)) IsSubmit="true">Editar</BSButton> *@
                                                     </div>
                                                 }else{
@@ -346,12 +346,6 @@
         claims = user.Claims.ToList();
     }
 
-    private string TraducirMensaje(string clave)
-    {
-        var traduccion = ValidationMessages.ResourceManager.GetString(clave, CultureInfo.CurrentUICulture);
-        return string.IsNullOrEmpty(traduccion) ? clave : traduccion;
-    }
-
     
     protected override async Task  OnInitializedAsync()
     {
@@ -363,7 +357,8 @@
             "AreaCargador", "Buscar", "CambioDeEstado", "Cargando", "Centro", "ClasificacionTPM", "CodigoEquipo", 
             "Desde", "Diaria", "Discrepancia", "Divisiones", "Empresas", "Estado", "Fecha", "Grupo", "Hasta", "Historico", 
             "Linea", "Observacion", "Pais", "PizarraUnificada", "Registrar", "ResourceManager", "Resuelto", "Resueltos", "Seleccione", 
-            "SeleccioneUnaDivision", "SinResolver", "Supervisor", "TiempoPerdido", "TipoDeReunion", "Todos", "Turno"
+            "SeleccioneUnaDivision", "SinResolver", "Supervisor", "TiempoPerdido", "TipoDeReunion", "Todos", "Turno",
+            "DatosValidos", "FallaLibroNovedades", "Exitosa", "Discrepancia2", "IntenteDeNuevo", "Cambio", "SinAcceso", "HistoricoRegistro"
         };
         
         foreach (var clave in claves)
@@ -396,7 +391,7 @@
             ClaimsPrincipal? user = authState?.User;
             if (user?.Identity is not null && user.Identity.IsAuthenticated)
             {
-                mensaje = TraducirMensaje("HistoricoRegistro");
+                mensaje = @Traducciones["HistoricoRegistro"];
                 Notificacion("info","",mensaje);
                 isDisabled = false;
                 idAreCargada = 0;
@@ -518,7 +513,7 @@
                     idAreCargada = 10;
                 }
             }else{
-                mensaje = TraducirMensaje("SinAcceso");
+                mensaje = @Traducciones["SinAcceso"];
                 Notificacion("info","",mensaje);
             }
         }
@@ -618,14 +613,14 @@
                 if(band){
                     indexLista = listaNovedades.IndexOf(dataNove);
                     listaNovedades[indexLista] = dataNove;
-                    Notificacion("exito", "", TraducirMensaje("Cambio"));
+                    Notificacion("exito", "", @Traducciones["Cambio"]);
                 }else{
-                    Notificacion("error", "Error", TraducirMensaje("IntenteDeNuevo"));                }
+                    Notificacion("error", "Error", @Traducciones["IntenteDeNuevo"]);                }
             }else{
-                Notificacion("info", "Error", TraducirMensaje("Discrepancia2"));
+                Notificacion("info", "Error", @Traducciones["Discrepancia2"]);
             }
         }catch(Exception e){
-            Notificacion("info", "Error", TraducirMensaje("Discrepancia2"));
+            Notificacion("info", "Error", @Traducciones["Discrepancia2"]);
         }
     }
 
@@ -638,14 +633,14 @@
             if(band1){
                 band2 = await LibroNovData.UpdateRegistros(listaFiltrada);
                 if(band2){
-                    mensaje = TraducirMensaje("Exitosa");
+                    mensaje = @Traducciones["Exitosa"];
                     Notificacion("exito","",mensaje);
                 }else{
-                    mensaje = TraducirMensaje("FallaLibroNovedades");
+                    mensaje = @Traducciones["FallaLibroNovedades"];
                     Notificacion("info","",mensaje);
                 }
             }else{
-                mensaje = TraducirMensaje("DatosValidos");
+                mensaje = @Traducciones["DatosValidos"];
                 Notificacion("info","",mensaje);
             }
         }catch(Exception ex){
@@ -657,8 +652,8 @@
 
     public void Notificacion(string tipo, string mensaje, string detalle)
     {
-        mensaje = TraducirMensaje(mensaje);
-        detalle = TraducirMensaje(detalle);
+        mensaje = mensaje;
+        detalle = detalle;
         NotificationMessage notificacion;
         if (tipo == "error")
         {

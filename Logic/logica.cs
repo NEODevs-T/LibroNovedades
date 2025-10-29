@@ -118,7 +118,7 @@ namespace LibroNovedades.Logic
                         registroNuevo.RdfecReu = DateTime.Now;
                         registroNuevo.RdfecTra = DateTime.Now;
                         registroNuevo.RdfecCrea = DateTime.Now;
-                        registroNuevo.Rdstatus = (registroNuevo.IdTipReu == 2) ? "Pendiente" : "En Curso";
+                        registroNuevo.Rdstatus = "Pendiente";
                         registroNuevo.IdResReu = 11;
                         registroNuevo.IdEmpresa = idEmpresa;
                         maestra = await maestraData.GetMaestraId(idmaster);

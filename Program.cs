@@ -117,7 +117,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 
-app.UsePathBase("/libroDESARROLLO");
+app.UsePathBase("/libronovedades");
 app.UseStaticFiles();
 
 app.UseRouting();

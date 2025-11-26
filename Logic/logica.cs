@@ -34,7 +34,7 @@ namespace LibroNovedades.Logic
         public async Task SomeMethodAsync()
         {
             var client = _clientFactory.CreateClient();
-            var response = await client.GetAsync("http://neo.paveca.com.ve/apineomaster/api/LogicLibroNov");
+            var response = await client.GetAsync("http://neo.grandbay-corp.com/ApiNeoMasterP/api/LogicLibroNov");
 
             if (response.IsSuccessStatusCode)
             {

@@ -11,7 +11,7 @@ namespace LibroNovedades.Data.LibroNov
     public class ClasifiTPMData : IClasifiTPMData
     {
         private readonly IHttpClientFactory _clientFactory;
-        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/TPM";
+        private const string BaseUrl = "http://neo.grandbay-corp.com/ApiNeoMasterP/api/TPM";
         private HttpClient cliente { get; set; } = new HttpClient();
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
         private string url { get; set; } = "";
@@ -32,7 +32,7 @@ namespace LibroNovedades.Data.LibroNov
     public class LibroNovData : ILibroNovData
     {
         private readonly IHttpClientFactory _clientFactory;
-        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/LibroNove";
+        private const string BaseUrl = "http://neo.grandbay-corp.com/ApiNeoMasterP/api/LibroNove";
         // private const string BaseUrl2 = "http://localhost:5021/api/LibroNove";
 
         private HttpClient cliente { get; set; } = new HttpClient();    //direccion va todo
@@ -195,7 +195,7 @@ namespace LibroNovedades.Data.LibroNov
     public class DataTiParTP : IDataTiParTP
     {
         private readonly IHttpClientFactory _clientFactory;
-        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/TipoParada";
+        private const string BaseUrl = "http://neo.grandbay-corp.com/ApiNeoMasterP/api/TipoParada";
         private HttpClient cliente { get; set; } = new HttpClient();    //direccion va todo
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
         private string url { get; set; } = "";
@@ -222,7 +222,7 @@ namespace LibroNovedades.Data.LibroNov
     {
 
         private readonly IHttpClientFactory _clientFactory;
-        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Pizarra";
+        private const string BaseUrl = "http://neo.grandbay-corp.com/ApiNeoMasterP/api/Pizarra";
         private HttpClient cliente { get; set; } = new HttpClient();    //direccion va todo
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
         private string url { get; set; } = "";
@@ -250,7 +250,7 @@ namespace LibroNovedades.Data.LibroNov
     public class DataAvisador : IDataAvisador
     {
         private readonly IHttpClientFactory _clientFactory;
-        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Avisador";
+        private const string BaseUrl = "http://neo.grandbay-corp.com/ApiNeoMasterP/api/Avisador";
         private const string BaseUrl2 = "http://localhost:5021/api/Avisador";
         private HttpClient cliente { get; set; } = new HttpClient();    //direccion va todo
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();

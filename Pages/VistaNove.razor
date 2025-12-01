@@ -215,9 +215,9 @@
                                         }else{
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                         }
-                                        <BSTD>@item.Lndiscrepa</BSTD>
+                                        <BSTD style="min-width: 300px;">@item.Lndiscrepa</BSTD>
                                         <BSTD>@item.AreaCarga</BSTD>
-                                        <BSTD>@item.Lnobserv</BSTD>
+                                        <BSTD style="min-width: 300px;">@item.Lnobserv</BSTD>
                                             @if(item.LnfichSupe == null)
                                             {
                                                 <BSTD> - </BSTD>
@@ -282,6 +282,7 @@
                 </BSCard>
         </BSCard>
     </BSCard>
+    
 }else{
     <BSRow class="carga" Justify="Justify.Center">
         <BSCol Column="3">

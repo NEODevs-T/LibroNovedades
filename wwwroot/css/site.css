@@ -134,10 +134,11 @@ tbody{
 }
 
 
+
 /* Cabecera fija */
 .cabeceraTabla {
     position: sticky;
-    top: 0;
+    top: 55px;
     color: #fff;
     z-index: 2;
 }

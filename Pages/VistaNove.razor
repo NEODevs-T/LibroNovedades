@@ -174,7 +174,9 @@
                     {
                         <br>
                         <br>
-                        <BSTable IsResponsive="true" IsStriped="true">
+                    <div class="contenedor-tabla">
+                        <div class="tabla-scroll">
+                        <BSTable IsResponsive="false" IsStriped="true">
                             <BSTHead>
                                 <BSTR class="cabeceraTabla">
                                     <BSTD>#</BSTD>
@@ -184,9 +186,9 @@
                                     <BSTD>@Traducciones["Grupo"]</BSTD>
                                     <BSTD>@Traducciones["Turno"]</BSTD>
                                     <BSTD>@Traducciones["TiempoPerdido"]</BSTD>
-                                    <BSTD>@Traducciones["Discrepancia"]</BSTD>
+                                    <BSTD class="col-discrepancia">@Traducciones["Discrepancia"]</BSTD>
                                     <BSTD>@Traducciones["AreaCargador"]</BSTD>
-                                    <BSTD>@Traducciones["Observacion"]</BSTD>
+                                    <BSTD class="col-observacion">@Traducciones["Observacion"]</BSTD>
                                     <BSTD>@Traducciones["Supervisor"]</BSTD>
                                     <BSTD>@Traducciones["Estado"]</BSTD>
                                     @if(IsAccesoCambioEstado){
@@ -215,9 +217,9 @@
                                         }else{
                                             <BSTD>@item.LntiePerMi.ToString().Replace(".",",").Substring(0,5)</BSTD> 
                                         }
-                                        <BSTD style="min-width: 300px;">@item.Lndiscrepa</BSTD>
+                                        <BSTD class="col-discrepancia">@item.Lndiscrepa</BSTD>
                                         <BSTD>@item.AreaCarga</BSTD>
-                                        <BSTD style="min-width: 300px;">@item.Lnobserv</BSTD>
+                                        <BSTD class="col-observacion">@item.Lnobserv</BSTD>
                                             @if(item.LnfichSupe == null)
                                             {
                                                 <BSTD> - </BSTD>
@@ -270,6 +272,8 @@
                                 }
                             </BSTBody>
                         </BSTable>
+                        </div>
+                        </div>
                         <BSRow>
                             <BSCol Column="12">
                                 @if(IsAccesoPizarra){

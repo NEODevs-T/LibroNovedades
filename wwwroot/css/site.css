@@ -98,3 +98,56 @@ textarea {
 tbody{
     text-align:center;
 }
+
+
+
+.contenedor-tabla {
+    width: 95%;
+    max-width: 1300px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.tabla-scroll {
+    height: 500px;            /* Altura visible del contenedor */
+    overflow-y: auto;         /* Scroll vertical */
+    overflow-x: auto;         /* Scroll horizontal */
+    display: block;
+    border: 1px solid #ccc;
+}
+
+.tabla-scroll table {
+    width: 100%;              /* Ocupa todo el contenedor */
+    table-layout: auto;       /* Ajusta ancho según contenido */
+    border-collapse: collapse;
+}
+
+.tabla-scroll table td,
+.tabla-scroll table th {
+    max-width: 200px;         /* Límite general para columnas */
+    white-space: normal;      /* Permite salto de línea */
+    word-wrap: break-word;    /* Rompe palabras largas */
+    padding: 8px;
+    text-align: center;
+}
+
+
+/* Cabecera fija */
+.cabeceraTabla {
+    position: sticky;
+    top: 0;
+    color: #fff;
+    z-index: 2;
+}
+
+
+
+.col-discrepancia, .col-observacion {
+    width: 400px; /* Fija el ancho */
+    min-width: 400px; /* Evita que se reduzca */
+    white-space: normal;
+    word-wrap: break-word;
+}
+

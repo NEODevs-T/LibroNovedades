@@ -137,7 +137,7 @@
             userDto.Proyecto = proyecto;
             userDto.UserName = usuario;
             userDto.Password = contrasena;
-            result = await Http.PostAsJsonAsync("http://neo.paveca.com.ve/Authentication/api/Auth/Login", userDto);
+            result = await Http.PostAsJsonAsync("http://operaciones.papeleslatinos.com/AuthenticationP/api/Auth/Login", userDto);
             validarToken = await result.Content.ReadAsStringAsync();
             if (validarToken != null)
             {

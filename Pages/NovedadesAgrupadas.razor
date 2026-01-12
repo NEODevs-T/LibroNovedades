@@ -775,7 +775,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
     
             listaNove = await LibroNovData.RegistroDeHoyPorLinea(dataNove.IdLinea);
             //listaNoveSinTiempoPerdido = listaNove.Where(n => n.LntiePerMi == -1).ToList();
-            //paradas = await DataAPI.GetParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
+            paradas = await DataAPI.obtenerParadasActualesturnoPorLineaAgrupadas(linea.LcenCos);
             listaDeEstado = new List<string>();
             
             for (int i = 0; i < paradas[0].Count; i++)

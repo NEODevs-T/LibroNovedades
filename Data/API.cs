@@ -102,14 +102,14 @@ namespace LibroNovedades.Data.API
             return null;
         }
 
-       /* public async Task<List<string>>? ObtenerTurnoYGrupo()
+        public async Task<List<string>>? ObtenerTurnoYGrupo()
         {
             List<string> usuario;
-            string url = "http://neo.grandbay-corp.com/ApiNeoMasterP/turno/ObtenerTurnoYGrupoActual";
+            string url = "http://neo.paveca.com.ve/neoapi/turno/ObtenerTurnoYGrupoActual";
             this.cliente = new HttpClient();
             usuario = await cliente.GetFromJsonAsync<List<string>>(url);
             return usuario;
-        }*/
+        }
 
       /*      public async Task<List<List<string>>>? obtenerParadasActualesturnoPorLinea(string centroCosto, List<LibroNoveDTO> listaNove)
         {

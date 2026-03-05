@@ -136,12 +136,17 @@ tbody{
 
 
 /* Cabecera fija */
-.cabeceraTabla {
-    position: sticky;
-    top: 55px;
-    color: #fff;
-    z-index: 2;
+
+.cabeceraTabla th,
+.cabeceraTabla td {
+  position: sticky;
+  top: 0;                 /* Si tienes un navbar fixed, usa top: 56px (o lo que mida) */
+  background: #00A23B;       /* o el color de tu card */
+  z-index: 2;             /* para estar por encima de las celdas del body */
+  /* Opcional: sombra para separar visualmente la cabecera del primer registro */
+  box-shadow: 0 2px 0 rgba(0,0,0,0.06);
 }
+
 
 
 

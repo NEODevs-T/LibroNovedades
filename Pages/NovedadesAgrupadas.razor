@@ -220,11 +220,11 @@
                             <BSRow class="mb-2">
                                 <BSCol Position="Position.Relative" Place ColumnMedium="6">
                                     <BSInput InputType="InputType.Text"
-                                             @bind-Value="filtroParadas"
-                                             Placeholder="Filtrar paradas..." />
+                                            @bind-Value="filtroParadas"
+                                            Placeholder="Filtrar paradas..." />
                                 </BSCol>
                             </BSRow>
-
+                            <div class="tabla-scroll">                         
                             <BSTable IsResponsive="true" IsStriped="true">
                                 <BSTHead>
                                     <BSTR class="cabeceraTabla">
@@ -249,7 +249,7 @@
                                         var listaFiltrada = string.IsNullOrWhiteSpace(filtroParadas)
                                             ? paradasVM
                                             : paradasVM.Where(v =>
-                                                   (!string.IsNullOrWhiteSpace(v.Parada.Aparte) &&
+                                                (!string.IsNullOrWhiteSpace(v.Parada.Aparte) &&
                                                     v.Parada.Aparte.Contains(filtroParadas, StringComparison.OrdinalIgnoreCase))
                                                 || (!string.IsNullOrWhiteSpace(v.Parada.NombreParada) &&
                                                     v.Parada.NombreParada.Contains(filtroParadas, StringComparison.OrdinalIgnoreCase))
@@ -257,7 +257,7 @@
                                                     v.Parada.CodigoParada.Contains(filtroParadas, StringComparison.OrdinalIgnoreCase))
                                                 || (!string.IsNullOrWhiteSpace(v.Parada.CodigoGrupoParada) &&
                                                     v.Parada.CodigoGrupoParada.Contains(filtroParadas, StringComparison.OrdinalIgnoreCase))
-                                               ).ToList();
+                                                ).ToList();
 
                                         @if (listaFiltrada.Count == 0)
                                         {
@@ -299,6 +299,7 @@
                                     }
                                 </BSTBody>
                             </BSTable>
+                        </div>
                         }
                         else
                         {

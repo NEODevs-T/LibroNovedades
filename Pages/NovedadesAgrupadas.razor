@@ -25,7 +25,6 @@
 @using LibroNovedades.DTOs
 @using LibroNovedades.Resources
 
-
 @if (IsCargado)
 {
     <PageTitle>@Traducciones["Formato"]</PageTitle>
@@ -171,12 +170,12 @@
                     <br />
                     <br />
 
-                    @* ---------- MODO MANUAL (cuando no hay paradas y el rol es Mantenimiento) ---------- *@
-                    @if (paradasBandera && rol != null && rol.Contains("Mantenimiento"))
+                    @* ---------- BLOQUE MANUAL (cuando hay línea seleccionada) ---------- *@
+                    @if (dataNove.IdLinea != 0)
                     {
                         <BSRow>
                             <BSCol Position="Position.Relative" Place ColumnMedium="5">
-                                @if (rol.Contains("Mantenimiento"))
+                                @if (rol != null && rol.Contains("Mantenimiento"))
                                 {
                                     <BSLabel class="labelFormularioGrande">@Traducciones["TiempoEmpleado"]</BSLabel>
                                 }
@@ -210,21 +209,25 @@
                                 <BSButton class="buttonFormularioOK" @onclick="eleccionSinGespline">@Traducciones["Seleccionar"]</BSButton>
                             </BSCol>
                         </BSRow>
-                    }
-                    else
-                    {
-                        @* ---------- FILTRO + TABLA DE PARADAS (solo si hay línea y hay paradas) ---------- *@
-                        @if (dataNove.IdLinea != 0 && !paradasBandera)
+
+                        <br />
+
+                        @* ---------- BOTÓN: PLEGAR/DESPLEGAR TABLA GESPLINE ---------- *@
+                        <BSRow>
+                            <BSCol ColumnMedium="12">
+                                @if (PuedeVerGespline)
+                                {
+                                    <BSButton class="btn btn-success" @onclick="ToggleGespline">
+                                        Tiempo Perdido Gespline @(mostrarGespline ? "▲" : "▼")
+                                    </BSButton>
+                                }
+                            </BSCol>
+                        </BSRow>
+
+                        @* ---------- PANEL DESPLEGABLE: TABLA (MISMA LÓGICA VIEJA) ---------- *@
+                        @if (mostrarGespline && PuedeVerGespline)
                         {
-                            @* Filtro arriba (único) *@
-                            <BSRow class="mb-2">
-                                <BSCol Position="Position.Relative" Place ColumnMedium="6">
-                                    <BSInput InputType="InputType.Text"
-                                            @bind-Value="filtroParadas"
-                                            Placeholder="Filtrar paradas..." />
-                                </BSCol>
-                            </BSRow>
-                            <div class="tabla-scroll">                         
+                            <br />
                             <BSTable IsResponsive="true" IsStriped="true">
                                 <BSTHead>
                                     <BSTR class="cabeceraTabla">
@@ -235,88 +238,53 @@
                                         <BSTD>@Traducciones["Seleccionar"]</BSTD>
                                     </BSTR>
                                 </BSTHead>
-
                                 <BSTBody class="cuerpoTabla">
-                                    @if (paradasVM == null || paradasVM.Count == 0)
+                                @if (paradas == null || paradas.Count == 0 || paradas[0].Count == 0 || indexParadas == null)
+                                {
+                                    <BSTR>
+                                        <BSTD ColSpan="5">@Traducciones["SeleccioneUnaLinea"]</BSTD>
+                                    </BSTR>
+                                }
+                                else
+                                {
+                                    @foreach (var item in indexParadas)
                                     {
                                         <BSTR>
-                                            <BSTD ColSpan="5">@Traducciones["SeleccioneUnaLinea"]</BSTD>
+                                            <BSTD>@(item + 1)</BSTD>
+                                            <BSTD>@paradas[4][item]</BSTD>
+                                            <BSTD>@paradas[3][item]</BSTD>
+                                            <BSTD>@Math.Round(double.Parse(paradas[5][item]), 2)</BSTD>
+                                            <BSTD>
+                                                @if (paradas[6][item] == "0")
+                                                {
+                                                    <BSButton id="@item" class="buttonFormularioOK" @onclick="@(e => eleccion(item))">
+                                                        @Traducciones["Seleccionar"]
+                                                    </BSButton>
+                                                }
+                                                else if (paradas[6][item] == "1")
+                                                {
+                                                    <BSButton id="@item" class="buttonFormularioCambio" @onclick="@(e => eleccion(item))">
+                                                        @Traducciones["Actualizado"]
+                                                    </BSButton>
+                                                }
+                                                else
+                                                {
+                                                    <BSButton id="@item" class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">
+                                                        @Traducciones["PorActualizar"]
+                                                    </BSButton>
+                                                }
+                                            </BSTD>
                                         </BSTR>
                                     }
-                                    else
-                                    {
-                                        // (NO usar "@{ }" aquí; ya estás dentro de un bloque C#)
-                                        var listaFiltrada = string.IsNullOrWhiteSpace(filtroParadas)
-                                            ? paradasVM
-                                            : paradasVM.Where(v =>
-                                                (!string.IsNullOrWhiteSpace(v.Parada.Aparte) &&
-                                                    v.Parada.Aparte.Contains(filtroParadas, StringComparison.OrdinalIgnoreCase))
-                                                || (!string.IsNullOrWhiteSpace(v.Parada.NombreParada) &&
-                                                    v.Parada.NombreParada.Contains(filtroParadas, StringComparison.OrdinalIgnoreCase))
-                                                || (!string.IsNullOrWhiteSpace(v.Parada.CodigoParada) &&
-                                                    v.Parada.CodigoParada.Contains(filtroParadas, StringComparison.OrdinalIgnoreCase))
-                                                || (!string.IsNullOrWhiteSpace(v.Parada.CodigoGrupoParada) &&
-                                                    v.Parada.CodigoGrupoParada.Contains(filtroParadas, StringComparison.OrdinalIgnoreCase))
-                                                ).ToList();
-
-                                        @if (listaFiltrada.Count == 0)
-                                        {
-                                            <BSTR>
-                                                <BSTD ColSpan="5" class="text-muted">No hay resultados para el filtro.</BSTD>
-                                            </BSTR>
-                                        }
-                                        else
-                                        {
-                                            @foreach (var vm in listaFiltrada)
-                                            {
-                                                <BSTR Class="@GetEstadoClase(vm.Estado)">
-                                                    <BSTD>@(vm.Index + 1)</BSTD>
-                                                    <BSTD>@vm.Parada.Aparte</BSTD>
-                                                    <BSTD>@vm.Parada.NombreParada</BSTD>
-                                                    <BSTD>@Math.Round(vm.Parada.TiempoPerdido, 2)</BSTD>
-                                                    <BSTD>
-                                                        @if (vm.Estado == "0")
-                                                        {
-                                                            <BSButton class="btn btn-primary btn-sm" @onclick="() => eleccion(vm.Index)">
-                                                                @Traducciones["Seleccionar"]
-                                                            </BSButton>
-                                                        }
-                                                        else if (vm.Estado == "1")
-                                                        {
-                                                            <span class="badge bg-success">@Traducciones["Actualizado"]</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="badge bg-warning text-dark">@Traducciones["PorActualizar"]</span>
-                                                            <BSButton class="btn btn-outline-primary btn-sm ms-2" @onclick="() => eleccion(vm.Index)">
-                                                                @Traducciones["Seleccionar"]
-                                                            </BSButton>
-                                                        }
-                                                    </BSTD>
-                                                </BSTR>
-                                            }
-                                        }
-                                    }
-                                </BSTBody>
+                                }
+                            </BSTBody>
                             </BSTable>
-                        </div>
-                        }
-                        else
-                        {
-                            @* Mientras no haya línea seleccionada o no existan paradas, NO mostramos filtro/tabla *@
-                            @if (dataNove.IdLinea == 0)
-                            {
-                                <div class="text-muted">@Traducciones["SeleccioneUnaLinea"]</div>
-                            }
-                            else if (paradasBandera)
-                            {
-                                <div class="text-muted">No hay paradas actuales para la línea seleccionada.</div>
-                            }
                         }
                     }
                 }
                 else
                 {
+
                     @* -------------------- BLOQUE: FORMULARIO DE REGISTRO (causaCargada == true) -------------------- *@
                     <BSForm Model="dataNove" IsRow="true" Gutters="Gutters.Medium" OnSubmit="OK">
                         <DataAnnotationsValidator />
@@ -439,8 +407,7 @@
 
                             <BSCol Position="Position.Relative" Place ColumnMedium="3">
                                 <BSLabel style="width: 200px;" class="labelFormulario">@Traducciones["FichaSupervisor"]</BSLabel>
-                                <BSInput InputType="InputType.Text" @bind-Value="dataNove.LnfichSupe">
-                                </BSInput>
+                                <BSInput InputType="InputType.Text" @bind-Value="dataNove.LnfichSupe"></BSInput>
                                 <BSFeedback For="@(() => dataNove.LnfichSupe)" />
                             </BSCol>
 
@@ -492,98 +459,101 @@ else
         </BSCol>
     </BSRow>
 }
+
 @code{
-[CascadingParameter]
-private Task<AuthenticationState>? authenticationState { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
 
-[Parameter]
-public int? id { get; set; }
+    [Parameter]
+    public int? id { get; set; }
 
-private bool _showTooltip;
-private BSAlert _alertRef;
+    private bool _showTooltip;
+    private BSAlert _alertRef;
 
-private string? mensaje { get; set; }  
-private string? nota { get; set; }   
-private string? rol { get; set; } 
-private string? ficha { get; set; } 
-public Dictionary<string, string> Traducciones { get; set; } = new();
-private LibroNoveDTO dataNove { get; set; } = new LibroNoveDTO();
-private List<LibroNoveDTO> listaDataNove { get; set; } = new List<LibroNoveDTO>();
-private List<LibroNoveDTO> listaNove { get; set; } = new List<LibroNoveDTO>();
-private List<LibroNoveDTO> listaNoveSinTiempoPerdido = new();
+    private string? mensaje { get; set; }  
+    private string? nota { get; set; }   
+    private string? rol { get; set; } 
+    private string? ficha { get; set; } 
+    public Dictionary<string, string> Traducciones { get; set; } = new();
+    private LibroNoveDTO dataNove { get; set; } = new LibroNoveDTO();
+    private List<LibroNoveDTO> listaDataNove { get; set; } = new List<LibroNoveDTO>();
+    private List<LibroNoveDTO> listaNove { get; set; } = new List<LibroNoveDTO>();
+    private List<LibroNoveDTO> listaNoveSinTiempoPerdido = new();
 
-private TiParTpDTO tipoParada { get; set; }
-private List<List<string>> paradas { get; set; } = new List<List<string>>();
-private List<int> indexParadas { get; set; } = new List<int>();
+    private TiParTpDTO tipoParada { get; set; }
+    private List<List<string>> paradas { get; set; } = new List<List<string>>();
+    private List<int> indexParadas { get; set; } = new List<int>();
 
-private IEnumerable<Claim> claims { get; set; } = Enumerable.Empty<Claim>();
+    private IEnumerable<Claim> claims { get; set; } = Enumerable.Empty<Claim>();
 
 
-private int idPais { get; set; }
+    private int idPais { get; set; }
 
-private int idEmpresa { get; set; }
-private int idCentro { get; set; } = 0;
-private int idDivision { get; set; }
-private int idLinea { get; set; }
+    private int idEmpresa { get; set; }
+    private int idCentro { get; set; } = 0;
+    private int idDivision { get; set; }
+    private int idLinea { get; set; }
 
-private bool isAccesoPais { get; set; }
-private bool isAccesoEmpresa { get; set; }
-private bool isAccesoCentro { get; set; }
-private bool isAccesoDivision { get; set; }
-private bool isAccesoLinea { get; set; }
-private bool isDisableManualCTPM { get; set; }
-private bool isDisableManualGT { get; set; }
-private bool isDisabledButton { get; set; }
-private bool IsCargado { get; set; }
-private bool isTPM { get; set; }
-private bool isFichaManual { get; set; }
+    private bool isAccesoPais { get; set; }
+    private bool isAccesoEmpresa { get; set; }
+    private bool isAccesoCentro { get; set; }
+    private bool isAccesoDivision { get; set; }
+    private bool isAccesoLinea { get; set; }
+    private bool isDisableManualCTPM { get; set; }
+    private bool isDisableManualGT { get; set; }
+    private bool isDisabledButton { get; set; }
+    private bool IsCargado { get; set; }
+    private bool isTPM { get; set; }
+    private bool isFichaManual { get; set; }
 
-private List<PaiDTO> listaPais { get; set; } = new();
-private List<EmpresasVDTO> listaEmpresa { get; set; } = new();
-private List<CentrosVDTO> listaCentro { get; set; } = new();
-private List<DivisionesVDTO> listaDivision { get; set; } = new();
-private List<LineaVDTO> listaLinea { get; set; } = new();
-private List<EquipoEamDTO> listaEquiposEAM { get; set; } = new();
-private List<EquipoEamDTO> listaAllEquiposEAM { get; set; } = new();
-private List<ClasifiTpmDTO> listaClasificacionTPM { get; set; } = new();
-private List<TiParTpDTO> listaTiposNovedad { get; set; } = new();
-private List<string> listaTurnoYGrupo { get; set; } = new();
-private List<ParadaEstadoVM> paradasVM { get; set; } = new();
-private string? filtroParadas { get; set; } = string.Empty;
-private RadzenDropDown<string> radzenDropDown { get; set; }
+    private List<PaiDTO> listaPais { get; set; } = new();
+    private List<EmpresasVDTO> listaEmpresa { get; set; } = new();
+    private List<CentrosVDTO> listaCentro { get; set; } = new();
+    private List<DivisionesVDTO> listaDivision { get; set; } = new();
+    private List<LineaVDTO> listaLinea { get; set; } = new();
+    private List<EquipoEamDTO> listaEquiposEAM { get; set; } = new();
+    private List<EquipoEamDTO> listaAllEquiposEAM { get; set; } = new();
+    private List<ClasifiTpmDTO> listaClasificacionTPM { get; set; } = new();
+    private List<TiParTpDTO> listaTiposNovedad { get; set; } = new();
+    private List<string> listaTurnoYGrupo { get; set; } = new();
 
-private bool causaCargada { get; set; }
-private bool paradasBandera { get; set; }
-private bool IsNuevo { get; set; }
-private bool bandera { get; set; }
+    private bool causaCargada { get; set; }
+    private bool paradasBandera { get; set; }
+    private bool IsNuevo { get; set; }
+    private bool bandera { get; set; }
 
-private int tiempoPerdido { get; set; }
-private int indexCambio { get; set; }
+    private int tiempoPerdido { get; set; }
+    private int indexCambio { get; set; }
 
-public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA, int PAPISA, int BIOPACOL, int TTL) empresas =
-    (PAVECA: 1, CHEMPRO: 2, PANASA: 3, PAINSA: 4, PAPISA: 5, BIOPACOL: 6, TTL: 7);
+    public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA, int PAPISA, int BIOPACOL, int TTL) empresas =
+        (PAVECA: 1, CHEMPRO: 2, PANASA: 3, PAINSA: 4, PAPISA: 5, BIOPACOL: 6, TTL: 7);
 
-public readonly Dictionary<string, string> grupoPAVECA = new()
-{
-    { "GrupoA", "A" }, { "GrupoB", "B" }, { "GrupoC", "C" }, { "GrupoD", "D" }
-};
+    public readonly Dictionary<string, string> grupoPAVECA = new()
+    {
+        { "GrupoA", "A" }, { "GrupoB", "B" }, { "GrupoC", "C" }, { "GrupoD", "D" }
+    };
 
-public readonly Dictionary<string, string> grupoPAINSA = new()
-{
-    { "Grupo1", "1" }, { "Grupo2", "2" }, { "Grupo3", "3" }, { "Grupo4", "4" }
-};
+    public readonly Dictionary<string, string> grupoPAINSA = new()
+    {
+        { "Grupo1", "1" }, { "Grupo2", "2" }, { "Grupo3", "3" }, { "Grupo4", "4" }
+    };
 
-public readonly Dictionary<string, string> grupoPANASA = new()
-{
-    { "Grupo1", "-" }
-};
+    public readonly Dictionary<string, string> grupoPANASA = new()
+    {
+        { "Grupo1", "-" }
+    };
 
-public readonly Dictionary<string, string> grupoPAPISA = new()
-{
-    { "GrupoA", "A" }, { "GrupoB", "B" }, { "GrupoC", "C" }
-};
+    public readonly Dictionary<string, string> grupoPAPISA = new()
+    {
+        { "GrupoA", "A" }, { "GrupoB", "B" }, { "GrupoC", "C" }
+    };
 
-public Dictionary<string, string> grupos { get; set; } = new();
+    public Dictionary<string, string> grupos { get; set; } = new();
+
+
+    private bool mostrarGespline { get; set; } = false;
+    private void ToggleGespline() => mostrarGespline = !mostrarGespline;
+    private bool PuedeVerGespline => !string.IsNullOrWhiteSpace(rol) && idEmpresa == 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -626,9 +596,6 @@ public Dictionary<string, string> grupos { get; set; } = new();
             Traducciones[clave] = Translator.Traducir(clave);
         }
     
-
-
-
         if (authenticationState is not null)
         {
             AuthenticationState? authState = await authenticationState;
@@ -655,7 +622,7 @@ public Dictionary<string, string> grupos { get; set; } = new();
                     dataNove.LnisResu = 0;
                     causaCargada = false;
                 }else{
-                    @* dataNove = await LibroNovData.ObtenerLibroPorId(id ?? 0) ?? new LibroNoveDTO(); *@
+                    // dataNove = await LibroNovData.ObtenerLibroPorId(id ?? 0) ?? new LibroNoveDTO();
                 }
 
                 claims = user.Claims;
@@ -776,6 +743,11 @@ public Dictionary<string, string> grupos { get; set; } = new();
                 }
             }
         }
+
+        if (!PuedeVerGespline && mostrarGespline)
+        {
+            mostrarGespline = false;
+        }
         IsCargado = true;
     }
 
@@ -876,9 +848,8 @@ public Dictionary<string, string> grupos { get; set; } = new();
                         int d2 =  dataNove.IdLinea;
                         string d4 = dataNove.LnfichaRes;
                         int d6 = dataNove.IdCtpm;
-                        if(indexCambio != -1 && paradasVM != null && indexCambio < paradasVM.Count)
-                        {
-                            paradasVM[indexCambio].Estado = "1";
+                        if(indexCambio != -1){
+                            paradas[6][indexCambio] = "1";
                         }
                             
                         dataNove = new LibroNoveDTO();
@@ -924,153 +895,111 @@ public Dictionary<string, string> grupos { get; set; } = new();
         isDisabledButton = false;
         _showTooltip = true;
     }
-
-    public class ParadaEstadoVM
-    {
-        public ParadasActualesAgrupadasDTO Parada {get; set; }
-        public string Estado {get; set; }
-        public int Index {get; set; }
-    }
-
-    public static class ParadaIdHelper
-    {
-        public static string BuildIdParada (ParadasActualesAgrupadasDTO dto, DateTime fecha, string turno, string grupo)
-        {
-            if
-            (string.IsNullOrWhiteSpace(dto.CodigoParada) || dto.CodigoParada.Length < 2)
-            throw new ArgumentException("CodigoParada debe tener al menos 2 caracteres.", nameof(dto.CodigoParada));            
-            var primerosDos = dto.CodigoParada.Substring(0, 2);
-            return $"{dto.CodigoParada}-{dto.CodigoGrupoParada}-{primerosDos}-{fecha:ddMMyyyy}-{turno}{grupo}";
-        }
-    }
-
-
-    private string GetEstadoClase(string estado) => estado switch
-    {
-        "1" => "table-success",
-        "2" => "table-warning",
-        "0" => "table-light",
-        _ => string.Empty
-    };
-
-
-
     
-protected async Task BuscarTiempoPerdido(ChangeEventArgs e)
-{
-    try
+    protected async Task BuscarTiempoPerdido(ChangeEventArgs e)
     {
-        if (e?.Value == null)
-        {
-            Notificacion("error","","Selección invalida.");
-            paradasBandera = true;
-            paradasVM = new List<ParadaEstadoVM>();
-            indexParadas = new List<int>();
-            return;
-        }
-
-        var idLineaSel = int.Parse(e.Value.ToString());
-        dataNove.IdLinea = idLineaSel;
-
-        // Equipos por línea (sin cambios en UI)
-        listaAllEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(idLineaSel);
-        listaEquiposEAM = listaAllEquiposEAM.ToList();
-
-        // Validar línea
-        var linea = listaLinea.FirstOrDefault(l => l.IdLinea == idLineaSel);
-        if (linea == null)
-        {
-            Notificacion("error", "", "La línea seleccionada no existe.");
-            paradasBandera = true;
-            paradasVM = new List<ParadaEstadoVM>();
-            indexParadas = new List<int>();
-            return;
-        }
-
-        // ⚠️ Usa el mismo parámetro que YA te funciona en la URL:
-        var paradasDto = await DataAPI.GetParadasActualesTurnoPorLineaAgrupadas(linea.LcenCos);
-        // Si tu endpoint realmente necesita IdMaster, cambia a: linea.IdMaster
-        // Si necesita IdLinea, usa: idLineaSel
-
-        // Mostrar listado si hay paradas (SIN depender de turno/grupo ni novedades)
-        if (paradasDto != null && paradasDto.Count > 0)
-        {
-            paradasBandera = false;
-
-            // Creamos el VM únicamente para listar (Estado neutro "0" -> usa tus estilos existentes con GetEstadoClase)
-            var vmList = new List<ParadaEstadoVM>(paradasDto.Count);
-            for (int i = 0; i < paradasDto.Count; i++)
-            {
-                vmList.Add(new ParadaEstadoVM
-                {
-                    Parada = paradasDto[i],
-                    Estado = "0",   // no cambia estilos Radzen; tu GetEstadoClase("0") ya mapea a "table-light"
-                    Index  = i
-                });
-            }
-
-            paradasVM = vmList;
-            indexParadas = vmList.Select(x => x.Index).ToList();
-        }
-        else
-        {
-            paradasBandera = true;
-            paradasVM = new List<ParadaEstadoVM>();
-            indexParadas = new List<int>();
-        }
-    }
-    catch (Exception ex)
-    {
-        if (ex.Message.Contains("Response status code does not indicate success: 500 (Internal Server Error)."))
-        {
-            mensaje = Traducciones["Gespline"];
-            Notificacion("error","",mensaje);
-        }
-        else
-        {
-            mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
-        }
-
-        paradasBandera = true;
-        paradasVM = new List<ParadaEstadoVM>();
-        indexParadas = new List<int>();
-    }
-}
-
-    public async Task eleccion(int item){
         try
         {
-            indexCambio = item;
-            var dto = paradasVM[item].Parada;
-            var turno = listaTurnoYGrupo[0];
-            var grupo = listaTurnoYGrupo[1];
-            var temporal = 
-            ParadaIdHelper.BuildIdParada(dto, DateTime.Now, turno, grupo);
-            var data = await LibroNovData.ObtenerPorIdParada(temporal);
-            tipoParada = await
-            DataTiParTP.ObtenerTipoParadaId(dto.CodigoGrupoParada);
-            dataNove.IdTipoNove = tipoParada.IdTiParTp;
-            GrupoTurno();
-            nota = "Nota: " + dto.Aparte + " - " + dto.NombreParada;
-            dataNove.IdParada = temporal;
-            var tiempoRedondeado = Math.Round(dto.TiempoPerdido, 5);
-            if (data.IdParada == null)
+            LineaVDTO linea;
+            string temporal;
+            List<string> listaDeEstado;
+            LibroNoveDTO? dataNov;
+            double parada;
+
+            dataNove.IdLinea = int.Parse(e.Value.ToString());
+            listaEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
+            listaAllEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
+
+            linea = listaLinea.FirstOrDefault(l => l.IdLinea == dataNove.IdLinea);
+
+            listaNove = await LibroNovData.RegistroDeHoyPorLinea(dataNove.IdLinea);
+
+            // ❗ Llamamos al ÚNICO método que tu API expone
+            var dtoList = await DataAPI.GetParadasActualesTurnoPorLineaAgrupadas(linea.LcenCos)
+                ?? new List<ParadasActualesAgrupadasDTO>();
+
+            // ⚠ Convertimos DTO → List<List<string>> (estructura legacy que tu tabla usa)
+            paradas = new List<List<string>>()
             {
-                IsNuevo = true;
-                dataNove.IdCtpm = 2;
-                dataNove.LntiePerMi = tiempoRedondeado;
-                dataNove.IdEquipo = "";
-                dataNove.Lnobserv = "";
-                dataNove.Lndiscrepa = "";
+                dtoList.Select(x => x.CodigoParada ?? "").ToList(),
+                dtoList.Select(x => x.CodigoGrupoParada ?? "").ToList(),
+                dtoList.Select(x => x.CodigoParada?.Substring(0,2) ?? "").ToList(),
+                dtoList.Select(x => x.NombreParada ?? "").ToList(),
+                dtoList.Select(x => x.Aparte ?? "").ToList(),
+                dtoList.Select(x => x.TiempoPerdido.ToString()).ToList()
+            };
+
+            // Calculamos estados igual que tu código viejo
+            listaDeEstado = new List<string>();
+            for (int i = 0; i < paradas[0].Count; i++)
+            {
+                temporal = paradas[0][i] + "-" + paradas[1][i] + "-" + paradas[2][i] + "-"
+                        + DateTime.Now.ToString("ddMMyyyy") + "-"
+                        + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
+
+                dataNov = listaNove.FirstOrDefault(n => n.IdParada == temporal);
+
+                if (dataNov == null)
+                {
+                    listaDeEstado.Add("0");
+                    continue;
+                }
+
+                parada = Math.Round(double.Parse(paradas[5][i]), 5);
+
+                if (dataNov.LntiePerMi == parada)
+                    listaDeEstado.Add("1");
+                else
+                    listaDeEstado.Add("2");
+            }
+
+            paradas.Add(listaDeEstado);
+
+            // Esto no se toca
+            if (paradas[0].Count == 0)
+            {
+                paradasBandera = true;
+                indexParadas = new List<int>();
             }
             else
             {
-                IsNuevo = false;
+                paradasBandera = false;
+                indexParadas = Enumerable.Range(0, paradas[0].Count).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error", "", mensaje);
+        }
+    }
+
+    public async Task eleccion(int item){
+        try{
+            string temporal;
+            LibroNoveDTO data;
+
+            indexCambio = item;
+            temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
+            data = await LibroNovData.ObtenerPorIdParada(temporal);
+
+            if(data.IdParada == null){
+                tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
+                dataNove.IdTipoNove = tipoParada.IdTiParTp;
+                GrupoTurno();
+                dataNove.IdEquipo = "";
+                dataNove.Lnobserv = "";
+                nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];
+                dataNove.Lndiscrepa = "";
+                dataNove.IdParada =  temporal;
+                IsNuevo = true;
+                dataNove.IdCtpm = 2;
+                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
+            }else{
                 dataNove.IdLinea = data.IdLinea;
                 dataNove.IdAreaCar = data.IdAreaCar;
                 dataNove.IdEquipo = data.IdEquipo;
-                dataNove.IdlibrNov = data.IdlibrNov;
+                dataNove.IdlibrNov =  data.IdlibrNov;
                 dataNove.IdParada = data.IdParada;
                 dataNove.IdTipoNove = data.IdTipoNove;
                 dataNove.Lndiscrepa = data.Lndiscrepa;
@@ -1082,14 +1011,13 @@ protected async Task BuscarTiempoPerdido(ChangeEventArgs e)
                 dataNove.Lnturno = data.Lnturno;
                 dataNove.IdCtpm = data.IdCtpm;
                 dataNove.LnisResu = data.LnisResu;
-                dataNove.LntiePerMi = tiempoRedondeado;
+                IsNuevo = false;
+                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
             }
             causaCargada = true;
-        }
-        catch (Exception e)
-        {
+        }catch(Exception e){
             mensaje = "Error: " + e.Message;
-            Notificacion("error", "", mensaje);
+            Notificacion("error","",mensaje);
         }
     }
 

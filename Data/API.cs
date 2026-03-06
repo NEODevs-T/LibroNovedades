@@ -84,7 +84,30 @@ namespace LibroNovedades.Data.API
             }
             return null;
         }
-        public async Task<List<List<string>>>? obtenerParadasActuales1turnoPorLinea(string centroCosto, List<LibroNoveDTO> listaNove)
+
+        public async Task<List<string>>? ObtenerTurnoYGrupo()
+        {
+            List<string> usuario;
+            string url = "http://neo.paveca.com.ve/neoapi/turno/ObtenerTurnoYGrupoActual";
+            this.cliente = new HttpClient();
+            usuario = await cliente.GetFromJsonAsync<List<string>>(url);
+            return usuario;
+        }
+
+      /*      public async Task<List<List<string>>>? obtenerParadasActualesturnoPorLinea(string centroCosto, List<LibroNoveDTO> listaNove)
+        {
+            DateTime hora = DateTime.Now;
+            if (hora.Hour >= 6 && hora.Hour < 18)
+            {
+                return await this.obtenerParadasActuales1turnoPorLinea(centroCosto, listaNove);
+            }
+            else
+            {
+                return await this.obtenerParadasActuales2turnoPorLinea(centroCosto, listaNove);
+            }
+        }*/
+
+      /*  public async Task<List<List<string>>>? GetParadasActuales1Turno(string centroCosto, List<LibroNoveDTO> listaNove)
         {
             string ParadasIgnorar = "[";
             List<List<string>> data = new List<List<string>>();

@@ -417,7 +417,18 @@
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
                 listaClasificacionTPM = await ClasifiTPMData.ObtenerClasificacion();
 
-                if(rol.Contains("SuperAdmin")){
+                if(rol.Contains("Admin")){
+                    isAccesoCentro = true;
+                    isAccesoDivision = true;
+                    isAccesoLinea = true;
+                    IsAccesoPizarra = true;
+                    IsAccesoCambioEstado = true;
+
+                    listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
+                    listaDivision = await DivisionData.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
+
+                }else if(rol.Contains("SuperAdmin")){
                     isAccesoPais = true;
                     isAccesoEmpresa = true;
                     isAccesoCentro = true;

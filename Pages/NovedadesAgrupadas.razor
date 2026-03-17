@@ -648,7 +648,17 @@ else
                 listaTiposNovedad = await DataTiParTP.ObtenerTodosTiposNovedad();
                 listaClasificacionTPM = await ClasifiTPMData.ObtenerClasificacion();
 
-                if(rol.Contains("SuperAdmin")){
+                if(rol.Contains("Admin")){
+                    isAccesoCentro = true;
+                    isAccesoDivision = true;
+                    isAccesoLinea = true;
+                    dataNove.IdAreaCar = 10;
+                    
+                    listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
+                    listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
+                    listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
+
+                }else if(rol.Contains("SuperAdmin")){
                     isAccesoPais = true;
                     isAccesoEmpresa = true;
                     isAccesoCentro = true;
@@ -835,6 +845,7 @@ else
                 try
                 {
                     if(IsNuevo){
+                        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(listaDataNove));
                         bandera = await LibroNovData.InsertarRegistro(listaDataNove);
                     }else{
                         bandera = await  LibroNovData.ActualizacionNovedad(dataNove.IdlibrNov,dataNove);

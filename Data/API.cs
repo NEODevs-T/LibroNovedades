@@ -84,22 +84,32 @@ namespace LibroNovedades.Data.API
             }
         }
 
-        public async Task<List<ParadasActualesAgrupadasDTO>?> GetParadasActualesTurnoPorLineaAgrupadas(string centroCosto)
+        public async Task<List<ParadasActualesAgrupadasDTO>>
+            GetParadasActualesTurnoPorLineaAgrupadas(string centroCosto)
         {
-            var hora = DateTime.Now.Hour;
+            int hora = DateTime.Now.Hour;
+
             if (hora >= 6 && hora < 18)
             {
-                return await this.GetParadasActuales1TurnoAgrupados(centroCosto);
+                return await GetParadasActuales1TurnoAgrupados(centroCosto)
+                    ?? new List<ParadasActualesAgrupadasDTO>();
             }
-            else if (hora >= 18 && hora < 24)
+
+            if (hora >= 18)
             {
-                return await this.GetParadasActuales2TurnoAntesDeLas0amAgrupadas(centroCosto);
+                return await GetParadasActuales2TurnoAntesDeLas0amAgrupadas(centroCosto)
+                    ?? new List<ParadasActualesAgrupadasDTO>();
             }
-            else if (hora >= 0 && hora < 6)
-            {
-                return await this.GetParadasActuales2TurnoDespuesDeLas0amAgrupadas(centroCosto);
-            }
-            return null;
+
+            var antes0am = await GetParadasActuales2TurnoAntesDeLas0amAgrupadas(centroCosto)
+                            ?? new List<ParadasActualesAgrupadasDTO>();
+
+            var despues0am = await GetParadasActuales2TurnoDespuesDeLas0amAgrupadas(centroCosto)
+                            ?? new List<ParadasActualesAgrupadasDTO>();
+
+            antes0am.AddRange(despues0am);
+
+            return antes0am;
         }
 
         public async Task<List<string>>? ObtenerTurnoYGrupo()

@@ -96,31 +96,31 @@
         proyecto = "LibroDeNovedades";
         userDto = new UserLoginDto() ;
     }
-    protected async Task logout(){
+
+    protected async Task logout()
+    {
         usuario = "";
         contrasena = "";
         await LocalStorage.RemoveItemAsync("LibroDeNovedadesNew");
-        await AuthStateProvider.GetAuthenticationStateAsync();
+
+        NavigationManager.NavigateTo("", true); // vuelve al login correctamente
     }
+
+
     private async Task CambiarIdioma(ChangeEventArgs e)
     {
-        var valor = e.Value?.ToString();
-        idioma = int.Parse(valor);
+        idioma = int.Parse(e.Value.ToString());
 
-        // Opcional: guardar en LocalStorage
         await LocalStorage.SetItemAsync("userCulture", idioma == 1 ? "es" : "en");
 
-        // Redirigir si es necesario
         if (idioma == 1)
         {
-            NavigationManager.NavigateTo("/libronovedades/es/inicio");
+            NavigationManager.NavigateTo("es/inicio", true);
         }
-        else if (idioma == 2)
+        else
         {
-            NavigationManager.NavigateTo("/libronovedades/en/home");
+            NavigationManager.NavigateTo("en/home", true);
         }
-
-        StateHasChanged();
     }
 
 
@@ -176,19 +176,21 @@
                 }
                 else
                 {
-                    await LocalStorage.SetItemAsync("LibroDeNovedadesNew", validarToken);
-                    await AuthStateProvider.GetAuthenticationStateAsync();    
-                    NavigationManager.NavigateTo("");
-                    if(idioma == 1)
+                    await LocalStorage.SetItemAsync("LibroDeNovedadesNew", validarToken.Trim('"'));
+
+                    if (idioma == 1)
                     {
-                        mensaje = "Bienvenido";
-                    } else if(idioma == 2)
-                    {
-                        mensaje = "Welcome";
+                        NavigationManager.NavigateTo("es/inicio", true);
                     }
-                    Notificacion("exito","",mensaje);
+                    else
+                    {
+                        NavigationManager.NavigateTo("en/home", true);
+                    }
+
+                    mensaje = idioma == 1 ? "Bienvenido" : "Welcome";
+                    Notificacion("exito", "", mensaje);
                 }
-            }else{
+                }else{
                 if(idioma == 1)
                 {
                     mensaje = "Hubo un error. Por favor intente de nuevo";

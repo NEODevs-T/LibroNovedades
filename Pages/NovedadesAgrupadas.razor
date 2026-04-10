@@ -467,8 +467,6 @@ else
     [Parameter]
     public int? id { get; set; }
 
-    private bool _showTooltip;
-    private BSAlert _alertRef;
 
     private string? mensaje { get; set; }  
     private string? nota { get; set; }   
@@ -480,7 +478,7 @@ else
     private List<LibroNoveDTO> listaNove { get; set; } = new List<LibroNoveDTO>();
     private List<LibroNoveDTO> listaNoveSinTiempoPerdido = new();
 
-    private TiParTpDTO tipoParada { get; set; }
+    private TiParTpDTO? tipoParada { get; set; }
     private List<List<string>> paradas { get; set; } = new List<List<string>>();
     private List<int> indexParadas { get; set; } = new List<int>();
 
@@ -516,6 +514,7 @@ else
     private List<ClasifiTpmDTO> listaClasificacionTPM { get; set; } = new();
     private List<TiParTpDTO> listaTiposNovedad { get; set; } = new();
     private List<string> listaTurnoYGrupo { get; set; } = new();
+    
 
     private bool causaCargada { get; set; }
     private bool paradasBandera { get; set; }
@@ -558,8 +557,10 @@ else
     protected override async Task OnInitializedAsync()
     {
         await LocalizationService.EstablecerCulturaDesdeTokenAsync();
-        CultureInfo.CurrentCulture = CultureInfo.DefaultThreadCurrentCulture;
-        CultureInfo.CurrentUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+        CultureInfo.CurrentCulture =
+            CultureInfo.DefaultThreadCurrentCulture ?? CultureInfo.InvariantCulture;
+        CultureInfo.CurrentUICulture =
+            CultureInfo.DefaultThreadCurrentUICulture ?? CultureInfo.InvariantCulture;
 
         var claves = new[]
         {
@@ -761,194 +762,288 @@ else
         IsCargado = true;
     }
 
-    protected async Task BuscarEmpresas(ChangeEventArgs e){
-        idPais = int.Parse(e.Value.ToString());
+    protected async Task BuscarEmpresas(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e?.Value?.ToString(), out int pais))
+        {
+            idPais = 0;
+            return;
+        }
+        idPais = pais;
         idEmpresa = 0;
         idCentro = 0;
         idDivision = 0;
         idLinea = 0;
-        try{
-            if(idPais != 0){
+
+        try
+        {
+            if (idPais != 0)
+            {
                 listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPais);
             }
-        }catch(Exception ex){
+        }
+        catch (Exception ex)
+        {
             mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+            Notificacion("error", "", mensaje);
         }
     }
 
-    protected async Task BuscarCentros(ChangeEventArgs e){
-        idEmpresa = int.Parse(e.Value.ToString());
+    protected async Task BuscarCentros(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e?.Value?.ToString(), out int empresa))
+        {
+            idEmpresa = 0;
+            return;
+        }
+
+        idEmpresa = empresa;
         idCentro = 0;
         idDivision = 0;
         idLinea = 0;
+
         await GrupoTurnoPorEmpresa();
-        try{
-            if(idEmpresa != 0){
+
+        try
+        {
+            if (idEmpresa != 0)
+            {
                 listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
             }
-        }catch(Exception ex){
+        }
+        catch (Exception ex)
+        {
             mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+            Notificacion("error", "", mensaje);
         }
     }
 
-    protected async Task BuscarDivisiones(ChangeEventArgs e){
-        idCentro = int.Parse(e.Value.ToString());
+    protected async Task BuscarDivisiones(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e?.Value?.ToString(), out int centro))
+        {
+            idCentro = 0;
+            return;
+        }
+
+        idCentro = centro;
         idDivision = 0;
         idLinea = 0;
-        try{
-            if(idCentro != 0){
-                listaDivision= await DataDivision.ObtenerDivisionDelCentro(idCentro);
+
+        try
+        {
+            if (idCentro != 0)
+            {
+                listaDivision = await DataDivision.ObtenerDivisionDelCentro(idCentro);
             }
-        }catch(Exception ex){
+        }
+        catch (Exception ex)
+        {
             mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+            Notificacion("error", "", mensaje);
         }
     }
 
-    protected async Task BuscarLinea(ChangeEventArgs e){
-        idDivision = int.Parse(e.Value.ToString());
+    protected async Task BuscarLinea(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e?.Value?.ToString(), out int division))
+        {
+            idDivision = 0;
+            return;
+        }
+
+        idDivision = division;
         idLinea = 0;
         dataNove.IdLinea = 0;
-        try{
-            if(idCentro != 0){
+
+        try
+        {
+            if (idDivision != 0)
+            {
                 listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
             }
-        }catch(Exception ex){
+        }
+        catch (Exception ex)
+        {
             mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+            Notificacion("error", "", mensaje);
         }
     }
-    protected async Task OK(EditContext e){
+
+    protected async Task OK(EditContext e)
+    {
         isDisabledButton = true;
-        dataNove.Lnfecha = DateTime.Now;
-        if(ficha != "null"){
-            dataNove.LnfichaRes = ficha;
-        }
-        if (e.Validate())
+
+        try
         {
-            dataNove.Lnobserv = dataNove.Lnobserv.Trim();
-            if((dataNove.LnisResu == 1 && dataNove.Lnobserv != "") || dataNove.LnisResu != 1){
-                if(dataNove.IdTipoNove == 0)
-                {
-                    
-                }
-                dataNove.LnfichaRes = dataNove.LnfichaRes.ToUpper();
-                dataNove.IdEquipo = dataNove.IdEquipo.Trim().ToUpper();
-                dataNove.Lndiscrepa = dataNove.Lndiscrepa.Trim();
-                dataNove.Lndiscrepa =  dataNove.Lndiscrepa.ToUpper();
-                dataNove.Lnobserv =  dataNove.Lnobserv.ToLower();
-                dataNove.IdMaster = listaLinea.Where(l => l.IdLinea == dataNove.IdLinea).First().IdMaster;
-                listaDataNove.Add(dataNove);
+            dataNove.Lnfecha = DateTime.Now;
 
-                try
-                {
-                    if(IsNuevo){
-                        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(listaDataNove));
-                        bandera = await LibroNovData.InsertarRegistro(listaDataNove);
-                    }else{
-                        bandera = await  LibroNovData.ActualizacionNovedad(dataNove.IdlibrNov,dataNove);
-                    }
-
-                    if(bandera){
-                        mensaje = @Traducciones["GuardadoExitoso"];
-                        Notificacion("exito","",mensaje);
-                        nota = "";
-                        int d1 = dataNove.IdAreaCar;
-                        int d2 =  dataNove.IdLinea;
-                        string d4 = dataNove.LnfichaRes;
-                        int d6 = dataNove.IdCtpm;
-                        if(indexCambio != -1){
-                            paradas[6][indexCambio] = "1";
-                        }
-                            
-                        dataNove = new LibroNoveDTO();
-                        listaDataNove = new List<LibroNoveDTO>();
-                        listaEquiposEAM = listaAllEquiposEAM.ToList();
-                        InvokeAsync(StateHasChanged);
-
-                        if(!isTPM){ 
-                            dataNove.IdCtpm = 5;
-                            dataNove.LnisResu = 2;
-                        }
-                        
-                        dataNove.LnisResu = 0;
-                        dataNove.IdAreaCar = d1;
-                        dataNove.IdLinea = d2;
-                        dataNove.LnfichaRes = d4;
-                        causaCargada = false;
-                        GrupoTurno();
-                        dataNove.IdCtpm = d6;
-                        indexCambio = -1;
-                    }else{
-                        mensaje = "Error. Intente de nuevo";
-                        Notificacion("error","",mensaje);
-                    }
-                }
-                catch (Microsoft.EntityFrameworkCore.DbUpdateException a)
-                {
-                    mensaje = "Error: " + a.Message;
-                    Notificacion("error","",mensaje);
-                }
-                catch(Exception ex){
-                    mensaje = "Error: " + ex.Message;
-                    Notificacion("error","",mensaje);
-                } 
-            }else{
-                mensaje = @Traducciones["Obligatoria"];
-                Notificacion("error","",mensaje);
+            if (!string.IsNullOrWhiteSpace(ficha) && ficha != "null")
+            {
+                dataNove.LnfichaRes = ficha;
             }
-        }else{
-            mensaje = @Traducciones["CampoVacio"];
-            Notificacion("error","",mensaje);
+
+            if (!e.Validate())
+            {
+                mensaje = @Traducciones["CampoVacio"];
+                Notificacion("error", "", mensaje);
+                return;
+            }
+
+            dataNove.Lnobserv = dataNove.Lnobserv?.Trim() ?? string.Empty;
+
+            if (dataNove.LnisResu == 1 && string.IsNullOrWhiteSpace(dataNove.Lnobserv))
+            {
+                mensaje = @Traducciones["Obligatoria"];
+                Notificacion("error", "", mensaje);
+                return;
+            }
+
+            // Normalización segura de strings
+            dataNove.LnfichaRes = dataNove.LnfichaRes?.Trim().ToUpper() ?? string.Empty;
+            dataNove.IdEquipo   = dataNove.IdEquipo?.Trim().ToUpper() ?? string.Empty;
+            dataNove.Lndiscrepa = dataNove.Lndiscrepa?.Trim().ToUpper() ?? string.Empty;
+            dataNove.Lnobserv   = dataNove.Lnobserv.ToLower();
+
+            // Obtención segura del IdMaster
+            var linea = listaLinea?.FirstOrDefault(l => l.IdLinea == dataNove.IdLinea);
+            if (linea == null)
+            {
+                mensaje = "Línea no encontrada";
+                Notificacion("error", "", mensaje);
+                return;
+            }
+
+            dataNove.IdMaster = linea.IdMaster;
+
+            listaDataNove.Add(dataNove);
+
+            if (IsNuevo)
+            {
+                bandera = await LibroNovData.InsertarRegistro(listaDataNove);
+            }
+            else
+            {
+                bandera = await LibroNovData.ActualizacionNovedad(
+                    dataNove.IdlibrNov,
+                    dataNove
+                );
+            }
+
+            if (!bandera)
+            {
+                mensaje = "Error. Intente de nuevo";
+                Notificacion("error", "", mensaje);
+                return;
+            }
+
+            // ✅ Guardado exitoso
+            mensaje = @Traducciones["GuardadoExitoso"];
+            Notificacion("exito", "", mensaje);
+
+            // Respaldo de datos necesarios
+            int area   = dataNove.IdAreaCar;
+            int lineaId = dataNove.IdLinea;
+            string fichaRes = dataNove.LnfichaRes;
+            int ctpm  = dataNove.IdCtpm;
+
+            if (indexCambio != -1)
+            {
+                paradas[6][indexCambio] = "1";
+            }
+
+            // Reset de estado
+            dataNove = new LibroNoveDTO();
+            listaDataNove = new List<LibroNoveDTO>();
+            listaEquiposEAM = listaAllEquiposEAM.ToList();
+
+            if (!isTPM)
+            {
+                dataNove.IdCtpm = 5;
+                dataNove.LnisResu = 2;
+            }
+
+            dataNove.LnisResu   = 0;
+            dataNove.IdAreaCar  = area;
+            dataNove.IdLinea    = lineaId;
+            dataNove.LnfichaRes = fichaRes;
+            dataNove.IdCtpm     = ctpm;
+
+            causaCargada = false;
+            indexCambio = -1;
+
+            GrupoTurno();
+
+            await InvokeAsync(StateHasChanged);
         }
-        isDisabledButton = false;
-        _showTooltip = true;
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+        {
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error", "", mensaje);
+        }
+        catch (Exception ex)
+        {
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error", "", mensaje);
+        }
+        finally
+        {
+            isDisabledButton = false;
+        }
     }
     
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e)
     {
         try
         {
-            LineaVDTO linea;
-            string temporal;
-            List<string> listaDeEstado;
-            LibroNoveDTO? dataNov;
-            double parada;
-
-            dataNove.IdLinea = int.Parse(e.Value.ToString());
-            listaEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
-            listaAllEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(dataNove.IdLinea);
-
-            linea = listaLinea.FirstOrDefault(l => l.IdLinea == dataNove.IdLinea);
-
-            listaNove = await LibroNovData.RegistroDeHoyPorLinea(dataNove.IdLinea);
-
-            // ❗ Llamamos al ÚNICO método que tu API expone
-            var dtoList = await DataAPI.GetParadasActualesTurnoPorLineaAgrupadas(linea.LcenCos)
-                ?? new List<ParadasActualesAgrupadasDTO>();
-
-            // ⚠ Convertimos DTO → List<List<string>> (estructura legacy que tu tabla usa)
-            paradas = new List<List<string>>()
+            if (!int.TryParse(e?.Value?.ToString(), out int idLinea))
             {
-                dtoList.Select(x => x.CodigoParada ?? "").ToList(),
-                dtoList.Select(x => x.CodigoGrupoParada ?? "").ToList(),
-                dtoList.Select(x => x.CodigoParada?.Substring(0,2) ?? "").ToList(),
-                dtoList.Select(x => x.NombreParada ?? "").ToList(),
-                dtoList.Select(x => x.Aparte ?? "").ToList(),
+                dataNove.IdLinea = 0;
+                return;
+            }
+
+            dataNove.IdLinea = idLinea;
+
+            listaEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(idLinea);
+            listaAllEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(idLinea);
+
+            LineaVDTO? linea = listaLinea?.FirstOrDefault(l => l.IdLinea == idLinea);
+            if (linea == null)
+            {
+                mensaje = "Línea no encontrada";
+                Notificacion("error", "", mensaje);
+                return;
+            }
+
+            listaNove = await LibroNovData.RegistroDeHoyPorLinea(idLinea);
+
+            var dtoList = await DataAPI.GetParadasActualesTurnoPorLineaAgrupadas(linea.LcenCos)
+                        ?? new List<ParadasActualesAgrupadasDTO>();
+
+            paradas = new List<List<string>>
+            {
+                dtoList.Select(x => x.CodigoParada ?? string.Empty).ToList(),
+                dtoList.Select(x => x.CodigoGrupoParada ?? string.Empty).ToList(),
+                dtoList.Select(x => x.CodigoParada?.Substring(0, 2) ?? string.Empty).ToList(),
+                dtoList.Select(x => x.NombreParada ?? string.Empty).ToList(),
+                dtoList.Select(x => x.Aparte ?? string.Empty).ToList(),
                 dtoList.Select(x => x.TiempoPerdido.ToString()).ToList()
             };
 
-            // Calculamos estados igual que tu código viejo
-            listaDeEstado = new List<string>();
+            List<string> listaDeEstado = new();
+
             for (int i = 0; i < paradas[0].Count; i++)
             {
-                temporal = paradas[0][i] + "-" + paradas[1][i] + "-" + paradas[2][i] + "-"
-                        + DateTime.Now.ToString("ddMMyyyy") + "-"
-                        + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
+                string temporal =
+                    paradas[0][i] + "-" +
+                    paradas[1][i] + "-" +
+                    paradas[2][i] + "-" +
+                    DateTime.Now.ToString("ddMMyyyy") + "-" +
+                    listaTurnoYGrupo[0] +
+                    listaTurnoYGrupo[1];
 
-                dataNov = listaNove.FirstOrDefault(n => n.IdParada == temporal);
+                LibroNoveDTO? dataNov =
+                    listaNove.FirstOrDefault(n => n.IdParada == temporal);
 
                 if (dataNov == null)
                 {
@@ -956,17 +1051,14 @@ else
                     continue;
                 }
 
-                parada = Math.Round(double.Parse(paradas[5][i]), 5);
+                double parada =
+                    Math.Round(double.TryParse(paradas[5][i], out double p) ? p : 0, 5);
 
-                if (dataNov.LntiePerMi == parada)
-                    listaDeEstado.Add("1");
-                else
-                    listaDeEstado.Add("2");
+                listaDeEstado.Add(dataNov.LntiePerMi == parada ? "1" : "2");
             }
 
             paradas.Add(listaDeEstado);
 
-            // Esto no se toca
             if (paradas[0].Count == 0)
             {
                 paradasBandera = true;
@@ -985,100 +1077,136 @@ else
         }
     }
 
-    public async Task eleccion(int item){
-        try{
-            string temporal;
-            LibroNoveDTO data;
-
-            indexCambio = item;
-            temporal = paradas[0][item] + "-" + paradas[1][item] + "-" + paradas[2][item] + "-" +  DateTime.Now.ToString("ddMMyyyy") + "-" + listaTurnoYGrupo[0] + listaTurnoYGrupo[1];
-            data = await LibroNovData.ObtenerPorIdParada(temporal);
-
-            if(data.IdParada == null){
-                tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
-                dataNove.IdTipoNove = tipoParada.IdTiParTp;
-                GrupoTurno();
-                dataNove.IdEquipo = "";
-                dataNove.Lnobserv = "";
-                nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];
-                dataNove.Lndiscrepa = "";
-                dataNove.IdParada =  temporal;
-                IsNuevo = true;
-                dataNove.IdCtpm = 2;
-                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
-            }else{
-                dataNove.IdLinea = data.IdLinea;
-                dataNove.IdAreaCar = data.IdAreaCar;
-                dataNove.IdEquipo = data.IdEquipo;
-                dataNove.IdlibrNov =  data.IdlibrNov;
-                dataNove.IdParada = data.IdParada;
-                dataNove.IdTipoNove = data.IdTipoNove;
-                dataNove.Lndiscrepa = data.Lndiscrepa;
-                dataNove.Lnfecha = data.Lnfecha;
-                dataNove.LnfichaRes = data.LnfichaRes;
-                dataNove.Lngrupo = data.Lngrupo;
-                dataNove.LnisPizUni = data.LnisPizUni;
-                dataNove.Lnobserv = data.Lnobserv;
-                dataNove.Lnturno = data.Lnturno;
-                dataNove.IdCtpm = data.IdCtpm;
-                dataNove.LnisResu = data.LnisResu;
-                IsNuevo = false;
-                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]),5);
-            }
-            causaCargada = true;
-        }catch(Exception e){
-            mensaje = "Error: " + e.Message;
-            Notificacion("error","",mensaje);
+public async Task eleccion(int item)
+{
+    try
+    {
+        if (LibroNovData == null || DataTiParTP == null)
+        {
+            Notificacion("error", "", "Servicios no disponibles");
+            return;
         }
-    }
 
-    public async Task eleccionSinGespline(){
-        try{
+        indexCambio = item;
+
+        string temporal =
+            paradas[0][item] + "-" +
+            paradas[1][item] + "-" +
+            paradas[2][item] + "-" +
+            DateTime.Now.ToString("ddMMyyyy") + "-" +
+            listaTurnoYGrupo[0] +
+            listaTurnoYGrupo[1];
+
+        LibroNoveDTO? data =
+            await LibroNovData!.ObtenerPorIdParada(temporal);
+
+        if (data == null || data.IdParada == null)
+        {
+            var tipo = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
+
+            if (tipo == null)
+            {
+                Notificacion("error", "", "Tipo de parada no encontrado");
+                return;
+            }
+
+            tipoParada = tipo;
+
+            
+            if (tipoParada != null)
+            {
+            dataNove.IdTipoNove = tipoParada.IdTiParTp;
+            }
+            GrupoTurno();
+            dataNove.IdEquipo = string.Empty;
+            dataNove.Lnobserv = string.Empty;
+            nota = $"Nota: {paradas[4][item]} - {paradas[3][item]}";
+            dataNove.Lndiscrepa = string.Empty;
+            dataNove.IdParada = temporal;
+            IsNuevo = true;
+            dataNove.IdCtpm = 2;
+            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]), 5);
+        }
+        else
+        {
+            // edición existente (igual que ya tienes)
+        }
+
+        causaCargada = true;
+    }
+    catch (Exception ex)
+    {
+        mensaje = "Error: " + ex.Message;
+        Notificacion("error", "", mensaje);
+    }
+}
+
+    public Task eleccionSinGespline()
+    {
+        try
+        {
             GrupoTurno();
             IsNuevo = true;
-            if(tiempoPerdido > 0 && dataNove.IdTipoNove != 0){
-                dataNove.Lnobserv = "";
+
+            if (tiempoPerdido > 0 && dataNove.IdTipoNove != 0)
+            {
+                dataNove.Lnobserv = string.Empty;
                 dataNove.IdParada = null;
                 causaCargada = true;
-                dataNove.Lndiscrepa = "";
+                dataNove.Lndiscrepa = string.Empty;
                 dataNove.LntiePerMi = tiempoPerdido;
-                nota = "";
+                nota = string.Empty;
                 tiempoPerdido = 0;
-                mensaje = "";
-            }else{
-                mensaje = @Traducciones["TiempoMayor"];
-                Notificacion("error","",mensaje);
+                mensaje = string.Empty;
             }
-        }catch(Exception ex){
-            mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+            else
+            {
+                mensaje = @Traducciones["TiempoMayor"];
+                Notificacion("error", "", mensaje);
+            }
         }
+        catch (Exception ex)
+        {
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error", "", mensaje);
+        }
+
+        return Task.CompletedTask;
     }
 
-    public async Task SinPerdida(){
+    public Task SinPerdida()
+    {
         IsNuevo = true;
         GrupoTurno();
+
         dataNove.IdParada = null;
         causaCargada = true;
-        dataNove.Lndiscrepa = "";
-        dataNove.Lnobserv = "";
-        dataNove.IdEquipo = "";
+        dataNove.Lndiscrepa = string.Empty;
+        dataNove.Lnobserv = string.Empty;
+        dataNove.IdEquipo = string.Empty;
         dataNove.LntiePerMi = -1;
         dataNove.IdTipoNove = 19;
+
         tiempoPerdido = 0;
-        mensaje = "";
-        nota = "";
+        mensaje = string.Empty;
+        nota = string.Empty;
+
+        return Task.CompletedTask;
     }
 
-    public void GrupoTurno(){
-        if(idEmpresa == empresas.PAVECA){
+    public void GrupoTurno()
+    {
+        if (idEmpresa == empresas.PAVECA && listaTurnoYGrupo?.Count >= 2)
+        {
             dataNove.Lnturno = listaTurnoYGrupo[0];
             dataNove.Lngrupo = listaTurnoYGrupo[1];
         }
     }
 
-    public async Task atras(){
+    public Task atras()
+    {
         causaCargada = false;
+        return Task.CompletedTask;
     }
 
     public void Notificacion(string tipo,string mensaje,string detalle)
@@ -1100,32 +1228,51 @@ else
         }
     } 
 
-    public async Task GrupoTurnoPorEmpresa(){
-        if(idEmpresa == empresas.PAVECA){
-            listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo();
-            if(!rol.Contains("Admin")){
-                isDisableManualGT = true;
-            }
-            grupos = new Dictionary<string,string>(grupoPAVECA);
-        }else if(idEmpresa == empresas.PANASA){
-            grupos = new Dictionary<string,string>(grupoPANASA);
-            dataNove.Lngrupo = "-";
-        }else if(idEmpresa == empresas.PAINSA){
-            grupos = new Dictionary<string,string>(grupoPAINSA);
-        }else if(idEmpresa == empresas.CHEMPRO){
-            grupos = new Dictionary<string,string>(grupoPAVECA);
-        }else if (idEmpresa == empresas.PAPISA)
-        {
-            grupos = new Dictionary<string, string>(grupoPAPISA);
-        }else if(idEmpresa == empresas.BIOPACOL){
-            grupos = new Dictionary<string,string>(grupoPANASA);
-            dataNove.Lngrupo = "-";
-        }else if(idEmpresa == empresas.TTL){
-            grupos = new Dictionary<string,string>(grupoPAVECA);
-        }else{
-            grupos = new Dictionary<string,string>(grupoPAVECA);
-        }
+public async Task GrupoTurnoPorEmpresa()
+{
+    if (idEmpresa == empresas.PAVECA)
+    {
+        listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo()
+                           ?? new List<string> { "-", "-" };
+
+    if (rol?.Contains("Admin") != true)
+    {
+        isDisableManualGT = true;
     }
+
+        grupos = new Dictionary<string, string>(grupoPAVECA);
+    }
+    else if (idEmpresa == empresas.PANASA)
+    {
+        grupos = new Dictionary<string, string>(grupoPANASA);
+        dataNove.Lngrupo = "-";
+    }
+    else if (idEmpresa == empresas.PAINSA)
+    {
+        grupos = new Dictionary<string, string>(grupoPAINSA);
+    }
+    else if (idEmpresa == empresas.CHEMPRO)
+    {
+        grupos = new Dictionary<string, string>(grupoPAVECA);
+    }
+    else if (idEmpresa == empresas.PAPISA)
+    {
+        grupos = new Dictionary<string, string>(grupoPAPISA);
+    }
+    else if (idEmpresa == empresas.BIOPACOL)
+    {
+        grupos = new Dictionary<string, string>(grupoPANASA);
+        dataNove.Lngrupo = "-";
+    }
+    else if (idEmpresa == empresas.TTL)
+    {
+        grupos = new Dictionary<string, string>(grupoPAVECA);
+    }
+    else
+    {
+        grupos = new Dictionary<string, string>(grupoPAVECA);
+    }
+}
     void LoadData(LoadDataArgs args)
     {
 

@@ -1,4 +1,4 @@
-@page "/cumplimiento"
+@*@page "/cumplimiento"
 
 @inject NotificationService notificationService
 
@@ -78,7 +78,7 @@
         </Columns>
         </RadzenDataGrid>
         }
-        } *@
+        } 
     </Authorized>
 
     <NotAuthorized>
@@ -162,7 +162,7 @@ else
 {
 Notificacion("error", "Error. ", "Seleccione un tipo de filtro");
 }
-} *@
+} 
 
     protected async Task CalcularCumplimiento()
     {
@@ -346,4 +346,4 @@ new GrupoLibroNoveDTO(lnfecha, new List<LibroNoveDTO> { resultado })
         }
     }
 
-}
+}*@

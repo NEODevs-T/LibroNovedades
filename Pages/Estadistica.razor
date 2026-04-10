@@ -1,4 +1,4 @@
-@page "/indicadores"
+@*@page "/indicadores"
 @inject ICentroData CentroData;
 @inject IDivisionData DivisionData;
 @inject ILineaData LineaData;
@@ -128,7 +128,7 @@ if (user?.Identity is not null && user.Identity.IsAuthenticated)
 {
 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
 }
-} *@
+} 
         fechaInicio = DateTime.Now;
         fechaFinal = DateTime.Now;
         isDesactivadoBoton = false;
@@ -176,4 +176,4 @@ rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
 
         isDesactivadoBoton = false;
     }
-}
+}*@

@@ -81,20 +81,21 @@
 
 @code {
 
-    private string? mensaje { get; set;} = "Bienvenido";
+    private string mensaje { get; set;} = "Bienvenido";
     private bool isDisabled  { get; set;} = false;
     private string proyecto { get; set;} = "";
     private string usuario {get; set;} = "";
     private string contrasena {get; set;} = "";
-    private UserLoginDto userDto {get; set;}
-    private HttpResponseMessage result {get; set;}
-    private string validarToken  {get; set;}
+    private UserLoginDto userDto { get; set; } = new();
+    private HttpResponseMessage? result { get; set; }
+    private string? validarToken { get; set; }
     private int idioma  {get; set;} = 1;
 
-    protected override async Task  OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         proyecto = "LibroDeNovedades";
-        userDto = new UserLoginDto() ;
+        userDto = new UserLoginDto();
+        return Task.CompletedTask;
     }
 
     protected async Task logout()
@@ -109,18 +110,18 @@
 
     private async Task CambiarIdioma(ChangeEventArgs e)
     {
-        idioma = int.Parse(e.Value.ToString());
-
-        await LocalStorage.SetItemAsync("userCulture", idioma == 1 ? "es" : "en");
-
-        if (idioma == 1)
+        if (int.TryParse(e.Value?.ToString(), out int nuevoIdioma))
         {
-            NavigationManager.NavigateTo("es/inicio", true);
+            idioma = nuevoIdioma;
         }
         else
         {
-            NavigationManager.NavigateTo("en/home", true);
+            idioma = 1;
         }
+
+        await LocalStorage.SetItemAsync("userCulture", idioma == 1 ? "es" : "en");
+
+        NavigationManager.NavigateTo(idioma == 1 ? "es/inicio" : "en/home", true);
     }
 
 

@@ -1077,70 +1077,75 @@ else
         }
     }
 
-public async Task eleccion(int item)
-{
-    try
+    public async Task eleccion(int item)
     {
-        if (LibroNovData == null || DataTiParTP == null)
+        try
         {
-            Notificacion("error", "", "Servicios no disponibles");
-            return;
-        }
+            string temporal;
+            LibroNoveDTO? data;
 
-        indexCambio = item;
+            indexCambio = item;
+            temporal = paradas[0][item] + "-" +
+                    paradas[1][item] + "-" +
+                    paradas[2][item] + "-" +
+                    DateTime.Now.ToString("ddMMyyyy") + "-" +
+                    listaTurnoYGrupo[0] +
+                    listaTurnoYGrupo[1];
 
-        string temporal =
-            paradas[0][item] + "-" +
-            paradas[1][item] + "-" +
-            paradas[2][item] + "-" +
-            DateTime.Now.ToString("ddMMyyyy") + "-" +
-            listaTurnoYGrupo[0] +
-            listaTurnoYGrupo[1];
+            data = await LibroNovData.ObtenerPorIdParada(temporal);
 
-        LibroNoveDTO? data =
-            await LibroNovData!.ObtenerPorIdParada(temporal);
-
-        if (data == null || data.IdParada == null)
-        {
-            var tipo = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
-
-            if (tipo == null)
+            if (data == null || data.IdParada == null)
             {
-                Notificacion("error", "", "Tipo de parada no encontrado");
-                return;
+                tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
+
+                if (tipoParada == null)
+                {
+                    Notificacion("error", "", "Tipo de parada no encontrado");
+                    return;
+                }
+
+                dataNove.IdTipoNove = tipoParada.IdTiParTp;
+                GrupoTurno();
+                dataNove.IdEquipo = "";
+                dataNove.Lnobserv = "";
+                nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];
+                dataNove.Lndiscrepa = "";
+                dataNove.IdParada = temporal;
+                IsNuevo = true;
+                dataNove.IdCtpm = 2;
+                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]), 5);
+            }
+            else
+            {
+                dataNove.IdLinea = data.IdLinea;
+                dataNove.IdAreaCar = data.IdAreaCar;
+                dataNove.IdEquipo = data.IdEquipo;
+                dataNove.IdlibrNov = data.IdlibrNov;
+                dataNove.IdParada = data.IdParada;
+                dataNove.IdTipoNove = data.IdTipoNove;
+                dataNove.Lndiscrepa = data.Lndiscrepa;
+                dataNove.Lnfecha = data.Lnfecha;
+                dataNove.LnfichaRes = data.LnfichaRes;
+                dataNove.Lngrupo = data.Lngrupo;
+                dataNove.LnisPizUni = data.LnisPizUni;
+                dataNove.Lnobserv = data.Lnobserv;
+                dataNove.Lnturno = data.Lnturno;
+                dataNove.IdCtpm = data.IdCtpm;
+                dataNove.LnisResu = data.LnisResu;
+
+                IsNuevo = false;
+                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]), 5);
             }
 
-            tipoParada = tipo;
-
-            
-            if (tipoParada != null)
-            {
-            dataNove.IdTipoNove = tipoParada.IdTiParTp;
-            }
-            GrupoTurno();
-            dataNove.IdEquipo = string.Empty;
-            dataNove.Lnobserv = string.Empty;
-            nota = $"Nota: {paradas[4][item]} - {paradas[3][item]}";
-            dataNove.Lndiscrepa = string.Empty;
-            dataNove.IdParada = temporal;
-            IsNuevo = true;
-            dataNove.IdCtpm = 2;
-            dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]), 5);
+            causaCargada = true;
         }
-        else
+        catch (Exception e)
         {
-            // edición existente (igual que ya tienes)
+            mensaje = "Error: " + e.Message;
+            Notificacion("error", "", mensaje);
         }
-
-        causaCargada = true;
     }
-    catch (Exception ex)
-    {
-        mensaje = "Error: " + ex.Message;
-        Notificacion("error", "", mensaje);
-    }
-}
-
+    
     public Task eleccionSinGespline()
     {
         try

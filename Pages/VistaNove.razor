@@ -316,16 +316,16 @@
     private bool band2  { get; set;}
     private bool IsDisableFTPM { get; set;}
     private string? rol { get; set;}
-    private string mensaje { get; set;}
-    private List<PaiDTO> listaPais {get;set;} 
-    private List<EmpresasVDTO> listaEmpresa {get;set;}
-    private List<CentrosVDTO> listaCentro {get;set;}
-    private List<DivisionesVDTO> listaDivision {get;set;}
-    private List<LineaVDTO> listaLinea {get;set;}
-    private List<LibroNoveDTO> listaNovedades { get; set;}
-    private List<TiParTpDTO> listaTiposNovedad { get; set;}
-    private List<ClasifiTpmDTO> listaClasificacionTPM { get; set;}
-    private LibroNoveDTO dataNove {get; set;}
+    private string mensaje { get; set;} = "";
+    private List<PaiDTO> listaPais {get;set;} = new();
+    private List<EmpresasVDTO> listaEmpresa {get;set;} = new();
+    private List<CentrosVDTO> listaCentro {get;set;} = new();
+    private List<DivisionesVDTO> listaDivision {get;set;} = new();
+    private List<LineaVDTO> listaLinea {get;set;} = new();
+    private List<LibroNoveDTO>? listaNovedades { get; set;}
+    private List<TiParTpDTO> listaTiposNovedad { get; set;} = new();
+    private List<ClasifiTpmDTO> listaClasificacionTPM { get; set;} = new();
+    private LibroNoveDTO? dataNove {get; set;} = new();
     private int idPais { get; set; }
     private int idEmpresa { get; set; }
     private int idCentro  { get; set;}
@@ -333,9 +333,9 @@
     private int idLinea { get; set; }
     private int idAreCargada { get; set;}
     private int tipoReu { get; set;} = 2;
-    private BSAlert _alertRef { get; set;}
-    private string nombre  { get; set;}
-    private string apellido  { get; set;}
+    //private BSAlert _alertRef { get; set;}
+    private string nombre  { get; set;} = "";
+    private string apellido  { get; set;} = "";
     private int idPaisFiltro { get; set; }
     public Dictionary<string, string> Traducciones { get; set; } = new();
     private IEnumerable<Claim> claims { get; set; } = Enumerable.Empty<Claim>();
@@ -351,8 +351,10 @@
     protected override async Task  OnInitializedAsync()
     {
         await LocalizationService.EstablecerCulturaDesdeTokenAsync();
-        CultureInfo.CurrentCulture = CultureInfo.DefaultThreadCurrentCulture;
-        CultureInfo.CurrentUICulture = CultureInfo.DefaultThreadCurrentUICulture;
+        CultureInfo.CurrentCulture =
+            CultureInfo.DefaultThreadCurrentCulture ?? CultureInfo.InvariantCulture;
+        CultureInfo.CurrentUICulture =
+            CultureInfo.DefaultThreadCurrentUICulture ?? CultureInfo.InvariantCulture;
         var claves = new[]
         {
             "AreaCargador", "Buscar", "CambioDeEstado", "Cargando", "Centro", "ClasificacionTPM", "CodigoEquipo", 
@@ -534,158 +536,303 @@
         
     }
 
-    protected async Task BuscarEmpresas(ChangeEventArgs e){
-        idPaisFiltro = int.Parse(e.Value.ToString());
+    protected async Task BuscarEmpresas(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e?.Value?.ToString(), out int pais))
+        {
+            idPaisFiltro = 0;
+            return;
+        }
+
+        idPaisFiltro = pais;
         idEmpresa = 0;
         idCentro = 0;
         idDivision = 0;
         idLinea = 0;
-        try{
-            if(idPaisFiltro != 0){
+
+        try
+        {
+            if (idPaisFiltro != 0)
+            {
                 listaEmpresa = await DataEmpresa.ObtenerEmpresasPorPaies(idPaisFiltro);
             }
-        }catch(Exception ex){
+        }
+        catch (Exception ex)
+        {
             mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+            Notificacion("error", "", mensaje);
         }
     }
 
-    protected async Task BuscarCentros(ChangeEventArgs e){
-        idEmpresa = int.Parse(e.Value.ToString());
+    protected async Task BuscarCentros(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e?.Value?.ToString(), out int empresa))
+        {
+            idEmpresa = 0;
+            return;
+        }
+
+        idEmpresa = empresa;
         idCentro = 0;
         idDivision = 0;
         idLinea = 0;
-        try{
-            if(idEmpresa != 0){
+
+        try
+        {
+            if (idEmpresa != 0)
+            {
                 listaCentro = await DataCentro.ObtenerCentrosPorEmpresa(idEmpresa);
             }
-        }catch(Exception ex){
+        }
+        catch (Exception ex)
+        {
             mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+            Notificacion("error", "", mensaje);
         }
     }
 
-    protected async Task BuscarDivisiones(ChangeEventArgs e){
-        idCentro = int.Parse(e.Value.ToString());
+    protected async Task BuscarDivisiones(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e?.Value?.ToString(), out int centro))
+        {
+            idCentro = 0;
+            return;
+        }
+
+        idCentro = centro;
         idDivision = 0;
         idLinea = 0;
-        try{
-            if(idCentro != 0){
-                listaDivision= await DivisionData.ObtenerDivisionDelCentro(idCentro);
+
+        try
+        {
+            if (idCentro != 0)
+            {
+                listaDivision = await DivisionData.ObtenerDivisionDelCentro(idCentro);
             }
-        }catch(Exception ex){
+        }
+        catch (Exception ex)
+        {
             mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+            Notificacion("error", "", mensaje);
         }
     }
 
-    protected async Task BuscarLinea(ChangeEventArgs e){
-        idDivision = int.Parse(e.Value.ToString());
+    protected async Task BuscarLinea(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e?.Value?.ToString(), out int division))
+        {
+            idDivision = 0;
+            return;
+        }
+
+        idDivision = division;
         idLinea = 0;
         filtroLinea = 0;
-        try{
-            if(idCentro != 0){
+
+        try
+        {
+            if (idDivision != 0)
+            {
                 listaLinea = await LineaData.ObtenerLasLineasPorDivision(idDivision);
             }
-        }catch(Exception ex){
+        }
+        catch (Exception ex)
+        {
             mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+            Notificacion("error", "", mensaje);
         }
     }
 
-    protected async Task buscar(){
-        //try{
-            if(filtroFechaInicio.Date == filtroFechaFinal.Date) {
-                listaNovedades = null;
-                listaNovedades = await LibroNovData.ObtenerLibroNovedadesPorFiltro(idCentro,filtroFechaInicio,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
-            }else if(filtroFechaInicio.Date < filtroFechaFinal.Date){
-                listaNovedades = null;
-                listaNovedades = await LibroNovData.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
-            }else{
-                listaNovedades = null;
-                listaNovedades = await LibroNovData.ObtenerLibroNovedadesPorFiltroEntreFechas(idCentro,filtroFechaInicio,filtroFechaFinal,idDivision,filtroLinea,filtroClasificacionTPM,filtroIsResuelto);
+    protected async Task buscar()
+    {
+        if (filtroFechaInicio.Date <= filtroFechaFinal.Date)
+        {
+            listaNovedades = new List<LibroNoveDTO>();
+
+            if (filtroFechaInicio.Date == filtroFechaFinal.Date)
+            {
+                listaNovedades = await LibroNovData
+                    .ObtenerLibroNovedadesPorFiltro(
+                        idCentro,
+                        filtroFechaInicio,
+                        idDivision,
+                        filtroLinea,
+                        filtroClasificacionTPM,
+                        filtroIsResuelto
+                    );
             }
-            /* }catch(Exception ex){
-                mensaje = "Error: " + ex.Message;
-                Notificacion("error","",mensaje);
-        } */
+            else
+            {
+                listaNovedades = await LibroNovData
+                    .ObtenerLibroNovedadesPorFiltroEntreFechas(
+                        idCentro,
+                        filtroFechaInicio,
+                        filtroFechaFinal,
+                        idDivision,
+                        filtroLinea,
+                        filtroClasificacionTPM,
+                        filtroIsResuelto
+                    );
+            }
+        }
     }
 
-    public async Task Edicion(int idLibroNov){
-        bool band;
-        int indexLista;
-        //NavigationManager.NavigateTo($"/FormatoAgrupado/{idLibroNov}");
-        try{
-            dataNove = listaNovedades.Where(x => x.IdlibrNov == idLibroNov).First();
-            if((dataNove.Lnfecha.AddDays(1) > DateTime.Now) || ((DateTime.Now.DayOfWeek.ToString() == "Monday") && (dataNove.Lnfecha.AddDays(3) > DateTime.Now))){
-                /*dataNove.AreaCarga = null;
-                dataNove.Linea = null;*/
-                dataNove.LnisResu = dataNove.LnisResu == 1 ?  dataNove.LnisResu = 0 : dataNove.LnisResu = 1;
-                band = await LibroNovData.ActualizacionNovedad(idLibroNov,dataNove);
-                if(band){
-                    indexLista = listaNovedades.IndexOf(dataNove);
+    public async Task Edicion(int idLibroNov)
+    {
+        try
+        {
+            if (listaNovedades == null)
+            {
+                Notificacion("error", "Error", "Lista no disponible");
+                return;
+            }
+
+            dataNove = listaNovedades
+                .FirstOrDefault(x => x.IdlibrNov == idLibroNov);
+
+            if (dataNove == null)
+            {
+                Notificacion("error", "Error", "Registro no encontrado");
+                return;
+            }
+
+            if (dataNove.Lnfecha.AddDays(1) > DateTime.Now ||
+                (DateTime.Now.DayOfWeek == DayOfWeek.Monday &&
+                dataNove.Lnfecha.AddDays(3) > DateTime.Now))
+            {
+                dataNove.LnisResu = dataNove.LnisResu == 1 ? 0 : 1;
+
+                bool band = await LibroNovData
+                    .ActualizacionNovedad(idLibroNov, dataNove);
+
+                if (band)
+                {
+                    int indexLista = listaNovedades.IndexOf(dataNove);
                     listaNovedades[indexLista] = dataNove;
                     Notificacion("exito", "", @Traducciones["Cambio"]);
-                }else{
-                    Notificacion("error", "Error", @Traducciones["IntenteDeNuevo"]);                }
-            }else{
+                }
+                else
+                {
+                    Notificacion("error", "Error", @Traducciones["IntenteDeNuevo"]);
+                }
+            }
+            else
+            {
                 Notificacion("info", "Error", @Traducciones["Discrepancia2"]);
             }
-        }catch(Exception e){
+        }
+        catch
+        {
             Notificacion("info", "Error", @Traducciones["Discrepancia2"]);
         }
     }
 
-    protected async Task Guardar(){
+    protected async Task Guardar()
+    {
         isDisabled = true;
-        List<LibroNoveDTO> listaFiltrada = new List<LibroNoveDTO>();
-        try{
+        List<LibroNoveDTO> listaFiltrada = new();
+        
+        try
+        {
             mensaje = "";
-            (band1,listaFiltrada) = await LogicLibroNov.CambiosBDLibro(idPais,idEmpresa,idCentro,idDivision,listaNovedades,filtroFechaInicio,filtroFechaFinal,filtroLinea,filtroClasificacionTPM,nombre + " " + apellido);
-            if(band1){
-                band2 = await LibroNovData.UpdateRegistros(listaFiltrada);
-                if(band2){
-                    mensaje = @Traducciones["Exitosa"];
-                    Notificacion("exito","",mensaje);
-                }else{
-                    mensaje = @Traducciones["FallaLibroNovedades"];
-                    Notificacion("info","",mensaje);
-                }
-            }else{
+
+            if (listaNovedades == null || !listaNovedades.Any())
+            {
                 mensaje = @Traducciones["DatosValidos"];
-                Notificacion("info","",mensaje);
+                Notificacion("info", "", mensaje);
+                return;
             }
-        }catch(Exception ex){
-            mensaje = "Error: " + ex.Message;
-            Notificacion("error","",mensaje);
+
+            (band1, listaFiltrada) = await LogicLibroNov.CambiosBDLibro(
+                idPais,
+                idEmpresa,
+                idCentro,
+                idDivision,
+                listaNovedades, // ✅ ya no es null aquí
+                filtroFechaInicio,
+                filtroFechaFinal,
+                filtroLinea,
+                filtroClasificacionTPM,
+                $"{nombre} {apellido}"
+            );
+
+            if (band1)
+            {
+                band2 = await LibroNovData.UpdateRegistros(listaFiltrada);
+
+                if (band2)
+                {
+                    mensaje = @Traducciones["Exitosa"];
+                    Notificacion("exito", "", mensaje);
+                }
+                else
+                {
+                    mensaje = @Traducciones["FallaLibroNovedades"];
+                    Notificacion("info", "", mensaje);
+                }
+            }
+            else
+            {
+                mensaje = @Traducciones["DatosValidos"];
+                Notificacion("info", "", mensaje);
+            }
         }
-        isDisabled = false;
+        catch (Exception ex)
+        {
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error", "", mensaje);
+        }
+        finally
+        {
+            isDisabled = false;
+        }
     }
 
     public void Notificacion(string tipo, string mensaje, string detalle)
     {
-        mensaje = mensaje;
-        detalle = detalle;
         NotificationMessage notificacion;
+
         if (tipo == "error")
         {
-            notificacion = new NotificationMessage { Severity = NotificationSeverity.Error, Summary = mensaje, Detail = detalle, Duration = 8000 };
-            notificationService.Notify(notificacion);
+            notificacion = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = mensaje,
+                Detail = detalle,
+                Duration = 8000
+            };
         }
         else if (tipo == "info")
         {
-            notificacion = new NotificationMessage { Severity = NotificationSeverity.Info, Summary = mensaje, Detail = detalle, Duration = 8000 };
-            notificationService.Notify(notificacion);
+            notificacion = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Info,
+                Summary = mensaje,
+                Detail = detalle,
+                Duration = 8000
+            };
         }
         else if (tipo == "exito")
         {
-            notificacion = new NotificationMessage { Severity = NotificationSeverity.Success, Summary = mensaje, Detail = detalle, Duration = 8000 };
-            notificationService.Notify(notificacion);
+            notificacion = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Success,
+                Summary = mensaje,
+                Detail = detalle,
+                Duration = 8000
+            };
         }
-        else if (tipo == "advertencia")
+        else
         {
-            notificacion = new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = mensaje, Detail = detalle, Duration = 8000 };
-            notificationService.Notify(notificacion);
+            notificacion = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Warning,
+                Summary = mensaje,
+                Detail = detalle,
+                Duration = 8000
+            };
         }
+
+        notificationService.Notify(notificacion);
     }
 }

@@ -71,7 +71,7 @@ namespace LibroNovedades.Data.LibroNov
 
         }
 
-        public async Task<LibroNoveDTO>? ObtenerPorIdParada(string idParada)
+        public async Task<LibroNoveDTO?> ObtenerPorIdParada(string idParada)
         {
             url = $"{BaseUrl}/GetNoveadadPorIdParada/{idParada}";
             cliente = _clientFactory.CreateClient();
@@ -184,7 +184,7 @@ namespace LibroNovedades.Data.LibroNov
             var retorno = await cliente.GetFromJsonAsync<LibroNoveDTO>(url) ?? new LibroNoveDTO();
             return retorno;
         }
-        public async Task<LibroNoveDTO>? ObtenerLibroPorId(int idRegistro)
+        public async Task<LibroNoveDTO?> ObtenerLibroPorId(int idRegistro)
         {
             url = $"{BaseUrl}/GetObtenerLibroPorId/{idRegistro}";
             cliente = _clientFactory.CreateClient();

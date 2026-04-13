@@ -15,8 +15,8 @@ namespace LibroNovedades.Interface
         Task<List<LibroNoveDTO>> RegistroDeHoyPorLinea(int idLinea);
         Task<List<LibroNoveDTO>> ObtenerLibroNovedadesPorFiltro(int idCentro, DateTime fecha, int idDivision, int idLinea, int tipoClasi, int filtroIsResuelto);
         Task<bool> UpdateRegistros(List<LibroNoveDTO> novedades);
-        Task<LibroNoveDTO>? ObtenerPorIdParada(string idParada);
-        Task<LibroNoveDTO>? ObtenerLibroPorId(int idRegistro);
+        Task<LibroNoveDTO?> ObtenerPorIdParada(string idParada);
+        Task<LibroNoveDTO?> ObtenerLibroPorId(int idRegistro);
         Task<bool> ActualizacionNovedad(int idlibrNov, LibroNoveDTO data);
         Task<List<LibroNoveDTO>> ObtenerNovedadePorLinea(int IdLiena);
         Task<List<LibroNoveDTO>> ObtenerLibroNovedadesDelAreaQueCarga(DateTime fecha, int idCentro, int idDivision, int idLinea, int tipoClasi, int IdAreaCar, int filtroIsResuelto);

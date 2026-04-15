@@ -174,28 +174,29 @@
                     {
                         <br>
                         <br>
+                        <div class="tabla-contenedor">
                         <BSTable IsResponsive="false" IsStriped="true">
                             <BSTHead>
                                 <BSTR class="cabeceraTabla">
-                                    <BSTD>#</BSTD>
-                                    <BSTD>@Traducciones["Linea"]</BSTD>
-                                    <BSTD>@Traducciones["Fecha"]</BSTD>
-                                    <BSTD>@Traducciones["CodigoEquipo"]</BSTD>
-                                    <BSTD>@Traducciones["Grupo"]</BSTD>
-                                    <BSTD>@Traducciones["Turno"]</BSTD>
-                                    <BSTD>@Traducciones["TiempoPerdido"]</BSTD>
+                                    <BSTD class="col-num">#</BSTD>
+                                    <BSTD class="col-linea">@Traducciones["Linea"]</BSTD>
+                                    <BSTD class="col-fecha">@Traducciones["Fecha"]</BSTD>
+                                    <BSTD class="col-equipo">@Traducciones["CodigoEquipo"]</BSTD>
+                                    <BSTD class="col-grupo">@Traducciones["Grupo"]</BSTD>
+                                    <BSTD class="col-turno">@Traducciones["Turno"]</BSTD>
+                                    <BSTD class="col-tiempo">@Traducciones["TiempoPerdido"]</BSTD>
                                     <BSTD class="col-discrepancia">@Traducciones["Discrepancia"]</BSTD>
-                                    <BSTD>@Traducciones["AreaCargador"]</BSTD>
+                                    <BSTD class="col-area">@Traducciones["AreaCargador"]</BSTD>
                                     <BSTD class="col-observacion">@Traducciones["Observacion"]</BSTD>
-                                    <BSTD>@Traducciones["Supervisor"]</BSTD>
-                                    <BSTD>@Traducciones["Estado"]</BSTD>
+                                    <BSTD class="col-supervisor">@Traducciones["Supervisor"]</BSTD>
+                                    <BSTD class="col-estado">@Traducciones["Estado"]</BSTD>
                                     @if(IsAccesoCambioEstado){
-                                        <BSTD>@Traducciones["CambioDeEstado"]</BSTD>
+                                        <BSTD class="col-accion">@Traducciones["CambioDeEstado"]</BSTD>
                                     }
                             @* //TODO: ARREGLAR LA Pizarra *@
                                     @if(IsAccesoPizarra){
-                                        <BSTD>@Traducciones["PizarraUnificada"]</BSTD>
-                                        <BSTD>@Traducciones["TipoDeReunion"]</BSTD>
+                                        <BSTD class="col-accion">@Traducciones["PizarraUnificada"]</BSTD>
+                                        <BSTD class="col-accion">@Traducciones["TipoDeReunion"]</BSTD>
                                     }
                                 </BSTR>
                             </BSTHead>
@@ -270,6 +271,7 @@
                                 }
                             </BSTBody>
                         </BSTable>
+                        </div>
                         <BSRow>
                             <BSCol Column="12">
                                 @if(IsAccesoPizarra){

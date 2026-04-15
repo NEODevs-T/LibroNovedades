@@ -48,7 +48,10 @@ namespace LibroNovedades.Service.Autenticacion
             var payload = jwt.Split('.')[1];
             var jsonBytes = ParseBase64WithoutPadding(payload);
             var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-            return keyValuePairs.Select(KeyValuePair => new Claim(KeyValuePair.Key, KeyValuePair.Value.ToString()));
+            return keyValuePairs?
+                .Where(kvp => kvp.Value != null)
+                .Select(kvp => new Claim(kvp.Key, kvp.Value!.ToString()!))
+                ?? Enumerable.Empty<Claim>();
         }
         private static byte[] ParseBase64WithoutPadding(string base64)
         {

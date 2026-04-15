@@ -8,13 +8,17 @@ namespace LibroNovedades.Validate
         private string GetErrorMessage(int idPais)
         {
             if (idPais == 5)
-                return "Please enter a issue.";
+                return "Please enter an issue.";
+
             return "Coloque la discrepancia.";
         }
 
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(
+            object? value,
+            ValidationContext validationContext)
         {
             int idPais = 0;
+
             var idPaisProp = validationContext.ObjectType.GetProperty("IdPais");
             if (idPaisProp != null)
             {
@@ -25,6 +29,7 @@ namespace LibroNovedades.Validate
                 }
             }
 
+            // Si el valor no es nulo ni vacío → válido
             if (value != null && !string.IsNullOrWhiteSpace(value.ToString()))
             {
                 return ValidationResult.Success;

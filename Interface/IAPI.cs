@@ -15,9 +15,11 @@ namespace LibroNovedades.Data.API
         Task<List<ParadasActualesAgrupadasDTO>?> GetParadasActuales2TurnoAntesDeLas0amAgrupadas(string centroCosto);
 
         // Selector por hora que retorna AGRUPADOS tipados
-        Task<List<ParadasActualesAgrupadasDTO>?> GetParadasActualesTurnoPorLineaAgrupadas(string centroCosto);
+        Task<List<ParadasActualesAgrupadasDTO>> GetParadasActualesTurnoPorLineaAgrupadas(string centroCosto);
+
 
         // Otros
-        Task<List<string>?> ObtenerTurnoYGrupo();
+        Task<List<string>> ObtenerTurnoYGrupo();
+        
     }
 }

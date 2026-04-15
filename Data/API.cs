@@ -6,120 +6,85 @@ namespace LibroNovedades.Data.API
 {
     public class DataAPI : IDataAPI
     {
-        private HttpClient cliente;
 
+        private readonly HttpClient _cliente;
+
+        public DataAPI(HttpClient cliente)
+        {
+            _cliente = cliente;
+        }
+
+        private async Task<T?> TryGetAsync<T>(string url)
+        {
+            try
+            {
+                return await _cliente.GetFromJsonAsync<T>(url);
+            }
+            catch
+            {
+                return default;
+            }
+        }
 
         public async Task<List<ParadasActualesDTO>?> GetParadasActuales1Turno(string centroCosto)
         {
-            cliente ??= new HttpClient();
             var url = $"http://neo.grandbay-corp.com/ApiNeoMasterP/api/GesplineParadasEjecutadas/GetParadasActuales1Turno?centroCosto={Uri.EscapeDataString(centroCosto)}";
-            try
-            {
-                var data = await cliente.GetFromJsonAsync<List<ParadasActualesDTO>>(url);
-                return data;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await TryGetAsync<List<ParadasActualesDTO>>(url);
         }
 
         public async Task<List<ParadasActualesAgrupadasDTO>?> GetParadasActuales1TurnoAgrupados(string centroCosto)
         {
-            cliente ??= new HttpClient();
             var url = $"http://neo.grandbay-corp.com/ApiNeoMasterP/api/GesplineParadasEjecutadas/GetParadasActuales1TurnoAgrupados?centroCosto={Uri.EscapeDataString(centroCosto)}";
-            try
-            {
-                var data = await cliente.GetFromJsonAsync<List<ParadasActualesAgrupadasDTO>>(url);
-                return data;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await TryGetAsync<List<ParadasActualesAgrupadasDTO>>(url);
         }
 
         public async Task<List<ParadasActualesAgrupadasDTO>?> GetParadasActuales2TurnoDespuesDeLas0amAgrupadas(string centroCosto)
         {
-            cliente ??= new HttpClient();
             var url = $"http://neo.grandbay-corp.com/ApiNeoMasterP/api/GesplineParadasEjecutadas/GetParadasActuales2TurnoDespuesDeLas0amAgrupadas?centroCosto={Uri.EscapeDataString(centroCosto)}";
-            try
-            {
-                var data = await cliente.GetFromJsonAsync<List<ParadasActualesAgrupadasDTO>>(url);
-                return data;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await TryGetAsync<List<ParadasActualesAgrupadasDTO>>(url);
         }
 
         public async Task<List<ParadasActualesAgrupadasDTO>?> GetParadasActuales2TurnoAntesDeLas0amAgrupadas(string centroCosto)
         {
-            cliente ??= new HttpClient();
             var url = $"http://neo.grandbay-corp.com/ApiNeoMasterP/api/GesplineParadasEjecutadas/GetParadasActuales2TurnoAntesDeLas0amAgrupadas?centroCosto={Uri.EscapeDataString(centroCosto)}";
-            try
-            {
-                var data = await cliente.GetFromJsonAsync<List<ParadasActualesAgrupadasDTO>>(url);
-                return data;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await TryGetAsync<List<ParadasActualesAgrupadasDTO>>(url);
         }
 
         public async Task<List<ParadasActualesDTO>?> GetParadasActuales2Turno(string centroCosto)
         {
-            cliente ??= new HttpClient();
             var url = $"http://neo.grandbay-corp.com/ApiNeoMasterP/api/GesplineParadasEjecutadas/GetParadasActuales2Turno?centroCosto={Uri.EscapeDataString(centroCosto)}";
-            try
-            {
-                var data = await cliente.GetFromJsonAsync<List<ParadasActualesDTO>>(url);
-                return data;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await TryGetAsync<List<ParadasActualesDTO>>(url);
         }
 
-        public async Task<List<ParadasActualesAgrupadasDTO>>
-            GetParadasActualesTurnoPorLineaAgrupadas(string centroCosto)
+        public async Task<List<ParadasActualesAgrupadasDTO>> GetParadasActualesTurnoPorLineaAgrupadas(string centroCosto)
         {
             int hora = DateTime.Now.Hour;
 
             if (hora >= 6 && hora < 18)
-            {
                 return await GetParadasActuales1TurnoAgrupados(centroCosto)
-                    ?? new List<ParadasActualesAgrupadasDTO>();
-            }
+                        ?? new List<ParadasActualesAgrupadasDTO>();
 
             if (hora >= 18)
-            {
                 return await GetParadasActuales2TurnoAntesDeLas0amAgrupadas(centroCosto)
-                    ?? new List<ParadasActualesAgrupadasDTO>();
-            }
+                        ?? new List<ParadasActualesAgrupadasDTO>();
 
-            var antes0am = await GetParadasActuales2TurnoAntesDeLas0amAgrupadas(centroCosto)
-                            ?? new List<ParadasActualesAgrupadasDTO>();
+            var antes = await GetParadasActuales2TurnoAntesDeLas0amAgrupadas(centroCosto)
+                        ?? new List<ParadasActualesAgrupadasDTO>();
 
-            var despues0am = await GetParadasActuales2TurnoDespuesDeLas0amAgrupadas(centroCosto)
-                            ?? new List<ParadasActualesAgrupadasDTO>();
+            var despues = await GetParadasActuales2TurnoDespuesDeLas0amAgrupadas(centroCosto)
+                        ?? new List<ParadasActualesAgrupadasDTO>();
 
-            antes0am.AddRange(despues0am);
-
-            return antes0am;
+            antes.AddRange(despues);
+            return antes;
         }
 
-        public async Task<List<string>>? ObtenerTurnoYGrupo()
+        public async Task<List<string>> ObtenerTurnoYGrupo()
         {
-            List<string> usuario;
-            string url = "http://neo.paveca.com.ve/neoapi/turno/ObtenerTurnoYGrupoActual";
-            this.cliente = new HttpClient();
-            usuario = await cliente.GetFromJsonAsync<List<string>>(url);
-            return usuario;
+            var url = "http://neo.paveca.com.ve/neoapi/turno/ObtenerTurnoYGrupoActual";
+            return await _cliente.GetFromJsonAsync<List<string>>(url)
+                    ?? new List<string>();
         }
+
 
       /*      public async Task<List<List<string>>>? obtenerParadasActualesturnoPorLinea(string centroCosto, List<LibroNoveDTO> listaNove)
         {

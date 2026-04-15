@@ -36,7 +36,8 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredSessionStorage(config =>
 {
     config.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
-    config.JsonSerializerOptions.IgnoreNullValues = true;
+    config.JsonSerializerOptions.DefaultIgnoreCondition =
+        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     config.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
     config.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     config.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -54,10 +55,12 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Resources")
 
 builder.Services.AddScoped<NotificationService>();
 
+var connectionString = builder.Configuration.GetConnectionString("ConnectionDbIng")
+    ?? throw new InvalidOperationException(
+        "La cadena de conexión 'ConnectionDbIng' no está configurada.");
+
 builder.Services.AddDbContext<DOC_IngIContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("ConnectionDbIng")
-    ),
+    options.UseSqlServer(connectionString),
     ServiceLifetime.Transient
 );
 

@@ -18,17 +18,6 @@ namespace LibroNovedades.ModelsDocIng
 
         public virtual DbSet<BdDiv1> BdDiv1s { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var builder = new ConfigurationBuilder();
-            builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            IConfiguration configuration = builder.Build();
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(configuration.GetConnectionString("ConnectionDbIng"));
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BdDiv1>(entity =>

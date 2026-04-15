@@ -18,7 +18,7 @@ public class LibroNoveDTO
         ErrorMessageResourceName = "RequiredEquipment")]
     public string IdEquipo { get; set; } = null!;
     [ValidDiscrepancia]
-    public string Lndiscrepa { get; set; }
+    public string Lndiscrepa { get; set; } = "";
     // [ValidMayorACero]
     public double LntiePerMi { get; set; }
     [Required(

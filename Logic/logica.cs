@@ -59,8 +59,8 @@ namespace LibroNovedades.Logic
             List<ReunionDTO> listaPizarra = new List<ReunionDTO>(listaNovedades.Count);
             List<LibroNoveDTO> listaNovedadesFiltrada = new List<LibroNoveDTO>();
             List<LibroNoveDTO> listaNovedades2;
-            int reunionTurno = 2;
-            LibroNoveDTO dataNovedades;
+            //int reunionTurno = 2;
+            //LibroNoveDTO dataNovedades;
             bool validacion = false;
 
             if (filtroFechaInicio.Date == filtroFechaFinal.Date)

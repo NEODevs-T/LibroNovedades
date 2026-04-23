@@ -19,7 +19,7 @@ namespace LibroNovedades.Data.API
 
 
         // Otros
-        Task<List<string>> ObtenerTurnoYGrupo();
+        Task<GrupoTurnoDTO> ObtenerTurnoYGrupo();
         
     }
 }

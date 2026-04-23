@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using LibroNovedades.DTOs;
+using System.Text.Json;
 
 namespace LibroNovedades.Data.API
 {
@@ -78,12 +79,22 @@ namespace LibroNovedades.Data.API
             return antes;
         }
 
-        public async Task<List<string>> ObtenerTurnoYGrupo()
+    public async Task<GrupoTurnoDTO> ObtenerTurnoYGrupo()
+    {
+        var url = "http://neo.grandbay-corp.com/ApiNeoMasterP/api/Global/GetGrupoYTurnoActual";
+
+        var options = new JsonSerializerOptions
         {
-            var url = "http://neo.paveca.com.ve/neoapi/turno/ObtenerTurnoYGrupoActual";
-            return await _cliente.GetFromJsonAsync<List<string>>(url)
-                    ?? new List<string>();
-        }
+            PropertyNameCaseInsensitive = true
+        };
+
+        var response = await _cliente.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var data = await response.Content.ReadFromJsonAsync<GrupoTurnoDTO>(options);
+
+        return data ?? new GrupoTurnoDTO();
+    }
 
 
       /*      public async Task<List<List<string>>>? obtenerParadasActualesturnoPorLinea(string centroCosto, List<LibroNoveDTO> listaNove)

@@ -362,7 +362,6 @@
                                             AllowFiltering="true"
                                             TValue="string"
                                             Data="listaEquiposEAM"
-                                            LoadData="@LoadData"
                                             ValueProperty="EcodEquiEam"
                                             AllowClear="true"
                                             @bind-Value="dataNove.IdEquipo"
@@ -1237,13 +1236,15 @@ public async Task GrupoTurnoPorEmpresa()
 {
     if (idEmpresa == empresas.PAVECA)
     {
-        listaTurnoYGrupo = await DataAPI.ObtenerTurnoYGrupo()
-                           ?? new List<string> { "-", "-" };
+        var turnoGrupo = await DataAPI.ObtenerTurnoYGrupo();
 
-    if (rol?.Contains("Admin") != true)
-    {
-        isDisableManualGT = true;
-    }
+        dataNove.Lnturno = turnoGrupo.Turno;
+        dataNove.Lngrupo = turnoGrupo.Grupo;
+
+        if (rol?.Contains("Admin") != true)
+        {
+            isDisableManualGT = true;
+        }
 
         grupos = new Dictionary<string, string>(grupoPAVECA);
     }
@@ -1278,17 +1279,4 @@ public async Task GrupoTurnoPorEmpresa()
         grupos = new Dictionary<string, string>(grupoPAVECA);
     }
 }
-    void LoadData(LoadDataArgs args)
-    {
-
-        if (!string.IsNullOrEmpty(args.Filter))
-        {
-            listaEquiposEAM = listaAllEquiposEAM.Where(c => c.EcodEquiEam.ToLower().Contains(args.Filter.ToLower()) || c.EnombreEam.ToLower().Contains(args.Filter.ToLower())).ToList();
-            InvokeAsync(StateHasChanged);
-        }
-        if(args.Filter == ""){
-            listaEquiposEAM = listaAllEquiposEAM.ToList();
-            InvokeAsync(StateHasChanged);
-        }
-    }
 }

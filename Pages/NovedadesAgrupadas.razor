@@ -1038,8 +1038,9 @@ else
                     paradas[1][i] + "-" +
                     paradas[2][i] + "-" +
                     DateTime.Now.ToString("ddMMyyyy") + "-" +
-                    listaTurnoYGrupo[0] +
-                    listaTurnoYGrupo[1];
+                    (dataNove.Lnturno ?? "") +
+                    (dataNove.Lngrupo ?? "");
+
 
                 LibroNoveDTO? dataNov =
                     listaNove.FirstOrDefault(n => n.IdParada == temporal);
@@ -1088,8 +1089,9 @@ else
                     paradas[1][item] + "-" +
                     paradas[2][item] + "-" +
                     DateTime.Now.ToString("ddMMyyyy") + "-" +
-                    listaTurnoYGrupo[0] +
-                    listaTurnoYGrupo[1];
+                    (dataNove.Lnturno ?? "") +
+                    (dataNove.Lngrupo ?? "");
+
 
             data = await LibroNovData.ObtenerPorIdParada(temporal);
 

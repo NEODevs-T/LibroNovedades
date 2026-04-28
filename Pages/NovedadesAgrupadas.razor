@@ -898,6 +898,13 @@ else
                 return;
             }
 
+            if (dataNove.IdTipoNove == 0)
+            {
+                mensaje = "Debe seleccionar una causa (IdTipoNove no puede ser 0).";
+                Notificacion("error", "", mensaje);
+                return;
+            }
+
             // Normalización segura de strings
             dataNove.LnfichaRes = dataNove.LnfichaRes?.Trim().ToUpper() ?? string.Empty;
             dataNove.IdEquipo   = dataNove.IdEquipo?.Trim().ToUpper() ?? string.Empty;
@@ -977,12 +984,17 @@ else
         }
         catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
         {
-            mensaje = "Error: " + ex.Message;
+            var detalle = ex.InnerException?.InnerException?.Message
+                    ?? ex.InnerException?.Message
+                    ?? ex.Message;
+
+            mensaje = $"DbUpdateException: {detalle}";
             Notificacion("error", "", mensaje);
         }
         catch (Exception ex)
         {
-            mensaje = "Error: " + ex.Message;
+            var detalle = ex.InnerException?.Message ?? ex.Message;
+            mensaje = $"Exception: {detalle}";
             Notificacion("error", "", mensaje);
         }
         finally
@@ -1081,31 +1093,25 @@ else
     {
         try
         {
-            string temporal;
-            LibroNoveDTO? data;
+            if (dataNove.IdTipoNove == 0)
+            {
+                Notificacion("advertencia", "", "Debe seleccionar una causa antes de elegir un registro del Gespline.");
+                return;
+            }
 
             indexCambio = item;
-            temporal = paradas[0][item] + "-" +
-                    paradas[1][item] + "-" +
-                    paradas[2][item] + "-" +
-                    DateTime.Now.ToString("ddMMyyyy") + "-" +
-                    (dataNove.Lnturno ?? "") +
-                    (dataNove.Lngrupo ?? "");
 
+            string temporal = paradas[0][item] + "-" +
+                            paradas[1][item] + "-" +
+                            paradas[2][item] + "-" +
+                            DateTime.Now.ToString("ddMMyyyy") + "-" +
+                            (dataNove.Lnturno ?? "") +
+                            (dataNove.Lngrupo ?? "");
 
-            data = await LibroNovData.ObtenerPorIdParada(temporal);
+            var data = await LibroNovData.ObtenerPorIdParada(temporal);
 
             if (data == null || data.IdParada == null)
             {
-                tipoParada = await DataTiParTP.ObtenerTipoParadaId(paradas[1][item]);
-
-                if (tipoParada == null)
-                {
-                    Notificacion("error", "", "Tipo de parada no encontrado");
-                    return;
-                }
-
-                dataNove.IdTipoNove = tipoParada.IdTiParTp;
                 GrupoTurno();
                 dataNove.IdEquipo = "";
                 dataNove.Lnobserv = "";
@@ -1113,7 +1119,6 @@ else
                 dataNove.Lndiscrepa = "";
                 dataNove.IdParada = temporal;
                 IsNuevo = true;
-                dataNove.IdCtpm = 2;
                 dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]), 5);
             }
             else

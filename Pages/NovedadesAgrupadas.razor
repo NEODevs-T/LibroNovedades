@@ -512,8 +512,11 @@ else
     private List<EquipoEamDTO> listaAllEquiposEAM { get; set; } = new();
     private List<ClasifiTpmDTO> listaClasificacionTPM { get; set; } = new();
     private List<TiParTpDTO> listaTiposNovedad { get; set; } = new();
-    private List<string> listaTurnoYGrupo { get; set; } = new();
     
+    private string? _turnoCache;
+    private string? _grupoCache;
+    private int? _fechaCache;     // yyyyMMdd (igual a tu API)
+    private int? _turnoNumCache;  // 1 o 2
 
     private bool causaCargada { get; set; }
     private bool paradasBandera { get; set; }
@@ -615,15 +618,11 @@ else
                 paradasBandera = false;
                 isFichaManual = false;
 
-                if(id == id){
-                    dataNove = new LibroNoveDTO();
-                    dataNove.Lnobserv = "";
-                    dataNove.Lndiscrepa = "";
-                    dataNove.LnisResu = 0;
-                    causaCargada = false;
-                }else{
-                    // dataNove = await LibroNovData.ObtenerLibroPorId(id ?? 0) ?? new LibroNoveDTO();
-                }
+                dataNove = new LibroNoveDTO();
+                dataNove.Lnobserv = "";
+                dataNove.Lndiscrepa = "";
+                dataNove.LnisResu = 0;
+                causaCargada = false;
 
                 claims = user.Claims;
                 rol = user.FindFirst(c => c.Type.Contains("role"))?.Value ?? "";
@@ -761,6 +760,72 @@ else
         IsCargado = true;
     }
 
+    private static (int fecha, int turno) GetClaveTurnoActual(DateTime ahora)
+    {
+        int hora = ahora.Hour;
+
+        int turno;
+        int fecha;
+
+        if (hora >= 6 && hora < 18)
+        {
+            turno = 1;
+            fecha = int.Parse(ahora.ToString("yyyyMMdd"));
+        }
+        else if (hora >= 0 && hora < 6)
+        {
+            turno = 2;
+            fecha = int.Parse(ahora.AddDays(-1).ToString("yyyyMMdd"));
+        }
+        else
+        {
+            turno = 2;
+            fecha = int.Parse(ahora.ToString("yyyyMMdd"));
+        }
+
+        return (fecha, turno);
+    }
+
+    private async Task EnsureTurnoGrupoActualAsync()
+    {
+        if (idEmpresa != empresas.PAVECA)
+            return;
+
+        var (fechaNow, turnoNow) = GetClaveTurnoActual(DateTime.Now);
+
+        bool necesitaRefresco =
+            _fechaCache != fechaNow ||
+            _turnoNumCache != turnoNow ||
+            string.IsNullOrWhiteSpace(_turnoCache) ||
+            string.IsNullOrWhiteSpace(_grupoCache);
+
+        if (!necesitaRefresco)
+            return;
+
+        GrupoTurnoDTO tg = await DataAPI.ObtenerTurnoYGrupo();
+
+        _turnoCache = tg.Turno ?? "-";
+        _grupoCache = tg.Grupo ?? "-";
+
+        _fechaCache = fechaNow;
+        _turnoNumCache = turnoNow;
+    }
+
+    private void AplicarTurnoGrupoAlModelo()
+    {
+        if (idEmpresa != empresas.PAVECA) return;
+
+        dataNove.Lnturno = _turnoCache ?? "-";
+        dataNove.Lngrupo = _grupoCache ?? "-";
+
+    }
+
+    private async Task SetTurnoGrupoActualEnModeloAsync()
+    {
+        await EnsureTurnoGrupoActualAsync();
+        AplicarTurnoGrupoAlModelo();
+    }
+
     protected async Task BuscarEmpresas(ChangeEventArgs e)
     {
         if (!int.TryParse(e?.Value?.ToString(), out int pais))
@@ -875,6 +940,7 @@ else
 
         try
         {
+            await SetTurnoGrupoActualEnModeloAsync();
             dataNove.Lnfecha = DateTime.Now;
 
             if (!string.IsNullOrWhiteSpace(ficha) && ficha != "null")
@@ -975,10 +1041,11 @@ else
             dataNove.LnfichaRes = fichaRes;
             dataNove.IdCtpm     = ctpm;
 
+            await SetTurnoGrupoActualEnModeloAsync();
+
             causaCargada = false;
             indexCambio = -1;
 
-            GrupoTurno();
 
             await InvokeAsync(StateHasChanged);
         }
@@ -1005,6 +1072,7 @@ else
     
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e)
     {
+        await SetTurnoGrupoActualEnModeloAsync();
         try
         {
             if (!int.TryParse(e?.Value?.ToString(), out int idLinea))
@@ -1053,7 +1121,6 @@ else
                     (dataNove.Lnturno ?? "") +
                     (dataNove.Lngrupo ?? "");
 
-
                 LibroNoveDTO? dataNov =
                     listaNove.FirstOrDefault(n => n.IdParada == temporal);
 
@@ -1101,6 +1168,8 @@ else
 
             indexCambio = item;
 
+            await SetTurnoGrupoActualEnModeloAsync();
+
             string temporal = paradas[0][item] + "-" +
                             paradas[1][item] + "-" +
                             paradas[2][item] + "-" +
@@ -1112,7 +1181,6 @@ else
 
             if (data == null || data.IdParada == null)
             {
-                GrupoTurno();
                 dataNove.IdEquipo = "";
                 dataNove.Lnobserv = "";
                 nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];
@@ -1138,11 +1206,9 @@ else
                 dataNove.Lnturno = data.Lnturno;
                 dataNove.IdCtpm = data.IdCtpm;
                 dataNove.LnisResu = data.LnisResu;
-
                 IsNuevo = false;
                 dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]), 5);
             }
-
             causaCargada = true;
         }
         catch (Exception e)
@@ -1152,11 +1218,11 @@ else
         }
     }
     
-    public Task eleccionSinGespline()
+    public async Task eleccionSinGespline()
     {
         try
         {
-            GrupoTurno();
+            await SetTurnoGrupoActualEnModeloAsync();
             IsNuevo = true;
 
             if (tiempoPerdido > 0 && dataNove.IdTipoNove != 0)
@@ -1172,7 +1238,7 @@ else
             }
             else
             {
-                mensaje = @Traducciones["TiempoMayor"];
+                mensaje = Traducciones["TiempoMayor"];
                 Notificacion("error", "", mensaje);
             }
         }
@@ -1181,36 +1247,31 @@ else
             mensaje = "Error: " + ex.Message;
             Notificacion("error", "", mensaje);
         }
-
-        return Task.CompletedTask;
     }
 
-    public Task SinPerdida()
+    public async Task SinPerdida()
     {
-        IsNuevo = true;
-        GrupoTurno();
-
-        dataNove.IdParada = null;
-        causaCargada = true;
-        dataNove.Lndiscrepa = string.Empty;
-        dataNove.Lnobserv = string.Empty;
-        dataNove.IdEquipo = string.Empty;
-        dataNove.LntiePerMi = -1;
-        dataNove.IdTipoNove = 19;
-
-        tiempoPerdido = 0;
-        mensaje = string.Empty;
-        nota = string.Empty;
-
-        return Task.CompletedTask;
-    }
-
-    public void GrupoTurno()
-    {
-        if (idEmpresa == empresas.PAVECA && listaTurnoYGrupo?.Count >= 2)
+        try
         {
-            dataNove.Lnturno = listaTurnoYGrupo[0];
-            dataNove.Lngrupo = listaTurnoYGrupo[1];
+            IsNuevo = true;
+            await SetTurnoGrupoActualEnModeloAsync();
+
+            dataNove.IdParada = null;
+            causaCargada = true;
+            dataNove.Lndiscrepa = string.Empty;
+            dataNove.Lnobserv = string.Empty;
+            dataNove.IdEquipo = string.Empty;
+            dataNove.LntiePerMi = -1;
+            dataNove.IdTipoNove = 19;
+
+            tiempoPerdido = 0;
+            mensaje = string.Empty;
+            nota = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            mensaje = "Error: " + ex.Message;
+            Notificacion("error", "", mensaje);
         }
     }
 
@@ -1238,52 +1299,57 @@ else
             notificationService.Notify(notificacion);
         }
     } 
-
-public async Task GrupoTurnoPorEmpresa()
-{
-    if (idEmpresa == empresas.PAVECA)
+    
+    public async Task GrupoTurnoPorEmpresa()
     {
-        var turnoGrupo = await DataAPI.ObtenerTurnoYGrupo();
-
-        dataNove.Lnturno = turnoGrupo.Turno;
-        dataNove.Lngrupo = turnoGrupo.Grupo;
-
-        if (rol?.Contains("Admin") != true)
+        if (idEmpresa == empresas.PAVECA)
         {
-            isDisableManualGT = true;
-        }
+            var turnoGrupo = await DataAPI.ObtenerTurnoYGrupo();
 
-        grupos = new Dictionary<string, string>(grupoPAVECA);
+            _turnoCache = turnoGrupo.Turno ?? "-";
+            _grupoCache = turnoGrupo.Grupo ?? "-";
+
+            var (fechaNow, turnoNow) = GetClaveTurnoActual(DateTime.Now);
+            _fechaCache = fechaNow;
+            _turnoNumCache = turnoNow;
+
+            dataNove.Lnturno = _turnoCache;
+            dataNove.Lngrupo = _grupoCache;
+
+            if (rol?.Contains("Admin") != true)
+                isDisableManualGT = true;
+                
+                grupos = new Dictionary<string, string>(grupoPAVECA);
+            }
+            else if (idEmpresa == empresas.PANASA)
+            {
+                grupos = new Dictionary<string, string>(grupoPANASA);
+                dataNove.Lngrupo = "-";
+            }
+            else if (idEmpresa == empresas.PAINSA)
+            {
+                grupos = new Dictionary<string, string>(grupoPAINSA);
+            }
+                else if (idEmpresa == empresas.CHEMPRO)
+            {
+                grupos = new Dictionary<string, string>(grupoPAVECA);
+            }
+                else if (idEmpresa == empresas.PAPISA)
+            {
+                grupos = new Dictionary<string, string>(grupoPAPISA);
+            }
+                else if (idEmpresa == empresas.BIOPACOL)
+            {
+                grupos = new Dictionary<string, string>(grupoPANASA);
+                dataNove.Lngrupo = "-";
+            }
+            else if (idEmpresa == empresas.TTL)
+            {
+                grupos = new Dictionary<string, string>(grupoPAVECA);
+            }
+        else
+        {
+            grupos = new Dictionary<string, string>(grupoPAVECA);
+        }
     }
-    else if (idEmpresa == empresas.PANASA)
-    {
-        grupos = new Dictionary<string, string>(grupoPANASA);
-        dataNove.Lngrupo = "-";
-    }
-    else if (idEmpresa == empresas.PAINSA)
-    {
-        grupos = new Dictionary<string, string>(grupoPAINSA);
-    }
-    else if (idEmpresa == empresas.CHEMPRO)
-    {
-        grupos = new Dictionary<string, string>(grupoPAVECA);
-    }
-    else if (idEmpresa == empresas.PAPISA)
-    {
-        grupos = new Dictionary<string, string>(grupoPAPISA);
-    }
-    else if (idEmpresa == empresas.BIOPACOL)
-    {
-        grupos = new Dictionary<string, string>(grupoPANASA);
-        dataNove.Lngrupo = "-";
-    }
-    else if (idEmpresa == empresas.TTL)
-    {
-        grupos = new Dictionary<string, string>(grupoPAVECA);
-    }
-    else
-    {
-        grupos = new Dictionary<string, string>(grupoPAVECA);
-    }
-}
 }

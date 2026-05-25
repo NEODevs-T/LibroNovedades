@@ -936,8 +936,9 @@ else
 
     protected async Task OK(EditContext e)
     {
+        if (isDisabledButton) return;
         isDisabledButton = true;
-
+        await InvokeAsync(StateHasChanged);
         try
         {
             await SetTurnoGrupoActualEnModeloAsync();
@@ -988,11 +989,11 @@ else
 
             dataNove.IdMaster = linea.IdMaster;
 
-            listaDataNove.Add(dataNove);
+            var payload = new List<LibroNoveDTO> { dataNove };
 
             if (IsNuevo)
             {
-                bandera = await LibroNovData.InsertarRegistro(listaDataNove);
+                bandera = await LibroNovData.InsertarRegistro(payload);
             }
             else
             {

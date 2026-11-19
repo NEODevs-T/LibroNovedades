@@ -224,10 +224,11 @@
                             </BSCol>
                         </BSRow>
 
-                        @* ---------- PANEL DESPLEGABLE: TABLA (MISMA LÓGICA VIEJA) ---------- *@
+                        @* ---------- PANEL DESPLEGABLE: TABLA GESPLINE ---------- *@
                         @if (mostrarGespline && PuedeVerGespline)
                         {
                             <br />
+
                             <BSTable IsResponsive="true" IsStriped="true">
                                 <BSTHead>
                                     <BSTR class="cabeceraTabla">
@@ -238,46 +239,85 @@
                                         <BSTD>@Traducciones["Seleccionar"]</BSTD>
                                     </BSTR>
                                 </BSTHead>
+
                                 <BSTBody class="cuerpoTabla">
-                                @if (paradas == null || paradas.Count == 0 || paradas[0].Count == 0 || indexParadas == null)
-                                {
-                                    <BSTR>
-                                        <BSTD ColSpan="5">@Traducciones["SeleccioneUnaLinea"]</BSTD>
-                                    </BSTR>
-                                }
-                                else
-                                {
-                                    @foreach (var item in indexParadas)
+
+                                    @if (paradas == null ||
+                                        paradas.Count < 8 ||
+                                        paradas[0].Count == 0 ||
+                                        indexParadas == null)
                                     {
                                         <BSTR>
-                                            <BSTD>@(item + 1)</BSTD>
-                                            <BSTD>@paradas[4][item]</BSTD>
-                                            <BSTD>@paradas[3][item]</BSTD>
-                                            <BSTD>@Math.Round(double.Parse(paradas[5][item]), 2)</BSTD>
-                                            <BSTD>
-                                                @if (paradas[6][item] == "0")
-                                                {
-                                                    <BSButton id="@item" class="buttonFormularioOK" @onclick="@(e => eleccion(item))">
-                                                        @Traducciones["Seleccionar"]
-                                                    </BSButton>
-                                                }
-                                                else if (paradas[6][item] == "1")
-                                                {
-                                                    <BSButton id="@item" class="buttonFormularioCambio" @onclick="@(e => eleccion(item))">
-                                                        @Traducciones["Actualizado"]
-                                                    </BSButton>
-                                                }
-                                                else
-                                                {
-                                                    <BSButton id="@item" class="buttonFormularioDLT" @onclick="@(e => eleccion(item))">
-                                                        @Traducciones["PorActualizar"]
-                                                    </BSButton>
-                                                }
+                                            <BSTD ColSpan="5">
+                                                @Traducciones["SinParadasRegistrada"]
                                             </BSTD>
                                         </BSTR>
                                     }
-                                }
-                            </BSTBody>
+                                    else
+                                    {
+                                        @foreach (var item in indexParadas)
+                                        {
+                                            <BSTR>
+                                                <BSTD>@(item + 1)</BSTD>
+
+                                                @* Sección *@
+                                                <BSTD>@paradas[4][item]</BSTD>
+
+                                                @* Descripción *@
+                                                <BSTD>@paradas[3][item]</BSTD>
+
+                                                @* Tiempo perdido *@
+                                                <BSTD>
+                                                    @Math.Round(
+                                                        double.TryParse(
+                                                            paradas[5][item],
+                                                            out double tiempo
+                                                        ) ? tiempo : 0,
+                                                        2
+                                                    )
+                                                </BSTD>
+
+                                                @* Estado de la parada: índice 7 *@
+                                                <BSTD>
+                                                    @if (paradas[7][item] == "0")
+                                                    {
+                                                        <BSButton
+                                                            id="@item"
+                                                            class="buttonFormularioOK"
+                                                            @onclick="@(e => eleccion(item))">
+
+                                                            @Traducciones["Seleccionar"]
+
+                                                        </BSButton>
+                                                    }
+                                                    else if (paradas[7][item] == "1")
+                                                    {
+                                                        <BSButton
+                                                            id="@item"
+                                                            class="buttonFormularioCambio"
+                                                            @onclick="@(e => eleccion(item))">
+
+                                                            @Traducciones["Actualizado"]
+
+                                                        </BSButton>
+                                                    }
+                                                    else
+                                                    {
+                                                        <BSButton
+                                                            id="@item"
+                                                            class="buttonFormularioDLT"
+                                                            @onclick="@(e => eleccion(item))">
+
+                                                            @Traducciones["PorActualizar"]
+
+                                                        </BSButton>
+                                                    }
+                                                </BSTD>
+                                            </BSTR>
+                                        }
+                                    }
+
+                                </BSTBody>
                             </BSTable>
                         }
                     }
@@ -571,7 +611,7 @@ else
             "Formato", "Gespline", "Grupo", "GuardadoExitoso", "InicieSesion", "LibroDeNovedades", "Linea", "No", 
             "Obligatoria", "Observacion", "Pais", "PorActualizar", "Registrar", "Registre", "Resuelto", "Seccion", 
             "Seleccionar", "SeleccioneUnCentro", "SeleccioneUnPais", "SeleccioneUnaDivision", "SeleccioneUnaEmpresa", 
-            "SeleccioneUnaLinea", "Si", "SinPerdidaDeTiempo", "Tiempo", "TiempoEmpleado", "TiempoMayor", "TiempoPerdido", 
+            "SeleccioneUnaLinea",  "Si", "SinParadasRegistrada", "SinPerdidaDeTiempo", "Tiempo", "TiempoEmpleado", "TiempoMayor", "TiempoPerdido", 
             "Turno"
         };
 
@@ -933,15 +973,18 @@ else
             Notificacion("error", "", mensaje);
         }
     }
-
+    
     protected async Task OK(EditContext e)
     {
         if (isDisabledButton) return;
+
         isDisabledButton = true;
         await InvokeAsync(StateHasChanged);
+
         try
         {
             await SetTurnoGrupoActualEnModeloAsync();
+
             dataNove.Lnfecha = DateTime.Now;
 
             if (!string.IsNullOrWhiteSpace(ficha) && ficha != "null")
@@ -958,7 +1001,8 @@ else
 
             dataNove.Lnobserv = dataNove.Lnobserv?.Trim() ?? string.Empty;
 
-            if (dataNove.LnisResu == 1 && string.IsNullOrWhiteSpace(dataNove.Lnobserv))
+            if (dataNove.LnisResu == 1 &&
+                string.IsNullOrWhiteSpace(dataNove.Lnobserv))
             {
                 mensaje = @Traducciones["Obligatoria"];
                 Notificacion("error", "", mensaje);
@@ -972,14 +1016,29 @@ else
                 return;
             }
 
-            // Normalización segura de strings
-            dataNove.LnfichaRes = dataNove.LnfichaRes?.Trim().ToUpper() ?? string.Empty;
-            dataNove.IdEquipo   = dataNove.IdEquipo?.Trim().ToUpper() ?? string.Empty;
-            dataNove.Lndiscrepa = dataNove.Lndiscrepa?.Trim().ToUpper() ?? string.Empty;
-            dataNove.Lnobserv   = dataNove.Lnobserv.ToLower();
+            // ==========================================
+            // 1. NORMALIZAR DATOS
+            // ==========================================
 
-            // Obtención segura del IdMaster
-            var linea = listaLinea?.FirstOrDefault(l => l.IdLinea == dataNove.IdLinea);
+            dataNove.LnfichaRes =
+                dataNove.LnfichaRes?.Trim().ToUpper() ?? string.Empty;
+
+            dataNove.IdEquipo =
+                dataNove.IdEquipo?.Trim().ToUpper() ?? string.Empty;
+
+            dataNove.Lndiscrepa =
+                dataNove.Lndiscrepa?.Trim().ToUpper() ?? string.Empty;
+
+            dataNove.Lnobserv =
+                dataNove.Lnobserv.ToLower();
+
+            // ==========================================
+            // 2. VALIDAR LINEA
+            // ==========================================
+
+            var linea = listaLinea?
+                .FirstOrDefault(l => l.IdLinea == dataNove.IdLinea);
+
             if (linea == null)
             {
                 mensaje = "Línea no encontrada";
@@ -989,7 +1048,25 @@ else
 
             dataNove.IdMaster = linea.IdMaster;
 
-            var payload = new List<LibroNoveDTO> { dataNove };
+            // ==========================================
+            // 3. VALIDAR IDENTIFICADOR DE PARADA
+            // ==========================================
+
+            if (string.IsNullOrWhiteSpace(dataNove.IdParada))
+            {
+                mensaje = "El identificador de la parada está vacío.";
+                Notificacion("error", "", mensaje);
+                return;
+            }
+
+            // ==========================================
+            // 5. GUARDAR
+            // ==========================================
+
+            var payload = new List<LibroNoveDTO>
+            {
+                dataNove
+            };
 
             if (IsNuevo)
             {
@@ -1010,24 +1087,54 @@ else
                 return;
             }
 
-            // ✅ Guardado exitoso
+            // ==========================================
+            // 6. GUARDADO EXITOSO
+            // ==========================================
+
             mensaje = @Traducciones["GuardadoExitoso"];
             Notificacion("exito", "", mensaje);
 
-            // Respaldo de datos necesarios
-            int area   = dataNove.IdAreaCar;
+            int area = dataNove.IdAreaCar;
             int lineaId = dataNove.IdLinea;
             string fichaRes = dataNove.LnfichaRes;
-            int ctpm  = dataNove.IdCtpm;
+            int ctpm = dataNove.IdCtpm;
 
-            if (indexCambio != -1)
+            // Conservar el identificador de la parada guardada
+            string idParadaGuardada = dataNove.IdParada;
+
+            // ==========================================
+            // 7. ACTUALIZAR NOVEDADES DESDE BD
+            // ==========================================
+
+            listaNove = await LibroNovData.RegistroDeHoyPorLinea(lineaId);
+
+            // Buscar exclusivamente la parada guardada
+            var novedadGuardada = listaNove.FirstOrDefault(n =>
+                n.IdParada == idParadaGuardada &&
+                n.IdLinea == lineaId
+            );
+
+            // ==========================================
+            // 8. ACTUALIZAR ESTADO VISUAL
+            // ==========================================
+
+            if (indexCambio >= 0 &&
+                indexCambio < paradas[0].Count)
             {
-                paradas[6][indexCambio] = "1";
+                if (novedadGuardada != null)
+                {
+                    paradas[7][indexCambio] = "1";
+                }
             }
 
-            // Reset de estado
+            // ==========================================
+            // 9. REINICIAR FORMULARIO
+            // ==========================================
+
             dataNove = new LibroNoveDTO();
+
             listaDataNove = new List<LibroNoveDTO>();
+
             listaEquiposEAM = listaAllEquiposEAM.ToList();
 
             if (!isTPM)
@@ -1036,25 +1143,24 @@ else
                 dataNove.LnisResu = 2;
             }
 
-            dataNove.LnisResu   = 0;
-            dataNove.IdAreaCar  = area;
-            dataNove.IdLinea    = lineaId;
+            dataNove.LnisResu = 0;
+            dataNove.IdAreaCar = area;
+            dataNove.IdLinea = lineaId;
             dataNove.LnfichaRes = fichaRes;
-            dataNove.IdCtpm     = ctpm;
+            dataNove.IdCtpm = ctpm;
 
             await SetTurnoGrupoActualEnModeloAsync();
 
             causaCargada = false;
             indexCambio = -1;
 
-
             await InvokeAsync(StateHasChanged);
         }
         catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
         {
             var detalle = ex.InnerException?.InnerException?.Message
-                    ?? ex.InnerException?.Message
-                    ?? ex.Message;
+                ?? ex.InnerException?.Message
+                ?? ex.Message;
 
             mensaje = $"DbUpdateException: {detalle}";
             Notificacion("error", "", mensaje);
@@ -1062,6 +1168,7 @@ else
         catch (Exception ex)
         {
             var detalle = ex.InnerException?.Message ?? ex.Message;
+
             mensaje = $"Exception: {detalle}";
             Notificacion("error", "", mensaje);
         }
@@ -1070,10 +1177,12 @@ else
             isDisabledButton = false;
         }
     }
+
     
     protected async Task BuscarTiempoPerdido(ChangeEventArgs e)
     {
         await SetTurnoGrupoActualEnModeloAsync();
+
         try
         {
             if (!int.TryParse(e?.Value?.ToString(), out int idLinea))
@@ -1084,10 +1193,22 @@ else
 
             dataNove.IdLinea = idLinea;
 
-            listaEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(idLinea);
-            listaAllEquiposEAM = await EquipoEAMData.BuscarEquiposSegunLinea(idLinea);
+            // ==========================================
+            // 1. CARGAR EQUIPOS EAM
+            // ==========================================
 
-            LineaVDTO? linea = listaLinea?.FirstOrDefault(l => l.IdLinea == idLinea);
+            listaEquiposEAM =
+                await EquipoEAMData.BuscarEquiposSegunLinea(idLinea);
+
+            listaAllEquiposEAM = listaEquiposEAM.ToList();
+
+            // ==========================================
+            // 2. BUSCAR LINEA
+            // ==========================================
+
+            LineaVDTO? linea =
+                listaLinea?.FirstOrDefault(l => l.IdLinea == idLinea);
+
             if (linea == null)
             {
                 mensaje = "Línea no encontrada";
@@ -1095,33 +1216,90 @@ else
                 return;
             }
 
-            listaNove = await LibroNovData.RegistroDeHoyPorLinea(idLinea);
+            // ==========================================
+            // 3. RECUPERAR NOVEDADES DEL DIA
+            // ==========================================
 
-            var dtoList = await DataAPI.GetParadasActualesTurnoPorLineaAgrupadas(linea.LcenCos)
-                        ?? new List<ParadasActualesAgrupadasDTO>();
+            listaNove =
+                await LibroNovData.RegistroDeHoyPorLinea(idLinea);
+
+            // ==========================================
+            // 4. RECUPERAR PARADAS GESPLINE
+            // ==========================================
+
+            var dtoList =
+                await DataAPI.GetParadasActualesTurnoPorLineaAgrupadas(linea.LcenCos)
+                ?? new List<ParadasActualesAgrupadasDTO>();
+
+            // ==========================================
+            // 5. DIAGNOSTICO GESPLINE / EAM
+            // ==========================================
+
+            foreach (var parada in dtoList)
+            {
+                string codigoGespline = parada.ACodGes?.Trim() ?? "";
+
+                var equipoEAM = listaEquiposEAM.FirstOrDefault(e =>
+                    string.Equals(
+                        e.EcodEquiEam?.Trim(),
+                        codigoGespline,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+
+                // Buscar novedades que tengan el mismo código de parada.
+                string codigoBase = parada.CodigoParada?.Length >= 2
+                    ? parada.CodigoParada.Substring(0, 2)
+                    : "";
+
+                string idParadaBase =
+                    $"{parada.CodigoParada}-{parada.CodigoGrupoParada}-{codigoBase}-" +
+                    DateTime.Now.ToString("ddMMyyyy") +
+                    (dataNove.Lnturno ?? "") +
+                    (dataNove.Lngrupo ?? "");
+
+                var novedadesRelacionadas = listaNove
+                    .Where(n => n.IdParada == idParadaBase)
+                    .ToList();
+            }
+
+            // ==========================================
+            // 6. CONSTRUIR LISTA DE PARADAS
+            // ==========================================
 
             paradas = new List<List<string>>
             {
                 dtoList.Select(x => x.CodigoParada ?? string.Empty).ToList(),
+
                 dtoList.Select(x => x.CodigoGrupoParada ?? string.Empty).ToList(),
-                dtoList.Select(x => x.CodigoParada?.Substring(0, 2) ?? string.Empty).ToList(),
+
+                dtoList.Select(x =>
+                    x.CodigoParada?.Length >= 2
+                        ? x.CodigoParada.Substring(0, 2)
+                        : string.Empty
+                ).ToList(),
+
                 dtoList.Select(x => x.NombreParada ?? string.Empty).ToList(),
+
                 dtoList.Select(x => x.Aparte ?? string.Empty).ToList(),
-                dtoList.Select(x => x.TiempoPerdido.ToString()).ToList()
+
+                dtoList.Select(x => x.TiempoPerdido.ToString()).ToList(),
+
+                dtoList.Select(x => x.ACodGes ?? string.Empty).ToList()
             };
+
+            // ==========================================
+            // 7. ESTADO VISUAL
+            // ==========================================
 
             List<string> listaDeEstado = new();
 
             for (int i = 0; i < paradas[0].Count; i++)
             {
-                string temporal =
-                    paradas[0][i] + "-" +
-                    paradas[1][i] + "-" +
-                    paradas[2][i] + "-" +
-                    DateTime.Now.ToString("ddMMyyyy") + "-" +
-                    (dataNove.Lnturno ?? "") +
-                    (dataNove.Lngrupo ?? "");
+                // Nuevo identificador que incluye ACodGes
+                string temporal = GenerarIdParada(i);
 
+                // Buscar primero por el nuevo identificador
                 LibroNoveDTO? dataNov =
                     listaNove.FirstOrDefault(n => n.IdParada == temporal);
 
@@ -1131,13 +1309,21 @@ else
                     continue;
                 }
 
-                double parada =
-                    Math.Round(double.TryParse(paradas[5][i], out double p) ? p : 0, 5);
+                double paradaTiempo = Math.Round(
+                    double.TryParse(paradas[5][i], out double p) ? p : 0,
+                    5
+                );
 
-                listaDeEstado.Add(dataNov.LntiePerMi == parada ? "1" : "2");
+                listaDeEstado.Add(
+                    dataNov.LntiePerMi == paradaTiempo ? "1" : "2"
+                );
             }
 
             paradas.Add(listaDeEstado);
+
+            // ==========================================
+            // 8. ACTUALIZAR TABLA
+            // ==========================================
 
             if (paradas[0].Count == 0)
             {
@@ -1147,14 +1333,29 @@ else
             else
             {
                 paradasBandera = false;
-                indexParadas = Enumerable.Range(0, paradas[0].Count).ToList();
+
+                indexParadas =
+                    Enumerable.Range(0, paradas[0].Count).ToList();
             }
         }
         catch (Exception ex)
         {
             mensaje = "Error: " + ex.Message;
             Notificacion("error", "", mensaje);
+
         }
+    }
+
+
+    private string GenerarIdParada(int item)
+    {
+        return paradas[0][item] + "-" +
+            paradas[1][item] + "-" +
+            paradas[2][item] + "-" +
+            DateTime.Now.ToString("ddMMyyyy") + "-" +
+            (dataNove.Lnturno ?? "") +
+            (dataNove.Lngrupo ?? "") + "-" +
+            (paradas[6][item] ?? "").Trim();
     }
 
     public async Task eleccion(int item)
@@ -1163,7 +1364,11 @@ else
         {
             if (dataNove.IdTipoNove == 0)
             {
-                Notificacion("advertencia", "", "Debe seleccionar una causa antes de elegir un registro del Gespline.");
+                Notificacion(
+                    "advertencia",
+                    "",
+                    "Debe seleccionar una causa antes de elegir un registro del Gespline."
+                );
                 return;
             }
 
@@ -1171,27 +1376,144 @@ else
 
             await SetTurnoGrupoActualEnModeloAsync();
 
-            string temporal = paradas[0][item] + "-" +
-                            paradas[1][item] + "-" +
-                            paradas[2][item] + "-" +
-                            DateTime.Now.ToString("ddMMyyyy") + "-" +
-                            (dataNove.Lnturno ?? "") +
-                            (dataNove.Lngrupo ?? "");
+            // ==========================================
+            // 1. DATOS GENERALES
+            // ==========================================
 
-            var data = await LibroNovData.ObtenerPorIdParada(temporal);
+            int lineaActual = dataNove.IdLinea;
 
-            if (data == null || data.IdParada == null)
+            string equipoGespline = paradas[6][item]?.Trim() ?? "";
+
+            // Identificador nuevo con ACodGes
+            string temporal = GenerarIdParada(item);
+
+            // Identificador antiguo sin ACodGes
+            string temporalAntiguo =
+                paradas[0][item] + "-" +
+                paradas[1][item] + "-" +
+                paradas[2][item] + "-" +
+                DateTime.Now.ToString("ddMMyyyy") +
+                (dataNove.Lnturno ?? "") +
+                (dataNove.Lngrupo ?? "");
+
+
+            // ==========================================
+            // 2. RECUPERAR NOVEDADES DEL DIA
+            // ==========================================
+
+            var registros =
+                await LibroNovData.RegistroDeHoyPorLinea(lineaActual);
+
+            // ==========================================
+            // 3. BUSCAR IDENTIFICADOR NUEVO
+            // ==========================================
+
+            var coincidencias = registros
+                .Where(x =>
+                    string.Equals(
+                        x.IdParada?.Trim(),
+                        temporal.Trim(),
+                        StringComparison.OrdinalIgnoreCase
+                    ) &&
+                    x.IdLinea == lineaActual
+                )
+                .ToList();
+
+            // ==========================================
+            // 4. COMPATIBILIDAD CON REGISTROS ANTIGUOS
+            // ==========================================
+
+            if (coincidencias.Count == 0)
             {
+                var coincidenciasAntiguas = registros
+                    .Where(x =>
+                        string.Equals(
+                            x.IdParada?.Trim(),
+                            temporalAntiguo.Trim(),
+                            StringComparison.OrdinalIgnoreCase
+                        ) &&
+                        x.IdLinea == lineaActual
+                    )
+                    .ToList();
+
+
+                if (coincidenciasAntiguas.Count == 1)
+                {
+                    // Solo se recupera si existe una única coincidencia.
+                    coincidencias = coincidenciasAntiguas;
+                }
+                else if (coincidenciasAntiguas.Count > 1)
+                {
+                    
+                    Notificacion(
+                        "advertencia",
+                        "",
+                        "Existen varias novedades anteriores para esta parada. " +
+                        "No se seleccionará ninguna automáticamente."
+                    );
+
+                    return;
+                }
+            }
+
+            // ==========================================
+            // 5. DETERMINAR REGISTRO
+            // ==========================================
+
+            LibroNoveDTO? data = null;
+
+            if (coincidencias.Count == 1)
+            {
+                data = coincidencias.First();
+            }
+            else if (coincidencias.Count > 1)
+            {
+                Notificacion(
+                    "advertencia",
+                    "",
+                    "Se encontraron varias novedades para esta parada. " +
+                    "No se seleccionará ninguna automáticamente."
+                );
+
+                return;
+            }
+            // ==========================================
+            // 7. REGISTRO NUEVO
+            // ==========================================
+
+            if (data == null)
+            {
+                dataNove.IdLinea = lineaActual;
+
+                dataNove.IdlibrNov = 0;
                 dataNove.IdEquipo = "";
                 dataNove.Lnobserv = "";
-                nota = "Nota: " + paradas[4][item] + " - " + paradas[3][item];
                 dataNove.Lndiscrepa = "";
+
+                // Guardar identificador nuevo
                 dataNove.IdParada = temporal;
+
                 IsNuevo = true;
-                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]), 5);
+
+                nota =
+                    "Nota: " +
+                    paradas[4][item] +
+                    " - " +
+                    paradas[3][item];
+
+                dataNove.LntiePerMi = Math.Round(
+                    double.Parse(paradas[5][item]),
+                    5
+                );
+
+                
             }
             else
             {
+                // ==========================================
+                // 8. RECUPERAR REGISTRO EXISTENTE
+                // ==========================================
+
                 dataNove.IdLinea = data.IdLinea;
                 dataNove.IdAreaCar = data.IdAreaCar;
                 dataNove.IdEquipo = data.IdEquipo;
@@ -1207,15 +1529,23 @@ else
                 dataNove.Lnturno = data.Lnturno;
                 dataNove.IdCtpm = data.IdCtpm;
                 dataNove.LnisResu = data.LnisResu;
+
                 IsNuevo = false;
-                dataNove.LntiePerMi = Math.Round(double.Parse(paradas[5][item]), 5);
+
+                dataNove.LntiePerMi = Math.Round(
+                    double.Parse(paradas[5][item]),
+                    5
+                );
+
             }
+
             causaCargada = true;
         }
         catch (Exception e)
         {
             mensaje = "Error: " + e.Message;
             Notificacion("error", "", mensaje);
+
         }
     }
     

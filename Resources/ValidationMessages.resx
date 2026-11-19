@@ -30,6 +30,7 @@
 <data name="SeleccioneUnaDivision" xml:space="preserve"><value>Seleccionar División</value></data>
 <data name="Linea" xml:space="preserve"><value>Línea</value></data>
 <data name="SeleccioneUnaLinea" xml:space="preserve"><value>Seleccionar Línea</value></data>
+<data name="SinParadasRegistrada" xml:space="preserve"><value>Sin Paradas Registradas en Gespline</value></data>
 <data name="TiempoPerdido" xml:space="preserve"><value>Tiempo Perdido (min)</value></data>
 <data name="TiempoEmpleado" xml:space="preserve"><value>Tiempo Empleado (min)</value></data>
 <data name="Causa" xml:space="preserve"><value>Causa</value></data>
